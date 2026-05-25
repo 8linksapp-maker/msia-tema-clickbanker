@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { readData } from '../lib/readData';
+
+const siteConfig = readData('siteConfig.json');
+const legal = readData('privacy.json', {}); // walker reusa o mesmo
+---
+
+<BaseLayout title="Termos de Uso" description={`Termos de uso do ${siteConfig.name}`}>
+  <section class="border-b border-rule">
+    <div class="container-x pt-16 md:pt-20 pb-10">
+      <p class="mono uppercase text-ink-faint mb-5">legal</p>
+      <h1 class="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-ink leading-[1.05] mb-3">
+        Termos de Uso
+      </h1>
+      {siteConfig.legal?.terms_last_updated && (
+        <p class="mono text-ink-faint">
+          atualizado em {siteConfig.legal.terms_last_updated}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <div class="container-x py-14 md:py-20">
+    <div class="prose-msia">
+      {(legal as any).termsContent ? (
+        <Fragment set:html={(legal as any).termsContent} />
+      ) : (
+        <p>Edite essa página no painel admin em <a href="/admin/legal" class="text-primary underline underline-offset-4">/admin/legal</a>.</p>
+      )}
+    </div>
+  </div>
+</BaseLayout>
