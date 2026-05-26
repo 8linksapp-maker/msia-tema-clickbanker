@@ -1,19 +1,25 @@
 /**
  * Mapeamento categoria → cor OKLCH committed.
- * Cada categoria do scaffold tem uma cor de assinatura.
- * Ordem importa — define a sequência de cores na home.
+ * Tema "Afiliado ClickBank" — cada nicho de produto tem sua cor de assinatura.
+ * Ordem importa — define a sequência dos blocos coloridos na home.
  */
 export type CategoryColor = 'terracota' | 'azul-tinta' | 'oliva' | 'ocre' | 'vinho';
 
 export const CATEGORY_COLORS: Record<string, CategoryColor> = {
-  'Comece aqui':  'terracota',
-  'Configuração': 'azul-tinta',
-  'Conteúdo':     'oliva',
-  'Plugins':      'ocre',
-  'Inspiração':   'vinho',
+  'Saúde & Emagrecimento':   'oliva',        // verde-natural, sem ser óbvio
+  'Finanças Pessoais':       'vinho',        // sério, premium
+  'Relacionamentos':         'terracota',    // warmth humana
+  'Negócios Online':         'ocre',         // gold/ambição
+  'Desenvolvimento Pessoal': 'azul-tinta',   // clarity/mind
 };
 
-export const CATEGORY_ORDER = ['Comece aqui', 'Configuração', 'Conteúdo', 'Plugins', 'Inspiração'];
+export const CATEGORY_ORDER = [
+  'Saúde & Emagrecimento',
+  'Finanças Pessoais',
+  'Relacionamentos',
+  'Negócios Online',
+  'Desenvolvimento Pessoal',
+];
 
 /** Pega a cor de uma categoria, fallback rotativo se desconhecida. */
 export function colorForCategory(category: string | undefined, index = 0): CategoryColor {

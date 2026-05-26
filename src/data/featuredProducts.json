@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Renovação Metabólica",
+    "category": "Saúde & Emagrecimento",
+    "price": "R$ 297",
+    "rating": "4.7",
+    "blurb": "Programa 8 semanas com foco em ajuste metabólico — não em corte calórico.",
+    "link": "#"
+  },
+  {
+    "name": "Marketing de Performance Essencial",
+    "category": "Negócios Online",
+    "price": "R$ 197",
+    "rating": "4.6",
+    "blurb": "Fundamentos sem inflar com técnicas avançadas. Garantia 60 dias.",
+    "link": "#"
+  },
+  {
+    "name": "Apego Seguro: Reconstruindo Padrões",
+    "category": "Relacionamentos",
+    "price": "R$ 97",
+    "rating": "4.8",
+    "blurb": "Ebook + workbook estruturado pra mapear próprio padrão de apego.",
+    "link": "#"
+  }
+]

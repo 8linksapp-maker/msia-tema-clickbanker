@@ -1,0 +1,48 @@
+---
+import type { Product } from '../../lib/products';
+
+interface Props {
+  product: Product;
+  postTitle: string;
+  postUrl: string;
+  publishedDate: Date;
+  updatedDate?: Date;
+  authorName?: string;
+}
+
+const { product, postTitle, postUrl, publishedDate, updatedDate, authorName } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Review",
+  "itemReviewed": {
+    "@type": "Product",
+    "name": product.name,
+    "description": product.blurb || product.description,
+    "offers": {
+      "@type": "Offer",
+      "price": product.price.replace(/[^0-9,.]/g, '').replace(',', '.'),
+      "priceCurrency": product.price.includes('R$') ? 'BRL' : 'USD',
+      "availability": "https://schema.org/InStock",
+      "url": postUrl,
+    },
+  },
+  "name": postTitle,
+  "datePublished": publishedDate.toISOString(),
+  "dateModified": (updatedDate || publishedDate).toISOString(),
+  "author": authorName ? {
+    "@type": "Person",
+    "name": authorName,
+  } : undefined,
+  ...(product.rating ? {
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": product.rating,
+      "bestRating": "5",
+      "worstRating": "1",
+    },
+  } : {}),
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

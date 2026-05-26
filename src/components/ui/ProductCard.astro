@@ -1,0 +1,105 @@
+---
+import type { Product } from '../../lib/products';
+
+interface Props {
+  product: Product;
+  variant?: 'sidebar' | 'inline' | 'hero';
+}
+
+const { product, variant = 'inline' } = Astro.props;
+const goUrl = `/go/${product.slug}`;
+
+if (variant === 'sidebar') {
+  // compact card pra sidebar widget — já existe no Sidebar.astro
+}
+---
+
+{variant === 'inline' && (
+  <a
+    href={goUrl}
+    target="_blank"
+    rel="noopener nofollow sponsored"
+    class="not-prose block bg-surface border border-border rounded-md p-5 md:p-6 my-8 hover:border-primary transition-colors group"
+  >
+    <div class="flex items-start justify-between gap-4 mb-3">
+      <div class="min-w-0 flex-1">
+        <p class="mono uppercase text-ink-faint mb-2">{product.category}</p>
+        <h3 class="font-display text-xl md:text-2xl font-bold text-ink leading-tight group-hover:text-primary transition-colors">
+          {product.name}
+        </h3>
+      </div>
+      {product.rating && (
+        <div class="flex flex-col items-end shrink-0">
+          <span class="mono text-primary font-bold">★ {product.rating}</span>
+          {product.reviewCount && (
+            <span class="mono text-ink-faint text-[10px]">{product.reviewCount} avaliações</span>
+          )}
+        </div>
+      )}
+    </div>
+
+    {product.blurb && (
+      <p class="text-base text-ink-muted leading-relaxed mb-5">
+        {product.blurb}
+      </p>
+    )}
+
+    <div class="flex items-center justify-between pt-4 border-t border-rule">
+      <div class="flex items-baseline gap-3">
+        {product.originalPrice && (
+          <span class="mono text-ink-faint line-through">{product.originalPrice}</span>
+        )}
+        <span class="font-display text-2xl font-extrabold text-primary">{product.price}</span>
+      </div>
+      <span class="btn btn-primary group-hover:translate-x-0.5 transition-transform">
+        Ver produto
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </span>
+    </div>
+  </a>
+)}
+
+{variant === 'hero' && (
+  <div class="bg-surface border border-border rounded-md p-6 md:p-8 my-10">
+    <p class="mono uppercase text-ink-faint mb-3">produto desta análise</p>
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-end">
+      <div>
+        <h3 class="font-display text-2xl md:text-3xl font-extrabold text-ink leading-tight mb-3">
+          {product.name}
+        </h3>
+        {product.blurb && (
+          <p class="text-ink-muted leading-relaxed mb-4 max-w-prose-lg">
+            {product.blurb}
+          </p>
+        )}
+        <div class="flex items-center gap-5 flex-wrap mono">
+          {product.rating && (
+            <span class="text-primary font-bold">★ {product.rating}</span>
+          )}
+          {product.bestFor && (
+            <span class="text-ink-muted">
+              <span class="text-ink-faint">melhor pra:</span> {product.bestFor}
+            </span>
+          )}
+        </div>
+      </div>
+      <div class="flex flex-col items-start md:items-end gap-3">
+        <div class="flex items-baseline gap-2">
+          {product.originalPrice && (
+            <span class="mono text-ink-faint line-through">{product.originalPrice}</span>
+          )}
+          <span class="font-display text-3xl font-extrabold text-primary">{product.price}</span>
+        </div>
+        <a
+          href={goUrl}
+          target="_blank"
+          rel="noopener nofollow sponsored"
+          class="btn btn-primary"
+        >
+          Conhecer agora
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+)}

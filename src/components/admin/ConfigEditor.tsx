@@ -230,18 +230,28 @@ export default function ConfigEditor() {
 
             {/* Prefixo da URL dos Posts */}
             <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Prefixo da URL dos Posts</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-2 border-b border-slate-100 pb-4">Estrutura da URL dos posts</h3>
+                <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+                    Quando você muda essa opção, as URLs antigas ganham redirect 301 automático no <code className="bg-slate-100 px-1 rounded">vercel.json</code>. SEO preservado.
+                </p>
                 <div className="flex gap-2">
                     {[
-                        { value: 'blog', label: '/blog/titulo-do-post', desc: 'Padrao' },
-                        { value: '', label: '/titulo-do-post', desc: 'URL limpa (sem /blog)' },
-                    ].map(opt => (
-                        <label key={opt.value} className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all text-center ${(config?.postUrlPrefix ?? 'blog') === opt.value ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                            <input type="radio" name="postUrlPrefix" value={opt.value} checked={(config?.postUrlPrefix ?? 'blog') === opt.value} onChange={e => setConfig({ ...config, postUrlPrefix: e.target.value })} className="hidden" />
-                            <p className="text-sm font-bold text-slate-800">{opt.label}</p>
-                            <p className="text-xs text-slate-500">{opt.desc}</p>
-                        </label>
-                    ))}
+                        { value: '', label: 'dominio.com/slug-do-post', desc: 'URL limpa (recomendado)', recommended: true },
+                        { value: 'blog', label: 'dominio.com/blog/slug-do-post', desc: 'Com prefixo /blog' },
+                    ].map(opt => {
+                        const current = config?.postUrlPrefix ?? '';
+                        const active = current === opt.value;
+                        return (
+                            <label key={opt.value} className={`relative flex-1 p-4 border-2 rounded-xl cursor-pointer transition-all text-center ${active ? 'border-amber-500 bg-amber-50 shadow-sm' : 'border-slate-200 hover:border-slate-300'}`}>
+                                <input type="radio" name="postUrlPrefix" value={opt.value} checked={active} onChange={e => setConfig({ ...config, postUrlPrefix: e.target.value })} className="hidden" />
+                                {opt.recommended && (
+                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-600 text-white">recomendado</span>
+                                )}
+                                <p className="text-sm font-mono font-bold text-slate-800 mt-1">{opt.label}</p>
+                                <p className="text-[11px] text-slate-500 mt-1">{opt.desc}</p>
+                            </label>
+                        );
+                    })}
                 </div>
             </div>
 

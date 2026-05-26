@@ -1,0 +1,9 @@
+---
+export const prerender = false;
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import PromoBarEditor from '../../components/admin/PromoBarEditor';
+---
+
+<AdminLayout title="Promo Bar" activeSection="promo">
+  <PromoBarEditor client:load />
+</AdminLayout>

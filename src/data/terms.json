@@ -1,4 +1,22 @@
 {
   "title": "Termos de Uso",
-  "content": ""
+  "lastUpdated": "",
+  "content": [
+    {
+      "title": "1. Aceitação dos termos",
+      "text": "Ao acessar e usar este site, o visitante concorda com os termos descritos aqui. Edite no admin em /admin/legal."
+    },
+    {
+      "title": "2. Propriedade intelectual",
+      "text": "Todo conteúdo publicado (textos, imagens, vídeos) é de propriedade do blog ou de seus respectivos donos. Reprodução sem autorização é proibida."
+    },
+    {
+      "title": "3. Conteúdo de terceiros",
+      "text": "Posts podem conter links pra sites externos. Não nos responsabilizamos pelo conteúdo deles."
+    },
+    {
+      "title": "4. Limitação de responsabilidade",
+      "text": "O conteúdo deste blog tem caráter informativo. Não substituímos aconselhamento profissional (médico, jurídico, financeiro)."
+    }
+  ]
 }

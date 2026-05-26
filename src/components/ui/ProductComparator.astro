@@ -1,0 +1,88 @@
+---
+import type { Product } from '../../lib/products';
+
+interface Props {
+  products: Product[];   // já resolvidos pelo Astro page server-side
+  title?: string;
+}
+
+const { products, title } = Astro.props;
+const valid = products.filter(p => p && p.active);
+---
+
+{valid.length > 0 && (
+  <div class="not-prose my-10 md:my-12">
+    {title && (
+      <h3 class="font-display text-xl md:text-2xl font-extrabold text-ink mb-5">
+        {title}
+      </h3>
+    )}
+
+    <div class="overflow-x-auto border border-border rounded-md bg-surface">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-rule bg-elev/50">
+            <th class="text-left p-3 md:p-4 mono uppercase text-ink-faint w-1/4">Produto</th>
+            <th class="text-center p-3 md:p-4 mono uppercase text-ink-faint hidden sm:table-cell">Rating</th>
+            <th class="text-left p-3 md:p-4 mono uppercase text-ink-faint hidden md:table-cell">Melhor pra</th>
+            <th class="text-right p-3 md:p-4 mono uppercase text-ink-faint">Preço</th>
+            <th class="text-right p-3 md:p-4 mono uppercase text-ink-faint">Link</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-rule">
+          {valid.map((p) => (
+            <tr class="hover:bg-elev/40 transition-colors">
+              <td class="p-3 md:p-4 align-top">
+                <div class="font-display font-bold text-ink leading-tight mb-1">
+                  {p.name}
+                </div>
+                <p class="mono uppercase text-ink-faint text-[10px]">{p.category}</p>
+                {p.blurb && (
+                  <p class="text-ink-muted text-xs leading-relaxed mt-2 line-clamp-2 max-w-xs">
+                    {p.blurb}
+                  </p>
+                )}
+              </td>
+
+              <td class="p-3 md:p-4 align-top text-center hidden sm:table-cell">
+                {p.rating ? (
+                  <div>
+                    <span class="font-display font-bold text-primary">★ {p.rating}</span>
+                    {p.reviewCount && (
+                      <p class="mono text-ink-faint text-[10px] mt-1">{p.reviewCount}</p>
+                    )}
+                  </div>
+                ) : <span class="text-ink-faint">—</span>}
+              </td>
+
+              <td class="p-3 md:p-4 align-top text-ink-muted text-xs hidden md:table-cell">
+                {p.bestFor || '—'}
+              </td>
+
+              <td class="p-3 md:p-4 align-top text-right">
+                {p.originalPrice && (
+                  <div class="mono text-ink-faint text-[10px] line-through">{p.originalPrice}</div>
+                )}
+                <div class="font-display font-extrabold text-primary text-base md:text-lg">
+                  {p.price}
+                </div>
+              </td>
+
+              <td class="p-3 md:p-4 align-top text-right">
+                <a
+                  href={`/go/${p.slug}`}
+                  target="_blank"
+                  rel="noopener nofollow sponsored"
+                  class="mono uppercase inline-flex items-center gap-1.5 text-ink hover:text-primary transition-colors border-b border-ink hover:border-primary pb-0.5"
+                >
+                  ver
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}

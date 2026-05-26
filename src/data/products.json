@@ -1,0 +1,184 @@
+[
+  {
+    "slug": "weightloss",
+    "name": "Weight Loss",
+    "category": "Saúde & Emagrecimento",
+    "vendor": "",
+    "hoplink": "amazon.com",
+    "price": "297",
+    "originalPrice": "",
+    "rating": "4.8",
+    "reviewCount": 0,
+    "blurb": "8 semanas com foco em ajuste metabolico - nao em corte calorico",
+    "description": "",
+    "pros": [
+      "comunidade ativa telegram"
+    ],
+    "cons": [],
+    "bestFor": "Quem ja tentou dieta restritiva",
+    "image": "/uploads/products/1779807955566-weightloss.jpg",
+    "commission": 0,
+    "gravity": 0,
+    "active": true,
+    "featuredInSidebar": false,
+    "createdAt": "2026-05-26T15:05:55.595Z"
+  },
+  {
+    "slug": "renovacao-metabolica",
+    "name": "Programa Renovação Metabólica",
+    "category": "Saúde & Emagrecimento",
+    "vendor": "Instituto Vida Plena",
+    "hoplink": "https://abc.hop.clickbank.net/?cbpage=metabolismo",
+    "price": "R$ 297",
+    "originalPrice": "R$ 497",
+    "rating": "4.7",
+    "reviewCount": 1240,
+    "blurb": "8 semanas com foco em ajuste metabólico — não em corte calórico.",
+    "description": "",
+    "pros": [
+      "Comunidade ativa Telegram",
+      "Material denso sem padding",
+      "Suporte 30 dias"
+    ],
+    "cons": [
+      "Módulo de exercícios genérico"
+    ],
+    "bestFor": "Quem já tentou dieta restritiva",
+    "image": "",
+    "commission": 50,
+    "gravity": 87,
+    "active": true,
+    "featuredInSidebar": true,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  },
+  {
+    "slug": "marketing-performance-essencial",
+    "name": "Marketing de Performance Essencial",
+    "category": "Negócios Online",
+    "vendor": "Hub Digital",
+    "hoplink": "https://xyz.hop.clickbank.net/?cbpage=marketing-perf",
+    "price": "R$ 197",
+    "rating": "4.6",
+    "reviewCount": 890,
+    "blurb": "Fundamentos sem inflar com técnicas avançadas. Garantia 60 dias.",
+    "pros": [
+      "Material didático",
+      "Sem upsell agressivo",
+      "Comunidade Discord"
+    ],
+    "cons": [
+      "Inicial — quem já sabe vai achar lento"
+    ],
+    "bestFor": "Iniciante absoluto",
+    "image": "",
+    "commission": 60,
+    "gravity": 62,
+    "active": true,
+    "featuredInSidebar": true,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  },
+  {
+    "slug": "apego-seguro-padroes",
+    "name": "Apego Seguro: Reconstruindo Padrões",
+    "category": "Relacionamentos",
+    "vendor": "Psicologia Aplicada",
+    "hoplink": "https://def.hop.clickbank.net/?cbpage=apego",
+    "price": "R$ 97",
+    "rating": "4.8",
+    "reviewCount": 420,
+    "blurb": "Ebook + workbook estruturado pra mapear padrão de apego.",
+    "pros": [
+      "Workbook anexo",
+      "Baseado em teoria do apego real",
+      "Preço acessível"
+    ],
+    "cons": [
+      "Pra quem busca curso em vídeo, não serve"
+    ],
+    "bestFor": "Quem faz terapia",
+    "image": "",
+    "commission": 50,
+    "gravity": 35,
+    "active": true,
+    "featuredInSidebar": true,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  },
+  {
+    "slug": "reset-hormonal-feminino",
+    "name": "Reset Hormonal Feminino",
+    "category": "Saúde & Emagrecimento",
+    "vendor": "Clínica Equilibra",
+    "hoplink": "https://ghi.hop.clickbank.net/?cbpage=hormonal",
+    "price": "R$ 397",
+    "rating": "4.5",
+    "reviewCount": 580,
+    "blurb": "Foco em desequilíbrio hormonal feminino 35-55. Suporte com nutri 4 semanas.",
+    "pros": [
+      "Suporte humano incluso",
+      "Abordagem específica",
+      "Plano alimentar"
+    ],
+    "cons": [
+      "Preço alto pra quem não sabe se é hormonal"
+    ],
+    "bestFor": "Mulheres 35-55 com sintomas hormonais",
+    "image": "",
+    "commission": 45,
+    "gravity": 71,
+    "active": true,
+    "featuredInSidebar": false,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  },
+  {
+    "slug": "metodo-corpo-equilibrio",
+    "name": "Método Corpo em Equilíbrio",
+    "category": "Saúde & Emagrecimento",
+    "vendor": "Bem-estar Pro",
+    "hoplink": "https://jkl.hop.clickbank.net/?cbpage=corpo-eq",
+    "price": "R$ 197",
+    "rating": "4.4",
+    "reviewCount": 760,
+    "blurb": "Abordagem progressiva pra iniciante: hidratação → nutrição → movimento.",
+    "pros": [
+      "Didático e progressivo",
+      "Sem overwhelm",
+      "Boa pra iniciante"
+    ],
+    "cons": [
+      "Quem já sabe vai achar básico"
+    ],
+    "bestFor": "Iniciante absoluto",
+    "image": "",
+    "commission": 50,
+    "gravity": 45,
+    "active": true,
+    "featuredInSidebar": false,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  },
+  {
+    "slug": "sistemas-trabalho-independente",
+    "name": "Sistemas de Trabalho Independente",
+    "category": "Desenvolvimento Pessoal",
+    "vendor": "Produtividade Aplicada",
+    "hoplink": "https://mno.hop.clickbank.net/?cbpage=sistemas",
+    "price": "R$ 197",
+    "rating": "4.6",
+    "reviewCount": 510,
+    "blurb": "Foca em rotina, não em motivação. Pra freelancer e afiliado.",
+    "pros": [
+      "Sem motivacional vazio",
+      "Ferramentas práticas",
+      "Aplicável imediato"
+    ],
+    "cons": [
+      "Não é específico pra quem quer 'mindset abundância'"
+    ],
+    "bestFor": "Quem trabalha por conta própria",
+    "image": "",
+    "commission": 55,
+    "gravity": 38,
+    "active": true,
+    "featuredInSidebar": false,
+    "createdAt": "2026-05-01T00:00:00.000Z"
+  }
+]

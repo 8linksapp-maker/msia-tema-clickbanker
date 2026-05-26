@@ -1,0 +1,71 @@
+---
+import type { PromoBarWidget } from '../../../lib/landingPages';
+import type { Product } from '../../../lib/products';
+
+interface Props { widget: PromoBarWidget; product: Product; }
+const { widget, product } = Astro.props;
+
+const link = widget.ctaLink || `/go/${product.slug}`;
+const isInk = widget.background === 'ink';
+const bgStyle = widget.background && widget.background !== 'primary' && widget.background !== 'ink'
+  ? `background:${widget.background};`
+  : '';
+---
+
+<div
+  class={`lp-widget-promobar ${isInk ? 'is-ink' : ''}`}
+  style={bgStyle}
+>
+  <div class="lp-widget-promobar-inner">
+    {widget.emoji && <span class="lp-widget-promobar-emoji">{widget.emoji}</span>}
+    <span class="lp-widget-promobar-text">{widget.text}</span>
+    {widget.ctaText && (
+      <a href={link} target="_blank" rel="noopener nofollow sponsored" class="lp-widget-promobar-cta">
+        {widget.ctaText}
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .lp-widget-promobar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 0.75rem 1.25rem;
+    background: rgb(var(--c-primary, 163 89 45));
+    color: white;
+    font-family: var(--lp-font, 'Switzer', system-ui, sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .lp-widget-promobar.is-ink { background: rgb(var(--c-ink, 38 31 22)); }
+  .lp-widget-promobar-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .lp-widget-promobar-emoji { font-size: 1rem; }
+  .lp-widget-promobar-cta {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: opacity 0.2s;
+  }
+  .lp-widget-promobar-cta:hover { opacity: 0.8; }
+</style>

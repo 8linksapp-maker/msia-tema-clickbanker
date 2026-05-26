@@ -18,18 +18,25 @@ if (valid) return Astro.redirect('/admin');
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login — Admin</title>
+    <title>Login — ClickBanker</title>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center p-4">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 flex items-center justify-center p-4">
     <div class="w-full max-w-sm">
         <div class="text-center mb-8">
-            <div class="w-14 h-14 bg-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/30">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-amber-900/40" style="background: linear-gradient(135deg, #a3592d 0%, #c47238 100%);">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 9l5 12 1.8-5.2L21 14Z"/>
+                    <path d="M7.2 2.2 8 5.1"/>
+                    <path d="m5.1 8-2.9-.8"/>
+                    <path d="M14 4.1 12 6"/>
+                    <path d="m6 12-1.9 2"/>
                 </svg>
+                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
             </div>
-            <h1 class="text-2xl font-bold text-white">Painel Admin</h1>
-            <p class="text-slate-400 text-sm mt-1">Entre com sua senha para continuar</p>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight" style="letter-spacing: -0.025em;">
+                Click<span class="text-amber-400">Banker</span>
+            </h1>
+            <p class="text-slate-400 text-[11px] font-mono uppercase tracking-widest mt-2">afiliado clickbank cms</p>
         </div>
 
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
@@ -41,13 +48,13 @@ if (valid) return Astro.redirect('/admin');
                         id="password"
                         type="password"
                         placeholder="••••••••••••"
-                        class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                        class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
                         autofocus
                     />
                 </div>
                 <button
                     id="loginBtn"
-                    class="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-violet-600/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
+                    class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-amber-600/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
                 >
                     Entrar
                 </button>

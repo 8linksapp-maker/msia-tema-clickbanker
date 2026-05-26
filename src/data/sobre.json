@@ -1,5 +1,18 @@
 {
-  "title": "Sobre",
-  "subtitle": "Edite essa página no admin pra contar a história do seu blog.",
-  "content": ""
+  "hero": {
+    "title": "Sobre o blog",
+    "desc": "Edite essa página no admin pra contar a história do seu blog: quem fundou, por quê, o que esperar.",
+    "image": ""
+  },
+  "content": {
+    "missionTitle": "Missão",
+    "missionText": "Descreva aqui a missão do seu blog em 1-2 parágrafos.",
+    "teamTitle": "Equipe",
+    "teamText": "Apresente quem está por trás do blog."
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "image": ""
+  }
 }

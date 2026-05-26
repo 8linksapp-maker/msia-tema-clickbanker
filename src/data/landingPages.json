@@ -1,0 +1,239 @@
+[
+  {
+    "slug": "apego-seguro-padroes",
+    "productSlug": "apego-seguro-padroes",
+    "published": true,
+    "createdAt": "2026-05-26T17:36:11.291Z",
+    "blocks": [
+      {
+        "id": "hero-1779816971291-8",
+        "type": "hero",
+        "data": {
+          "headline": "",
+          "subheadline": "",
+          "image": "",
+          "cta": "Quero conhecer"
+        }
+      },
+      {
+        "id": "problem-1779816982838-9",
+        "type": "problem",
+        "data": {
+          "headline": "Você se identifica com isso?",
+          "items": [
+            "",
+            "",
+            ""
+          ]
+        }
+      },
+      {
+        "id": "solution-1779816986027-10",
+        "type": "solution",
+        "data": {
+          "headline": "",
+          "text": "",
+          "image": ""
+        }
+      },
+      {
+        "id": "text-image-1779816991194-11",
+        "type": "text-image",
+        "data": {
+          "headline": "",
+          "text": "",
+          "image": "",
+          "imagePosition": "right"
+        }
+      },
+      {
+        "id": "gallery-1779817001207-12",
+        "type": "gallery",
+        "data": {
+          "headline": "",
+          "columns": 3,
+          "images": [
+            {
+              "src": "",
+              "caption": ""
+            },
+            {
+              "src": "",
+              "caption": ""
+            },
+            {
+              "src": "",
+              "caption": ""
+            }
+          ]
+        }
+      },
+      {
+        "id": "quote-1779817007360-13",
+        "type": "quote",
+        "data": {
+          "text": "",
+          "author": "",
+          "role": ""
+        }
+      }
+    ],
+    "seo": {
+      "title": "",
+      "description": ""
+    }
+  },
+  {
+    "slug": "renovacao-metabolica-30-dias",
+    "productSlug": "renovacao-metabolica",
+    "published": true,
+    "createdAt": "2026-05-26T00:00:00.000Z",
+    "blocks": [
+      {
+        "id": "hero-1779816968093-1",
+        "type": "hero",
+        "data": {
+          "headline": "Pare de cortar calorias. Comece a ajustar seu metabolismo.",
+          "subheadline": "O programa de 8 semanas que já transformou 1.240 mulheres acima dos 35 anos — sem dieta restritiva, sem academia obrigatória.",
+          "image": "",
+          "cta": "Quero conhecer o programa"
+        },
+        "style": {
+          "background": "#065700"
+        }
+      },
+      {
+        "id": "problem-1779816968093-2",
+        "type": "problem",
+        "data": {
+          "headline": "Reconhece algum desses cenários?",
+          "items": [
+            "Faz dieta restritiva, perde 3kg, volta a comer normal e recupera 5",
+            "Já tentou todo tipo de jejum e nada funciona pra você",
+            "Tem 35+ e percebe que o que dava certo aos 25 não funciona mais",
+            "Cansou de promessas vazias do tipo \"perca 10kg em 7 dias\""
+          ]
+        }
+      },
+      {
+        "id": "solution-1779816968093-3",
+        "type": "solution",
+        "data": {
+          "headline": "Não é mais uma dieta. É um reset do metabolismo.",
+          "text": "Renovação Metabólica trabalha com janelas alimentares estratégicas + composição correta de refeições + ajuste de sono e estresse. Foco em CAUSA, não em sintoma. 8 semanas estruturadas com material denso, sem padding motivacional.",
+          "image": ""
+        }
+      },
+      {
+        "id": "benefits-1779816968093-4",
+        "type": "benefits",
+        "data": {
+          "headline": "O que você ganha",
+          "items": [
+            "Sem corte calórico brutal — você come bem, só na hora certa",
+            "Suporte da comunidade ativa no Telegram (30 dias gratuitos)",
+            "Material vitalício — assiste no seu ritmo",
+            "Planilha de tracking semanal pra você ver o progresso",
+            "Garantia de 60 dias — testa sem risco"
+          ]
+        }
+      },
+      {
+        "id": "testimonials-1779816968093-5",
+        "type": "testimonials",
+        "data": {
+          "headline": "Resultados reais",
+          "items": [
+            {
+              "name": "Marina, 41",
+              "text": "Fiz tudo nessa vida. Atkins, low-carb, jejum. Nada dava certo por mais de 2 meses. Comecei o programa em janeiro e em maio eu não sei como, mas perdi 7kg sem nem perceber.",
+              "rating": 5
+            },
+            {
+              "name": "Camila, 38",
+              "text": "O que mais mudou foi a forma como eu vejo comida. Saí da neura de calorias. Hoje como muito mais e peso menos do que quando contava obsessivamente.",
+              "rating": 5
+            },
+            {
+              "name": "Beatriz, 45",
+              "text": "Tenho hipotireoidismo. Sempre me disseram que metabolismo lento era inevitável. Esse programa provou que não era. -6kg em 3 meses, energia voltou.",
+              "rating": 5
+            }
+          ]
+        }
+      },
+      {
+        "id": "faq-1779816968093-6",
+        "type": "faq",
+        "data": {
+          "headline": "Dúvidas comuns",
+          "items": [
+            {
+              "q": "Funciona pra quem tem 50+?",
+              "a": "Sim. A faixa de 50-65 é onde temos mais resultado consistente, justamente porque o problema principal nessa idade é metabolismo, não força de vontade."
+            },
+            {
+              "q": "Preciso fazer exercício?",
+              "a": "Não obrigatoriamente. O programa funciona sem academia. Mas se você gosta de se movimentar, incluímos um módulo (opcional) com sugestões de baixo impacto."
+            },
+            {
+              "q": "E se eu não gostar?",
+              "a": "Garantia incondicional de 60 dias via ClickBank. Você testa por 2 meses inteiros e, se não funcionar pra você, pede reembolso total sem precisar justificar."
+            },
+            {
+              "q": "Tem suporte direto?",
+              "a": "Sim. Comunidade ativa no Telegram com a nutricionista responsável presente 5 dias por semana respondendo dúvidas individuais."
+            }
+          ]
+        }
+      },
+      {
+        "id": "cta-1779816968093-7",
+        "type": "cta-final",
+        "data": {
+          "headline": "Você tentou tudo. Tenta esse agora.",
+          "subtext": "Sem risco — garantia incondicional de 60 dias. Se não funcionar, devolvemos cada centavo.",
+          "cta": "Garantir agora",
+          "urgency": "Vagas limitadas pra próxima turma da comunidade"
+        }
+      }
+    ],
+    "seo": {
+      "title": "Renovação Metabólica — Programa 8 semanas pra mulheres 35+",
+      "description": "O programa de reset metabólico que já transformou 1.240 mulheres. Sem dieta restritiva. Garantia de 60 dias."
+    },
+    "primaryColor": "",
+    "fontFamily": "boska",
+    "widgets": {
+      "promoBar": {
+        "enabled": true,
+        "emoji": "🎯",
+        "text": "",
+        "ctaText": "Ver agora",
+        "ctaLink": "",
+        "background": "primary"
+      },
+      "socialProof": {
+        "enabled": true,
+        "items": [
+          {
+            "name": "",
+            "location": "",
+            "product": "",
+            "time": "agora"
+          }
+        ],
+        "intervalSeconds": 8,
+        "position": "bottom-left"
+      },
+      "exitPopup": {
+        "enabled": true,
+        "headline": "",
+        "subtext": "",
+        "ctaText": "Garantir desconto",
+        "couponCode": ""
+      }
+    },
+    "thumbnail": "/uploads/images/1779824819869-image.jpg"
+  }
+]

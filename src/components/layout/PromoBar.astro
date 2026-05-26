@@ -1,0 +1,60 @@
+---
+import { readData } from '../../lib/readData';
+
+const promo = readData('promoBar.json', { enabled: false }) as any;
+const products = readData('products.json', []) as any[];
+
+const enabled = !!promo?.enabled;
+const link = promo?.productSlug
+  ? `/go/${promo.productSlug}`
+  : (promo?.link || '#');
+
+const bg = promo?.background === 'ink' ? 'bg-ink text-bg' : 'bg-primary text-white';
+---
+
+{enabled && (
+  <div id="promo-bar" class={`${bg} relative`}>
+    <div class="container-x py-2.5 md:py-3">
+      <div class="flex items-center justify-center gap-3 md:gap-4 flex-wrap text-sm font-medium text-center">
+        {promo.emoji && <span class="text-base">{promo.emoji}</span>}
+        <span class="font-medium">{promo.text}</span>
+        {(link && promo.ctaText) && (
+          <a
+            href={link}
+            target={promo.productSlug ? '_blank' : '_self'}
+            rel={promo.productSlug ? 'noopener nofollow sponsored' : ''}
+            class="mono uppercase inline-flex items-center gap-1.5 border-b border-current pb-0.5 hover:opacity-80 transition-opacity"
+          >
+            {promo.ctaText}
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        )}
+      </div>
+    </div>
+    {promo.dismissible && (
+      <button id="promo-dismiss" aria-label="Fechar promoção" class="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    )}
+  </div>
+
+  <script is:inline>
+    (function() {
+      const bar = document.getElementById('promo-bar');
+      if (!bar) return;
+      try {
+        if (sessionStorage.getItem('promo-dismissed') === '1') {
+          bar.style.display = 'none';
+          return;
+        }
+      } catch {}
+      const btn = document.getElementById('promo-dismiss');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          bar.style.display = 'none';
+          try { sessionStorage.setItem('promo-dismissed', '1'); } catch {}
+        });
+      }
+    })();
+  </script>
+)}

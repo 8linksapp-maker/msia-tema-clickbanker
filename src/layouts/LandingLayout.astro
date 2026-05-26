@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import { readData } from '../lib/readData';
+import HeadPlugins from '../plugins/_slots/HeadPlugins.astro';
+import BodyEndPlugins from '../plugins/_slots/BodyEndPlugins.astro';
+
+const siteConfig = readData('siteConfig.json');
+
+const primaryHex = siteConfig.theme?.primary || '#a3592d';
+const fontDisplay = siteConfig.theme?.fontDisplay || 'Cabinet Grotesk';
+const fontBody = siteConfig.theme?.fontBody || 'Switzer';
+
+function hexToRgbTriplet(hex: string): string {
+  const h = hex.replace('#', '').trim();
+  if (h.length !== 6) return '163 89 45';
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `${r} ${g} ${b}`;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  primaryOverride?: string | null;
+  /** URL de import da fonte custom da landing (Fontshare/Google) */
+  fontImportUrl?: string | null;
+  /** font-family stack a aplicar no .lp + headings */
+  fontStack?: string | null;
+}
+const { title, description, image = '', primaryOverride = null, fontImportUrl = null, fontStack = null } = Astro.props;
+
+const primaryTriplet = primaryOverride || hexToRgbTriplet(primaryHex);
+let cssVars = `--c-primary: ${primaryTriplet};`;
+if (fontStack) {
+  cssVars += ` --lp-font: ${fontStack};`;
+}
+
+const siteUrl = siteConfig.url || Astro.url.origin;
+const ogImage = image?.startsWith('http') ? image : (image ? new URL(image, siteUrl).toString() : '');
+---
+
+<!DOCTYPE html>
+<html lang={siteConfig.language || 'pt-BR'} style={cssVars}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href={siteConfig.favicon || '/favicon.svg'} />
+
+  {fontImportUrl && <link rel="stylesheet" href={fontImportUrl} />}
+
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  {ogImage && <meta property="og:image" content={ogImage} />}
+
+  <HeadPlugins />
+</head>
+
+<body style="background: rgb(var(--c-bg, 252 249 244));">
+  <!-- Header minimalista (só logo, sem nav) -->
+  <header style="padding: 1.25rem 1.5rem; background: rgb(var(--c-surface, 255 254 251)); border-bottom: 1px solid rgb(var(--c-border, 222 213 196));">
+    <div style="max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+      <a href="/" style="text-decoration: none; font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800; font-size: 1.125rem; color: rgb(var(--c-ink, 38 31 22)); letter-spacing: -0.02em;">
+        {siteConfig.name}
+      </a>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: rgb(var(--c-ink-faint, 158 145 124)); text-transform: uppercase; letter-spacing: 0.05em;">
+        Oferta especial
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <!-- Footer minimalista — só disclaimer + legal -->
+  <footer style="padding: 2rem 1.5rem; border-top: 1px solid rgb(var(--c-border, 222 213 196)); background: rgb(var(--c-bg, 252 249 244));">
+    <div style="max-width: 720px; margin: 0 auto; text-align: center; font-family: 'Switzer', sans-serif; font-size: 0.75rem; color: rgb(var(--c-ink-faint, 158 145 124)); line-height: 1.6;">
+      <p style="margin: 0 0 0.875rem;">
+        <strong>Aviso de afiliado:</strong> esta página contém links de afiliado para produtos da plataforma ClickBank.
+        Compras realizadas podem gerar comissão sem custo adicional para você.
+      </p>
+      <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.02em;">
+        © {new Date().getFullYear()} {siteConfig.name} ·
+        <a href="/privacidade" style="color: inherit; text-decoration: underline;">privacidade</a> ·
+        <a href="/termos" style="color: inherit; text-decoration: underline;">termos</a>
+      </p>
+    </div>
+  </footer>
+
+  <BodyEndPlugins />
+</body>
+</html>

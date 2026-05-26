@@ -1,5 +1,22 @@
 {
   "title": "Política de Privacidade",
-  "content": "",
-  "termsContent": ""
+  "lastUpdated": "",
+  "content": [
+    {
+      "title": "1. Coleta de informações",
+      "text": "Descreva quais informações você coleta dos visitantes (cookies, formulários, analytics). Edite essa seção no admin em /admin/legal."
+    },
+    {
+      "title": "2. Uso das informações",
+      "text": "Como você usa essas informações. Para envio de newsletter, melhoria do conteúdo, métricas internas, etc."
+    },
+    {
+      "title": "3. Compartilhamento",
+      "text": "Com quem (se algum) você compartilha dados. Ex: Brevo (email), Google Analytics, Google AdSense."
+    },
+    {
+      "title": "4. Direitos do usuário (LGPD)",
+      "text": "Como o visitante pode solicitar acesso, correção ou remoção dos dados dele."
+    }
+  ]
 }

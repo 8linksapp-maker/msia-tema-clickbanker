@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "slug": "renovacao-metabolica",
+      "ts": "2026-05-26T17:18:25.255Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "weightloss",
+      "ts": "2026-05-26T15:19:48.251Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "weightloss",
+      "ts": "2026-05-26T15:17:59.980Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "weightloss",
+      "ts": "2026-05-26T15:06:29.406Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "renovacao-metabolica",
+      "ts": "2026-05-26T15:06:25.622Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "renovacao-metabolica",
+      "ts": "2026-05-26T15:06:09.775Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "weightloss",
+      "ts": "2026-05-26T15:06:00.680Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "apego-seguro-padroes",
+      "ts": "2026-05-26T14:43:50.587Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "reset-hormonal-feminino",
+      "ts": "2026-05-26T14:27:54.108Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    },
+    {
+      "slug": "reset-hormonal-feminino",
+      "ts": "2026-05-26T14:27:50.324Z",
+      "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.216 Safari/537.36"
+    }
+  ],
+  "totals": {
+    "reset-hormonal-feminino": 2,
+    "apego-seguro-padroes": 1,
+    "weightloss": 4,
+    "renovacao-metabolica": 3
+  }
+}

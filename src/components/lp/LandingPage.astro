@@ -1,0 +1,612 @@
+---
+import type { LandingPage, Block } from '../../lib/landingPages';
+import { isHexDark } from '../../lib/landingPages';
+import type { Product } from '../../lib/products';
+
+interface Props {
+  lp: LandingPage;
+  product: Product;
+}
+const { lp, product } = Astro.props;
+const goUrl = `/go/${product.slug}`;
+
+function stars(n: number): string {
+  return '★'.repeat(Math.max(1, Math.min(5, n))) + '☆'.repeat(5 - Math.max(1, Math.min(5, n)));
+}
+
+/**
+ * Classes + inline style do background da section.
+ * Preset: usa classe utility. Hex custom: inline style + classe que define cor de texto contrastante.
+ */
+function bgStyles(block: Block): { className: string; style: string } {
+  const bg = block.style?.background;
+  const txt = block.style?.textColor;
+  let className = '';
+  let style = '';
+
+  if (bg === 'default') className = 'lp-bg-default';
+  else if (bg === 'muted')   className = 'lp-bg-muted';
+  else if (bg === 'dark')    className = 'lp-bg-dark';
+  else if (bg === 'primary') className = 'lp-bg-primary';
+  else if (typeof bg === 'string' && /^#[0-9a-f]{6}$/i.test(bg)) {
+    const isDark = isHexDark(bg);
+    className = isDark ? 'lp-bg-custom-dark' : 'lp-bg-custom-light';
+    style = `background:${bg};`;
+  }
+
+  // Text color override (sobrescreve auto-contraste se especificado)
+  if (typeof txt === 'string' && /^#[0-9a-f]{6}$/i.test(txt)) {
+    style += `--lp-text-override:${txt};`;
+    className = (className + ' lp-text-override').trim();
+  }
+
+  return { className, style };
+}
+---
+
+<article class="lp">
+  {lp.blocks.map((block: Block) => {
+    const d: any = block.data;
+
+    if (block.type === 'hero') {
+      const heroImage = d.image || product.image || '';
+      return (
+        <section class={`lp-block lp-hero ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            <div class="lp-hero-grid">
+              <div class="lp-hero-text">
+                <h1 class="lp-h1">{d.headline}</h1>
+                {d.subheadline && <p class="lp-lead">{d.subheadline}</p>}
+                <div class="lp-hero-actions">
+                  <a href={goUrl} target="_blank" rel="noopener nofollow sponsored" class="lp-btn lp-btn-primary lp-btn-lg">
+                    {d.cta}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </a>
+                  {product.rating && (
+                    <div class="lp-hero-meta">
+                      <span class="lp-stars">★ {product.rating}</span>
+                      {product.reviewCount && product.reviewCount > 0 && (
+                        <span class="lp-reviews">{product.reviewCount} avaliações</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {heroImage && (
+                <div class="lp-hero-image">
+                  <img src={heroImage} alt={product.name} loading="eager" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'problem') {
+      const items = (d.items || []).filter((s: string) => s && s.trim());
+      if (items.length === 0) return null;
+      return (
+        <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container lp-narrow">
+            <h2 class="lp-h2">{d.headline}</h2>
+            <ul class="lp-list-x">
+              {items.map((item: string) => (
+                <li>
+                  <svg class="lp-icon-x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'solution') {
+      if (!d.headline && !d.text) return null;
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            <div class={`lp-solution-grid ${d.image ? 'has-image' : ''}`}>
+              <div>
+                <p class="lp-eyebrow">a solução</p>
+                <h2 class="lp-h2">{d.headline}</h2>
+                {d.text && <p class="lp-body">{d.text}</p>}
+              </div>
+              {d.image && (
+                <div class="lp-solution-image">
+                  <img src={d.image} alt={product.name} loading="lazy" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'benefits') {
+      const items = (d.items || []).filter((s: string) => s && s.trim());
+      if (items.length === 0) return null;
+      return (
+        <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container lp-narrow">
+            <p class="lp-eyebrow">o que você ganha</p>
+            <h2 class="lp-h2">{d.headline || 'Benefícios diretos'}</h2>
+            <ul class="lp-list-check">
+              {items.map((item: string) => (
+                <li>
+                  <svg class="lp-icon-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div class="lp-mid-cta">
+              <a href={goUrl} target="_blank" rel="noopener nofollow sponsored" class="lp-btn lp-btn-primary lp-btn-lg">
+                Quero conhecer
+              </a>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'testimonials') {
+      const items = (d.items || []).filter((t: any) => t && t.text);
+      if (items.length === 0) return null;
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            <p class="lp-eyebrow lp-center">quem já usou</p>
+            <h2 class="lp-h2 lp-center">{d.headline || 'Resultados reais'}</h2>
+            <div class="lp-testimonials">
+              {items.map((t: any) => (
+                <figure class="lp-testimonial">
+                  <div class="lp-testimonial-stars">{stars(t.rating || 5)}</div>
+                  <blockquote class="lp-testimonial-text">"{t.text}"</blockquote>
+                  <figcaption class="lp-testimonial-footer">
+                    {t.avatar && (
+                      <img src={t.avatar} alt={t.name} class="lp-testimonial-avatar" loading="lazy" />
+                    )}
+                    <span class="lp-testimonial-name">{t.avatar ? t.name : `— ${t.name}`}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'faq') {
+      const items = (d.items || []).filter((i: any) => i && i.q);
+      if (items.length === 0) return null;
+      return (
+        <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container lp-narrow">
+            <p class="lp-eyebrow">perguntas frequentes</p>
+            <h2 class="lp-h2">{d.headline || 'Dúvidas comuns'}</h2>
+            <div class="lp-faq">
+              {items.map((item: any) => (
+                <details class="lp-faq-item">
+                  <summary>
+                    <span>{item.q}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </summary>
+                  <div class="lp-faq-answer">{item.a}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === 'cta-final') {
+      return (
+        <section class={`lp-block lp-section lp-cta-final ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container lp-narrow lp-center">
+            {d.urgency && <p class="lp-urgency">⚡ {d.urgency}</p>}
+            <h2 class="lp-h2-big">{d.headline}</h2>
+            {d.subtext && <p class="lp-lead">{d.subtext}</p>}
+            <div class="lp-price-block">
+              {product.originalPrice && <span class="lp-price-old">{product.originalPrice}</span>}
+              <span class="lp-price">{product.price}</span>
+            </div>
+            <a href={goUrl} target="_blank" rel="noopener nofollow sponsored" class="lp-btn lp-btn-primary lp-btn-xl">
+              {d.cta}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <p class="lp-guarantee">✓ Garantia de 60 dias · ✓ Compra segura via ClickBank</p>
+          </div>
+        </section>
+      );
+    }
+
+    // ===== TEXT-IMAGE (novo) =====
+    if (block.type === 'text-image') {
+      if (!d.headline && !d.text && !d.image) return null;
+      const isLeft = d.imagePosition === 'left';
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            <div class={`lp-text-image-grid ${isLeft ? 'reverse' : ''}`}>
+              <div class="lp-text-image-content">
+                {d.headline && <h2 class="lp-h2">{d.headline}</h2>}
+                {d.text && <p class="lp-body">{d.text}</p>}
+              </div>
+              {d.image && (
+                <div class="lp-text-image-img">
+                  <img src={d.image} alt={d.headline || ''} loading="lazy" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ===== GALLERY (novo) =====
+    if (block.type === 'gallery') {
+      const imgs = (d.images || []).filter((img: any) => img && img.src);
+      if (imgs.length === 0) return null;
+      const cols = d.columns || 3;
+      return (
+        <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            {d.headline && <h2 class="lp-h2 lp-center">{d.headline}</h2>}
+            <div class={`lp-gallery cols-${cols}`}>
+              {imgs.map((img: any) => (
+                <figure class="lp-gallery-item">
+                  <div class="lp-gallery-img">
+                    <img src={img.src} alt={img.caption || ''} loading="lazy" />
+                  </div>
+                  {img.caption && <figcaption class="lp-gallery-caption">{img.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ===== STATS (novo) =====
+    if (block.type === 'stats') {
+      const items = (d.items || []).filter((i: any) => i && i.value);
+      if (items.length === 0) return null;
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container">
+            {d.headline && <h2 class="lp-h2 lp-center">{d.headline}</h2>}
+            <div class="lp-stats" style={`grid-template-columns:repeat(${Math.min(items.length, 4)},1fr);`}>
+              {items.map((stat: any) => (
+                <div class="lp-stat">
+                  <div class="lp-stat-value">{stat.value}</div>
+                  {stat.label && <div class="lp-stat-label">{stat.label}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // ===== QUOTE (novo) =====
+    if (block.type === 'quote') {
+      if (!d.text) return null;
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class="lp-container lp-narrow lp-center">
+            <svg class="lp-quote-icon" width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9 7v6c0 3.5-3 6-6 6v-3c1.5 0 3-1.5 3-3H3V7h6zm12 0v6c0 3.5-3 6-6 6v-3c1.5 0 3-1.5 3-3h-3V7h6z"/>
+            </svg>
+            <blockquote class="lp-quote-text">{d.text}</blockquote>
+            {d.author && (
+              <footer class="lp-quote-author">
+                <span class="lp-quote-name">{d.author}</span>
+                {d.role && <span class="lp-quote-role">{d.role}</span>}
+              </footer>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    // ===== COUNTDOWN =====
+    if (block.type === 'countdown') {
+      if (!d.targetDate) return null;
+      const isBanner = d.layout === 'banner';
+      return (
+        <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
+          <div class={`lp-container ${isBanner ? '' : 'lp-narrow lp-center'}`}>
+            <div
+              class={`lp-countdown ${isBanner ? 'lp-countdown-banner' : 'lp-countdown-box'}`}
+              data-target={d.targetDate}
+              data-expired-msg={d.expiredMessage || 'Oferta encerrada'}
+            >
+              <p class="lp-countdown-headline">{d.headline}</p>
+              <div class="lp-countdown-timer" data-countdown-display>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-d>00</span><span class="lp-countdown-lbl">dias</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-h>00</span><span class="lp-countdown-lbl">horas</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-m>00</span><span class="lp-countdown-lbl">min</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-s>00</span><span class="lp-countdown-lbl">seg</span></div>
+              </div>
+              <div class="lp-countdown-expired" data-countdown-expired style="display:none;">
+                <span class="lp-countdown-expired-text">{d.expiredMessage || 'Oferta encerrada'}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    return null;
+  })}
+</article>
+
+<style>
+  .lp {
+    font-family: var(--lp-font, 'Switzer', system-ui, -apple-system, sans-serif);
+    color: rgb(var(--c-ink-muted, 92 80 64));
+    background: rgb(var(--c-bg, 252 249 244));
+    line-height: 1.65;
+  }
+
+  /* Text color override (per-block, sobrescreve auto-contraste) */
+  .lp .lp-text-override,
+  .lp .lp-text-override .lp-h1,
+  .lp .lp-text-override .lp-h2,
+  .lp .lp-text-override .lp-h2-big,
+  .lp .lp-text-override .lp-body,
+  .lp .lp-text-override .lp-lead,
+  .lp .lp-text-override .lp-eyebrow,
+  .lp .lp-text-override .lp-list-x li,
+  .lp .lp-text-override .lp-list-check li,
+  .lp .lp-text-override .lp-stat-value,
+  .lp .lp-text-override .lp-stat-label,
+  .lp .lp-text-override .lp-testimonial-text,
+  .lp .lp-text-override .lp-testimonial-name,
+  .lp .lp-text-override .lp-quote-text,
+  .lp .lp-text-override .lp-quote-name,
+  .lp .lp-text-override .lp-faq-item summary,
+  .lp .lp-text-override .lp-faq-answer {
+    color: var(--lp-text-override) !important;
+  }
+  .lp-container { max-width: 1120px; margin-inline: auto; padding-inline: 1.5rem; }
+  @media (min-width: 768px) { .lp-container { padding-inline: 2.5rem; } }
+  .lp-narrow { max-width: 720px; }
+  .lp-center { text-align: center; }
+
+  .lp-section { padding: 4rem 0; border-top: 1px solid rgb(var(--c-rule, 204 192 174)); }
+  @media (min-width: 768px) { .lp-section { padding: 6rem 0; } }
+  .lp-section-muted { background: rgb(var(--c-elev, 244 237 226)); }
+
+  .lp-h1 { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(2.25rem, 5vw, 3.75rem); font-weight: 900; line-height: 1.02; letter-spacing: -0.035em; color: rgb(var(--c-ink, 38 31 22)); margin: 0 0 1.25rem; }
+  .lp-h2 { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; color: rgb(var(--c-ink, 38 31 22)); margin: 0 0 1.5rem; }
+  .lp-h2-big { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 900; line-height: 1.05; letter-spacing: -0.03em; color: rgb(var(--c-ink, 38 31 22)); margin: 0 0 1.25rem; }
+  .lp-eyebrow { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; text-transform: uppercase; color: rgb(var(--c-primary, 163 89 45)); letter-spacing: 0.08em; font-weight: 600; margin: 0 0 0.625rem; }
+  .lp-lead { font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.55; color: rgb(var(--c-ink-muted, 92 80 64)); margin: 0 0 2rem; }
+  .lp-body { font-size: 1.0625rem; line-height: 1.7; color: rgb(var(--c-ink-muted, 92 80 64)); margin: 0 0 1rem; }
+
+  .lp-hero { padding: 4rem 0 5rem; background: rgb(var(--c-surface, 255 254 251)); }
+  @media (min-width: 768px) { .lp-hero { padding: 6rem 0 7rem; } }
+  .lp-hero-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+  @media (min-width: 768px) { .lp-hero-grid { grid-template-columns: 3fr 2fr; gap: 4rem; } }
+  .lp-hero-image img { width: 100%; height: auto; border-radius: 8px; object-fit: cover; aspect-ratio: 4/5; border: 1px solid rgb(var(--c-border, 222 213 196)); }
+  .lp-hero-actions { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .lp-hero-meta { display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.875rem; }
+  .lp-stars { color: rgb(var(--c-primary, 163 89 45)); font-weight: 700; }
+  .lp-reviews { color: rgb(var(--c-ink-faint, 158 145 124)); font-size: 0.75rem; }
+
+  .lp-solution-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+  @media (min-width: 768px) { .lp-solution-grid.has-image { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .lp-solution-image img { width: 100%; border-radius: 8px; aspect-ratio: 4/3; object-fit: cover; border: 1px solid rgb(var(--c-border, 222 213 196)); }
+
+  .lp-list-x, .lp-list-check { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lp-list-x li, .lp-list-check li { display: flex; align-items: flex-start; gap: 0.875rem; font-size: 1.0625rem; line-height: 1.55; color: rgb(var(--c-ink-muted, 92 80 64)); }
+  .lp-icon-x, .lp-icon-check { color: rgb(var(--c-primary, 163 89 45)); flex-shrink: 0; margin-top: 0.125rem; }
+
+  .lp-mid-cta { margin-top: 2.5rem; text-align: center; }
+
+  .lp-testimonials { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 2.5rem; }
+  @media (min-width: 768px) { .lp-testimonials { grid-template-columns: repeat(3, 1fr); } }
+  .lp-testimonial { background: rgb(var(--c-surface, 255 254 251)); border: 1px solid rgb(var(--c-border, 222 213 196)); border-radius: 8px; padding: 1.75rem; margin: 0; }
+  .lp-testimonial-stars { color: rgb(var(--c-primary, 163 89 45)); font-size: 1rem; letter-spacing: 0.05em; margin-bottom: 0.875rem; }
+  .lp-testimonial-text { font-size: 1rem; line-height: 1.55; color: rgb(var(--c-ink, 38 31 22)); font-style: italic; margin: 0 0 1rem; padding: 0; border: 0; }
+  .lp-testimonial-footer { display: flex; align-items: center; gap: 0.625rem; }
+  .lp-testimonial-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid rgb(var(--c-border, 222 213 196)); }
+  .lp-testimonial-name { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; color: rgb(var(--c-ink-faint, 158 145 124)); }
+
+  .lp-faq { margin-top: 2rem; border-top: 1px solid rgb(var(--c-border, 222 213 196)); }
+  .lp-faq-item { border-bottom: 1px solid rgb(var(--c-border, 222 213 196)); }
+  .lp-faq-item summary { cursor: pointer; padding: 1.25rem 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: 1.0625rem; font-weight: 700; color: rgb(var(--c-ink, 38 31 22)); list-style: none; }
+  .lp-faq-item summary::-webkit-details-marker { display: none; }
+  .lp-faq-item summary svg { transition: transform 0.2s; flex-shrink: 0; color: rgb(var(--c-ink-faint, 158 145 124)); }
+  .lp-faq-item[open] summary svg { transform: rotate(180deg); }
+  .lp-faq-answer { padding: 0 0 1.5rem; font-size: 1rem; line-height: 1.65; color: rgb(var(--c-ink-muted, 92 80 64)); }
+
+  .lp-cta-final { background: rgb(var(--c-ink, 38 31 22)); color: rgb(var(--c-bg, 252 249 244)); border-top: 0; }
+  .lp-cta-final .lp-h2-big, .lp-cta-final .lp-lead { color: rgb(var(--c-bg, 252 249 244)); }
+  .lp-urgency { display: inline-block; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; text-transform: uppercase; background: rgb(var(--c-primary, 163 89 45)); color: white; padding: 0.375rem 0.875rem; border-radius: 999px; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 1.5rem; }
+  .lp-price-block { display: flex; align-items: baseline; justify-content: center; gap: 1rem; margin: 1.5rem 0 2rem; }
+  .lp-price-old { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1rem; color: rgb(255 255 255 / 0.5); text-decoration: line-through; }
+  .lp-price { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; color: rgb(var(--c-primary, 163 89 45)); line-height: 1; }
+  .lp-guarantee { margin-top: 1.5rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; color: rgb(255 255 255 / 0.7); letter-spacing: 0.02em; }
+
+  .lp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; font-family: 'Switzer', system-ui, sans-serif; font-weight: 700; font-size: 0.9375rem; border-radius: 6px; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); letter-spacing: -0.005em; }
+  .lp-btn-primary { background: rgb(var(--c-primary, 163 89 45)); color: white; }
+  .lp-btn-primary:hover { background: rgb(143 78 39); transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgb(163 89 45 / 0.4); }
+  .lp-btn-lg { padding: 1rem 1.875rem; font-size: 1rem; }
+  .lp-btn-xl { padding: 1.25rem 2.25rem; font-size: 1.0625rem; }
+
+  /* ===== BACKGROUND OVERRIDES POR BLOCO ===== */
+  /* Cada classe sobrescreve o background da section + ajusta contraste do texto. */
+  .lp-bg-default { background: rgb(var(--c-bg, 252 249 244)) !important; }
+  .lp-bg-default, .lp-bg-default .lp-h2, .lp-bg-default .lp-h2-big { color: inherit !important; }
+
+  .lp-bg-muted { background: rgb(var(--c-elev, 244 237 226)) !important; }
+
+  .lp-bg-dark { background: rgb(var(--c-ink, 38 31 22)) !important; }
+  .lp-bg-dark, .lp-bg-dark .lp-body, .lp-bg-dark .lp-lead { color: rgb(248 248 246) !important; }
+  .lp-bg-dark .lp-h2, .lp-bg-dark .lp-h2-big, .lp-bg-dark .lp-h1, .lp-bg-dark .lp-quote-text { color: white !important; }
+  .lp-bg-dark .lp-list-x li, .lp-bg-dark .lp-list-check li { color: rgb(220 220 215) !important; }
+  .lp-bg-dark .lp-stat { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+  .lp-bg-dark .lp-stat-label { color: rgb(200 200 195); }
+  .lp-bg-dark .lp-testimonial { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+  .lp-bg-dark .lp-testimonial-text { color: white; }
+  .lp-bg-dark .lp-faq { border-top-color: rgba(255,255,255,0.15); }
+  .lp-bg-dark .lp-faq-item { border-bottom-color: rgba(255,255,255,0.15); }
+  .lp-bg-dark .lp-faq-item summary { color: white; }
+  .lp-bg-dark .lp-faq-answer { color: rgb(220 220 215); }
+  .lp-bg-dark .lp-quote-name { color: white; }
+
+  .lp-bg-primary { background: rgb(var(--c-primary, 163 89 45)) !important; }
+  .lp-bg-primary, .lp-bg-primary .lp-body, .lp-bg-primary .lp-lead { color: rgba(255,255,255,0.92) !important; }
+  .lp-bg-primary .lp-h2, .lp-bg-primary .lp-h2-big, .lp-bg-primary .lp-h1, .lp-bg-primary .lp-quote-text { color: white !important; }
+  .lp-bg-primary .lp-eyebrow { color: rgba(255,255,255,0.75) !important; }
+  .lp-bg-primary .lp-stars, .lp-bg-primary .lp-stat-value, .lp-bg-primary .lp-icon-x, .lp-bg-primary .lp-icon-check { color: white !important; }
+  .lp-bg-primary .lp-btn-primary { background: white; color: rgb(var(--c-primary, 163 89 45)); }
+  .lp-bg-primary .lp-btn-primary:hover { background: rgba(255,255,255,0.92); color: rgb(var(--c-primary, 163 89 45)); }
+
+  /* Custom hex — texto contrastante automático */
+  .lp-bg-custom-dark, .lp-bg-custom-dark .lp-body, .lp-bg-custom-dark .lp-lead { color: rgba(255,255,255,0.92) !important; }
+  .lp-bg-custom-dark .lp-h2, .lp-bg-custom-dark .lp-h2-big, .lp-bg-custom-dark .lp-h1, .lp-bg-custom-dark .lp-quote-text { color: white !important; }
+  .lp-bg-custom-dark .lp-eyebrow { color: rgba(255,255,255,0.75) !important; }
+
+  .lp-bg-custom-light, .lp-bg-custom-light .lp-body, .lp-bg-custom-light .lp-lead { color: rgb(var(--c-ink-muted, 92 80 64)) !important; }
+  .lp-bg-custom-light .lp-h2, .lp-bg-custom-light .lp-h2-big, .lp-bg-custom-light .lp-h1, .lp-bg-custom-light .lp-quote-text { color: rgb(var(--c-ink, 38 31 22)) !important; }
+
+  /* ===== NOVOS BLOCOS ===== */
+  .lp-text-image-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+  @media (min-width: 768px) {
+    .lp-text-image-grid { grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .lp-text-image-grid.reverse .lp-text-image-content { order: 2; }
+    .lp-text-image-grid.reverse .lp-text-image-img { order: 1; }
+  }
+  .lp-text-image-img img { width: 100%; height: auto; border-radius: 8px; aspect-ratio: 4/3; object-fit: cover; border: 1px solid rgb(var(--c-border, 222 213 196)); }
+
+  .lp-gallery { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+  @media (min-width: 640px) {
+    .lp-gallery.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .lp-gallery.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .lp-gallery.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .lp-gallery.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  }
+  .lp-gallery-item { margin: 0; }
+  .lp-gallery-img { aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; border: 1px solid rgb(var(--c-border, 222 213 196)); }
+  .lp-gallery-img img { width: 100%; height: 100%; object-fit: cover; }
+  .lp-gallery-caption { margin-top: 0.625rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; color: rgb(var(--c-ink-faint, 158 145 124)); text-align: center; }
+
+  .lp-stats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
+  @media (min-width: 640px) { .lp-stats { grid-template-columns: repeat(3, 1fr) !important; } }
+  .lp-stat { text-align: center; padding: 1.75rem 1rem; background: rgb(var(--c-surface, 255 254 251)); border: 1px solid rgb(var(--c-border, 222 213 196)); border-radius: 8px; }
+  .lp-stat-value { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: rgb(var(--c-primary, 163 89 45)); line-height: 1; margin-bottom: 0.625rem; letter-spacing: -0.025em; }
+  .lp-stat-label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; color: rgb(var(--c-ink-muted, 92 80 64)); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .lp-quote-icon { color: rgb(var(--c-primary, 163 89 45)); opacity: 0.25; margin-bottom: 1rem; }
+  .lp-quote-text { font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; color: rgb(var(--c-ink, 38 31 22)); margin: 0 0 1.5rem; font-style: italic; }
+  .lp-quote-author { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .lp-quote-name { font-size: 0.875rem; color: rgb(var(--c-ink, 38 31 22)); font-weight: 600; }
+  .lp-quote-role { font-size: 0.7rem; color: rgb(var(--c-ink-faint, 158 145 124)); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ===== COUNTDOWN ===== */
+  .lp-countdown { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  .lp-countdown-banner { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 1.5rem 2.5rem; }
+  .lp-countdown-box {
+    background: rgb(var(--c-surface, 255 254 251));
+    border: 1px solid rgb(var(--c-border, 222 213 196));
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+  }
+  .lp-countdown-headline {
+    font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    color: rgb(var(--c-ink, 38 31 22));
+    margin: 0;
+    text-align: center;
+    letter-spacing: -0.015em;
+  }
+  .lp-countdown-timer {
+    display: flex;
+    gap: 0.875rem;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .lp-countdown-timer { gap: 1.25rem; }
+  }
+  .lp-countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 60px;
+  }
+  .lp-countdown-val {
+    font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', system-ui, sans-serif);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: rgb(var(--c-primary, 163 89 45));
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+  }
+  .lp-countdown-lbl {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .lp-countdown-expired {
+    padding: 0.5rem 1rem;
+    background: rgb(var(--c-ink, 38 31 22) / 0.05);
+    border-radius: 6px;
+  }
+  .lp-countdown-expired-text {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function tick(el) {
+      const target = new Date(el.dataset.target).getTime();
+      const now = Date.now();
+      const diff = target - now;
+      const display = el.querySelector('[data-countdown-display]');
+      const expired = el.querySelector('[data-countdown-expired]');
+      if (diff <= 0) {
+        if (display) display.style.display = 'none';
+        if (expired) expired.style.display = 'inline-block';
+        return false;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      const setVal = (sel, v) => { const e = el.querySelector('[' + sel + ']'); if (e) e.textContent = pad(v); };
+      setVal('data-d', d);
+      setVal('data-h', h);
+      setVal('data-m', m);
+      setVal('data-s', s);
+      return true;
+    }
+    document.querySelectorAll('.lp-countdown').forEach(el => {
+      const ok = tick(el);
+      if (ok) setInterval(() => tick(el), 1000);
+    });
+  })();
+</script>

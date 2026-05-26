@@ -1,0 +1,70 @@
+---
+import LandingLayout from '../../layouts/LandingLayout.astro';
+import LandingPage from '../../components/lp/LandingPage.astro';
+import PromoBarLP from '../../components/lp/widgets/PromoBarLP.astro';
+import SocialProofPopup from '../../components/lp/widgets/SocialProofPopup.astro';
+import ExitPopup from '../../components/lp/widgets/ExitPopup.astro';
+import { readData } from '../../lib/readData';
+import { findLandingBySlug, hexToRgbTriplet, findFontOption, resolveLandingThumbnail } from '../../lib/landingPages';
+import { findProductBySlug, type Product } from '../../lib/products';
+
+export async function getStaticPaths() {
+  const landings = readData('landingPages.json', []) as any[];
+  const list = Array.isArray(landings) ? landings : [];
+  return list
+    .filter(lp => lp.published !== false)
+    .map(lp => ({
+      params: { slug: lp.slug },
+      props: { slug: lp.slug },
+    }));
+}
+
+const { slug } = Astro.props;
+const landings = readData('landingPages.json', []) as any[];
+const products = readData('products.json', []) as Product[];
+
+const lp = findLandingBySlug(Array.isArray(landings) ? landings : [], slug);
+const product = lp ? findProductBySlug(Array.isArray(products) ? products : [], lp.productSlug) : null;
+
+if (!lp || !product) {
+  return Astro.redirect('/404');
+}
+
+const heroBlock = lp.blocks.find(b => b.type === 'hero');
+const heroData: any = heroBlock?.data || {};
+
+const seoTitle = lp.seo.title || `${product.name} — ${heroData.headline || ''}`.replace(/[—\-]\s*$/, '').trim();
+const seoDesc = lp.seo.description || heroData.subheadline || product.blurb || '';
+const seoImage = resolveLandingThumbnail(lp, product.image) || '';
+
+// Cor primária customizada (se houver) sobrescreve a global via CSS var inline
+const customPrimary = lp.primaryColor ? hexToRgbTriplet(lp.primaryColor) : null;
+
+// Fonte customizada (opcional)
+const fontOption = findFontOption(lp.fontFamily);
+const fontImportUrl = fontOption.importUrl || null;
+const fontStack = lp.fontFamily ? fontOption.cssStack : null;
+---
+
+<LandingLayout
+  title={seoTitle}
+  description={seoDesc}
+  image={seoImage}
+  primaryOverride={customPrimary}
+  fontImportUrl={fontImportUrl}
+  fontStack={fontStack}
+>
+  {lp.widgets?.promoBar?.enabled && (
+    <PromoBarLP widget={lp.widgets.promoBar} product={product} />
+  )}
+
+  <LandingPage lp={lp} product={product} />
+
+  {lp.widgets?.socialProof?.enabled && (
+    <SocialProofPopup widget={lp.widgets.socialProof} product={product} />
+  )}
+
+  {lp.widgets?.exitPopup?.enabled && (
+    <ExitPopup widget={lp.widgets.exitPopup} product={product} />
+  )}
+</LandingLayout>

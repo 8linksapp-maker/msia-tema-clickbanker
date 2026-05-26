@@ -93,7 +93,7 @@ export default function AuthorsEditor() {
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     {saving && <div className="flex items-center gap-2 text-amber-600 bg-slate-50 px-4 py-2 rounded-lg text-sm font-bold mr-2"><Loader2 className="w-4 h-4 animate-spin" /> Sincronizando...</div>}
-                    <button onClick={() => { setTempAuthor({ id: `author-${Date.now()}`, name: '', role: '', avatar: '', bio: '' }); setEditingIndex(null); setIsModalOpen(true); }} disabled={saving}
+                    <button onClick={() => { setTempAuthor({ id: `author-${Date.now()}`, name: '', role: '', avatar: '', bio: '', social: { twitter: '', instagram: '', linkedin: '', website: '' } }); setEditingIndex(null); setIsModalOpen(true); }} disabled={saving}
                         className="w-full sm:w-auto bg-slate-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 transition-all">
                         <UserPlus className="w-5 h-5" /> Adicionar Perfil
                     </button>
@@ -107,7 +107,7 @@ export default function AuthorsEditor() {
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-slate-300 mb-4 shadow-sm"><Users className="w-10 h-10" /></div>
                     <h3 className="text-xl font-bold text-slate-700 mb-2">Sua equipe está vazia!</h3>
                     <p className="text-slate-500 max-w-sm mx-auto mb-6">Adicione membros da equipe para que eles possam assinar os artigos do blog.</p>
-                    <button onClick={() => { setTempAuthor({ id: `author-${Date.now()}`, name: '', role: '', avatar: '', bio: '' }); setEditingIndex(null); setIsModalOpen(true); }}
+                    <button onClick={() => { setTempAuthor({ id: `author-${Date.now()}`, name: '', role: '', avatar: '', bio: '', social: { twitter: '', instagram: '', linkedin: '', website: '' } }); setEditingIndex(null); setIsModalOpen(true); }}
                         className="bg-slate-500 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-amber-600 transition-colors inline-flex items-center gap-2">
                         <Plus className="w-5 h-5" /> Adicionar Primeiro Autor
                     </button>
@@ -198,6 +198,31 @@ export default function AuthorsEditor() {
                                     <label className="block text-xs font-black text-slate-400 mb-1 uppercase tracking-widest text-center">Resumo Biográfico</label>
                                     <textarea rows={4} placeholder="Escreva sobre as especialidades do autor..." value={tempAuthor.bio || ''} onChange={e => setTempAuthor({ ...tempAuthor, bio: e.target.value })}
                                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none text-center leading-relaxed" />
+                                </div>
+                                <div className="pt-4 border-t border-slate-100">
+                                    <p className="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest text-center">Redes Sociais</p>
+                                    <div className="space-y-3">
+                                        {[
+                                            { key: 'twitter', label: 'Twitter / X', placeholder: 'https://twitter.com/usuario' },
+                                            { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/usuario' },
+                                            { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/usuario' },
+                                            { key: 'website', label: 'Website', placeholder: 'https://seusite.com' },
+                                        ].map(f => (
+                                            <div key={f.key}>
+                                                <label className="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">{f.label}</label>
+                                                <input
+                                                    type="url"
+                                                    placeholder={f.placeholder}
+                                                    value={tempAuthor?.social?.[f.key] || ''}
+                                                    onChange={e => setTempAuthor({
+                                                        ...tempAuthor,
+                                                        social: { ...(tempAuthor.social || {}), [f.key]: e.target.value }
+                                                    })}
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

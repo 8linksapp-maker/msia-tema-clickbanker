@@ -1,0 +1,173 @@
+---
+import type { SocialProofWidget } from '../../../lib/landingPages';
+import type { Product } from '../../../lib/products';
+
+interface Props { widget: SocialProofWidget; product: Product; }
+const { widget, product } = Astro.props;
+
+const items = (widget.items || []).filter(i => i && i.name).map(i => ({
+  name: i.name,
+  location: i.location || '',
+  product: i.product || product.name,
+  time: i.time || 'agora',
+}));
+
+if (items.length === 0) return null;
+
+const interval = Math.max(3, widget.intervalSeconds || 8);
+const position = widget.position || 'bottom-left';
+const itemsJson = JSON.stringify(items);
+---
+
+<div
+  id="lp-social-proof"
+  class={`lp-widget-socialproof pos-${position}`}
+  data-items={itemsJson}
+  data-interval={interval * 1000}
+>
+  <div class="lp-widget-socialproof-card">
+    <div class="lp-widget-socialproof-avatar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 22v-2a8 8 0 0116 0v2"/>
+      </svg>
+    </div>
+    <div class="lp-widget-socialproof-content">
+      <p class="lp-widget-socialproof-name"><span data-sp-name></span><span data-sp-location class="lp-widget-socialproof-location"></span></p>
+      <p class="lp-widget-socialproof-action">comprou <strong data-sp-product></strong></p>
+      <p class="lp-widget-socialproof-time" data-sp-time></p>
+    </div>
+    <button type="button" class="lp-widget-socialproof-close" aria-label="Fechar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .lp-widget-socialproof {
+    position: fixed;
+    bottom: 1.25rem;
+    z-index: 40;
+    max-width: 320px;
+    pointer-events: none;
+  }
+  .lp-widget-socialproof.pos-bottom-left { left: 1.25rem; }
+  .lp-widget-socialproof.pos-bottom-right { right: 1.25rem; left: auto; }
+  .lp-widget-socialproof.is-visible { pointer-events: auto; }
+
+  .lp-widget-socialproof-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: rgb(var(--c-surface, 255 254 251));
+    border: 1px solid rgb(var(--c-border, 222 213 196));
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.15);
+    font-family: var(--lp-font, 'Switzer', system-ui, sans-serif);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lp-widget-socialproof.is-visible .lp-widget-socialproof-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .lp-widget-socialproof-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgb(var(--c-primary, 163 89 45) / 0.1);
+    color: rgb(var(--c-primary, 163 89 45));
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lp-widget-socialproof-content { flex: 1; min-width: 0; }
+  .lp-widget-socialproof-name {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: rgb(var(--c-ink, 38 31 22));
+    margin: 0;
+    line-height: 1.3;
+  }
+  .lp-widget-socialproof-location {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.65rem;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+  }
+  .lp-widget-socialproof-action {
+    font-size: 0.75rem;
+    color: rgb(var(--c-ink-muted, 92 80 64));
+    margin: 0.125rem 0 0;
+    line-height: 1.4;
+  }
+  .lp-widget-socialproof-action strong { color: rgb(var(--c-ink, 38 31 22)); font-weight: 600; }
+  .lp-widget-socialproof-time {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.625rem;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0;
+  }
+  .lp-widget-socialproof-close {
+    background: transparent;
+    border: 0;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    cursor: pointer;
+    padding: 2px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .lp-widget-socialproof-close:hover { color: rgb(var(--c-ink, 38 31 22)); background: rgb(0 0 0 / 0.05); }
+</style>
+
+<script is:inline>
+  (function() {
+    const el = document.getElementById('lp-social-proof');
+    if (!el) return;
+    let items;
+    try { items = JSON.parse(el.dataset.items || '[]'); } catch { return; }
+    if (!items.length) return;
+    const interval = parseInt(el.dataset.interval || '8000', 10);
+    const nameEl = el.querySelector('[data-sp-name]');
+    const locEl = el.querySelector('[data-sp-location]');
+    const prodEl = el.querySelector('[data-sp-product]');
+    const timeEl = el.querySelector('[data-sp-time]');
+    const closeBtn = el.querySelector('.lp-widget-socialproof-close');
+    let idx = 0;
+    let dismissed = sessionStorage.getItem('lp-sp-dismissed') === '1';
+    if (dismissed) return;
+
+    function show() {
+      if (idx >= items.length) idx = 0;
+      const it = items[idx];
+      if (nameEl) nameEl.textContent = it.name;
+      if (locEl) locEl.textContent = it.location ? `· ${it.location}` : '';
+      if (prodEl) prodEl.textContent = it.product;
+      if (timeEl) timeEl.textContent = it.time;
+      el.classList.add('is-visible');
+      setTimeout(() => el.classList.remove('is-visible'), interval - 600);
+      idx++;
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        el.style.display = 'none';
+        try { sessionStorage.setItem('lp-sp-dismissed', '1'); } catch {}
+      });
+    }
+
+    // Primeira aparição depois de 5 segundos
+    setTimeout(() => {
+      show();
+      setInterval(show, interval);
+    }, 5000);
+  })();
+</script>

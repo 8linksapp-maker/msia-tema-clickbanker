@@ -1,0 +1,198 @@
+---
+import type { ExitPopupWidget } from '../../../lib/landingPages';
+import type { Product } from '../../../lib/products';
+
+interface Props { widget: ExitPopupWidget; product: Product; }
+const { widget, product } = Astro.props;
+const goUrl = `/go/${product.slug}`;
+---
+
+<div id="lp-exit-popup" class="lp-widget-exit" aria-hidden="true">
+  <div class="lp-widget-exit-backdrop" data-exit-close></div>
+  <div class="lp-widget-exit-card" role="dialog" aria-modal="true" aria-labelledby="lp-exit-headline">
+    <button type="button" class="lp-widget-exit-close" data-exit-close aria-label="Fechar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <p class="lp-widget-exit-eyebrow">⚠ Espera um segundo</p>
+    <h2 id="lp-exit-headline" class="lp-widget-exit-headline">{widget.headline}</h2>
+    {widget.subtext && <p class="lp-widget-exit-subtext">{widget.subtext}</p>}
+    {widget.couponCode && (
+      <div class="lp-widget-exit-coupon">
+        <span class="lp-widget-exit-coupon-label">Use o cupom:</span>
+        <code class="lp-widget-exit-coupon-code">{widget.couponCode}</code>
+      </div>
+    )}
+    <a href={goUrl} target="_blank" rel="noopener nofollow sponsored" class="lp-widget-exit-cta">
+      {widget.ctaText}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <button type="button" class="lp-widget-exit-skip" data-exit-close>não, prefiro sair</button>
+  </div>
+</div>
+
+<style>
+  .lp-widget-exit {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-family: var(--lp-font, 'Switzer', system-ui, sans-serif);
+  }
+  .lp-widget-exit.is-open { display: flex; opacity: 1; }
+  .lp-widget-exit-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+  }
+  .lp-widget-exit-card {
+    position: relative;
+    background: rgb(var(--c-surface, 255 254 251));
+    border: 1px solid rgb(var(--c-border, 222 213 196));
+    border-radius: 16px;
+    padding: 2.25rem 2rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.4);
+    transform: scale(0.92);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lp-widget-exit.is-open .lp-widget-exit-card { transform: scale(1); }
+  .lp-widget-exit-close {
+    position: absolute;
+    top: 0.875rem;
+    right: 0.875rem;
+    background: transparent;
+    border: 0;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .lp-widget-exit-close:hover { color: rgb(var(--c-ink, 38 31 22)); background: rgb(0 0 0 / 0.05); }
+
+  .lp-widget-exit-eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(var(--c-primary, 163 89 45));
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  .lp-widget-exit-headline {
+    font-family: var(--lp-font, 'Cabinet Grotesk', 'Switzer', sans-serif);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: rgb(var(--c-ink, 38 31 22));
+    margin: 0 0 0.875rem;
+  }
+  .lp-widget-exit-subtext {
+    color: rgb(var(--c-ink-muted, 92 80 64));
+    line-height: 1.55;
+    margin: 0 0 1.5rem;
+    font-size: 0.9375rem;
+  }
+  .lp-widget-exit-coupon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    background: rgb(var(--c-primary, 163 89 45) / 0.08);
+    border: 1px dashed rgb(var(--c-primary, 163 89 45));
+    border-radius: 8px;
+    padding: 0.625rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .lp-widget-exit-coupon-label {
+    font-size: 0.75rem;
+    color: rgb(var(--c-ink-muted, 92 80 64));
+  }
+  .lp-widget-exit-coupon-code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgb(var(--c-primary, 163 89 45));
+    letter-spacing: 0.05em;
+  }
+  .lp-widget-exit-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgb(var(--c-primary, 163 89 45));
+    color: white;
+    padding: 0.875rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .lp-widget-exit-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgb(var(--c-primary, 163 89 45) / 0.4); }
+  .lp-widget-exit-skip {
+    display: block;
+    margin: 1rem auto 0;
+    background: transparent;
+    border: 0;
+    color: rgb(var(--c-ink-faint, 158 145 124));
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+  }
+  .lp-widget-exit-skip:hover { color: rgb(var(--c-ink-muted, 92 80 64)); }
+</style>
+
+<script is:inline>
+  (function() {
+    const popup = document.getElementById('lp-exit-popup');
+    if (!popup) return;
+    if (sessionStorage.getItem('lp-exit-shown') === '1') return;
+
+    function open() {
+      if (sessionStorage.getItem('lp-exit-shown') === '1') return;
+      popup.classList.add('is-open');
+      popup.setAttribute('aria-hidden', 'false');
+      try { sessionStorage.setItem('lp-exit-shown', '1'); } catch {}
+    }
+    function close() {
+      popup.classList.remove('is-open');
+      popup.setAttribute('aria-hidden', 'true');
+    }
+
+    // Desktop: mouseleave pelo topo
+    let armed = false;
+    setTimeout(() => { armed = true; }, 3000); // arma após 3s na página
+    document.addEventListener('mouseleave', (e) => {
+      if (!armed) return;
+      if (e.clientY < 5) open();
+    });
+
+    // Mobile: detecta back gesture via history (cria fake state)
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      let scrolledUp = 0;
+      let lastScroll = window.scrollY;
+      window.addEventListener('scroll', () => {
+        if (!armed) return;
+        const cur = window.scrollY;
+        if (cur < lastScroll - 30 && cur < 200) {
+          scrolledUp++;
+          if (scrolledUp >= 2) open();
+        }
+        lastScroll = cur;
+      });
+    }
+
+    popup.querySelectorAll('[data-exit-close]').forEach(b => b.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
+</script>

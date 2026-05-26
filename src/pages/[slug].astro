@@ -4,8 +4,17 @@ import { getCollection } from 'astro:content';
 import { readData } from '../lib/readData';
 import { colorForCategory } from '../lib/categoryColors';
 import { slugify } from '../lib/slugify';
+import { findProductBySlug } from '../lib/products';
+import type { Product } from '../lib/products';
+import { renderShortcodes } from '../lib/shortcodes';
+import ProductCard from '../components/ui/ProductCard.astro';
+import ProductComparator from '../components/ui/ProductComparator.astro';
+import ReviewSchema from '../components/ui/ReviewSchema.astro';
 
 export async function getStaticPaths() {
+  const siteConfig = readData('siteConfig.json', {}) as any;
+  // Quando aluno escolheu prefixo /blog, esta rota nao gera (evita duplicacao com /blog/[slug]).
+  if (siteConfig?.postUrlPrefix === 'blog') return [];
   const posts = await getCollection('blog');
   return posts.map((post: any) => ({
     params: { slug: post.slug ?? post.id },
@@ -18,8 +27,29 @@ const { Content } = await post.render();
 const data = post.data;
 
 const siteConfig = readData('siteConfig.json');
+const allProducts = readData('products.json', []) as Product[];
+
+// Processa shortcodes [[produto:slug]] e [[comparador:a,b,c]] no body do post
+// Se body já é HTML (Quill output), passamos direto; senão Content cuida via markdown.
+const rawBody = (post.body || '') as string;
+const hasShortcodes = /\[\[\s*(produto|comparador)\s*:/i.test(rawBody);
+const isHtmlBody = /^\s*</.test(rawBody.trim());
+const processedHtml = hasShortcodes && isHtmlBody
+  ? renderShortcodes(rawBody, allProducts)
+  : null;
 
 const catColor = colorForCategory(data.category);
+
+// Resolve produtos referenciados pelo frontmatter
+const mainProduct = data.productSlug ? findProductBySlug(allProducts, data.productSlug) : null;
+
+const comparedProducts = (data.comparedProductSlugs || [])
+  .map((s: string) => findProductBySlug(allProducts, s))
+  .filter(Boolean) as Product[];
+
+const featuredProducts = (data.featuredProductSlugs || [])
+  .map((s: string) => findProductBySlug(allProducts, s))
+  .filter(Boolean) as Product[];
 
 function fmtDate(d: any): string {
   if (!d) return '';
@@ -36,20 +66,33 @@ const readingMinutes = (() => {
   } catch { return 5; }
 })();
 
-// Próximos posts (mesma categoria, depois outros)
 const allPosts = await getCollection('blog');
 const otherPosts = allPosts.filter((p: any) => (p.slug ?? p.id) !== (post.slug ?? post.id));
 const related = otherPosts.slice(0, 3);
+
+const postUrl = `${siteConfig.url || Astro.url.origin}/${post.slug ?? post.id}`;
+const isUpdated = data.updatedDate && new Date(data.updatedDate).getTime() > new Date(data.pubDate).getTime();
 ---
 
 <BaseLayout
   title={data.title}
   description={data.description || ''}
-  image={data.heroImage || data.cover || ''}
+  image={data.heroImage || ''}
   type="article"
 >
+  {mainProduct && (
+    <ReviewSchema
+      product={mainProduct}
+      postTitle={data.title}
+      postUrl={postUrl}
+      publishedDate={new Date(data.pubDate)}
+      updatedDate={data.updatedDate ? new Date(data.updatedDate) : undefined}
+      authorName={data.author}
+    />
+  )}
+
   <article>
-    <!-- HERO BLOCK — cor da categoria dominante -->
+    <!-- HERO BLOCK -->
     <header class={`bg-cat-${catColor} relative overflow-hidden isolate`}>
       <span class="color-block-num" style="bottom:-4rem;right:-2rem;font-size:clamp(16rem,40vw,32rem)">
         {String(data.order || '#').padStart(2, '0')}
@@ -81,7 +124,13 @@ const related = otherPosts.slice(0, 3);
         )}
 
         <div class="mono uppercase text-white/70 flex items-center gap-3 flex-wrap pt-6 border-t border-white/20">
-          <span>{fmtDate(data.pubDate || data.date)}</span>
+          <span>{fmtDate(data.pubDate)}</span>
+          {isUpdated && (
+            <>
+              <span class="opacity-50">·</span>
+              <span class="text-white">atualizado em {fmtDate(data.updatedDate)}</span>
+            </>
+          )}
           <span class="opacity-50">·</span>
           <span>{readingMinutes} min</span>
           {data.author && (<><span class="opacity-50">·</span><span>por {data.author}</span></>)}
@@ -89,11 +138,11 @@ const related = otherPosts.slice(0, 3);
       </div>
     </header>
 
-    {(data.heroImage || data.cover || data.coverImage) && (
+    {data.heroImage && (
       <div class="border-b border-rule">
         <div class="container-x py-8">
           <img
-            src={data.heroImage || data.cover || data.coverImage}
+            src={data.heroImage}
             alt=""
             class="w-full aspect-[21/9] object-cover"
             loading="eager"
@@ -102,18 +151,56 @@ const related = otherPosts.slice(0, 3);
       </div>
     )}
 
-    <!-- CONTEÚDO DO POST -->
+    <!-- DISCLAIMER per-post (compliance afiliado) -->
+    {data.affiliate && (
+      <div class="border-b border-rule bg-elev/40">
+        <div class="container-x py-3">
+          <p class="text-xs text-ink-muted leading-relaxed text-center md:text-left">
+            <span class="mono uppercase text-ink-faint mr-2">aviso</span>
+            Este artigo contém links de afiliado. Compras podem gerar comissão sem custo adicional pra você. Recomendamos apenas produtos analisados.
+          </p>
+        </div>
+      </div>
+    )}
+
+    <!-- CONTEÚDO -->
     <div class="container-x py-16 md:py-24">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
         <div class="lg:col-span-8 lg:col-start-2">
+
+          {/* Hero do produto (se for review específica) */}
+          {mainProduct && <ProductCard product={mainProduct} variant="hero" />}
+
           <div class="prose-msia max-w-none">
-            <Content />
+            {processedHtml ? (
+              <Fragment set:html={processedHtml} />
+            ) : (
+              <Content />
+            )}
           </div>
+
+          {/* Tabela comparativa */}
+          {comparedProducts.length > 0 && (
+            <ProductComparator products={comparedProducts} title="Comparação rápida" />
+          )}
+
+          {/* Produtos recomendados no fim */}
+          {featuredProducts.length > 0 && (
+            <div class="not-prose mt-12 pt-10 border-t border-rule">
+              <p class="mono uppercase text-ink-faint mb-5">recomendado</p>
+              <div class="space-y-4">
+                {featuredProducts.map((p) => (
+                  <ProductCard product={p} variant="inline" />
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
 
-    <!-- BLOCOS RELACIONADOS -->
+    <!-- POSTS RELACIONADOS -->
     {related.length > 0 && (
       <section class="border-t border-rule">
         <div class="container-x py-14 md:py-20">
