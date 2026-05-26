@@ -14,8 +14,14 @@ function isSafeFilename(name: string): boolean {
   if (name.includes('..')) return false;
   if (name.startsWith('/') || name.startsWith('\\')) return false;
   if (name.includes('\0')) return false;
-  // Caracteres válidos: alfanumérico, hífen, underline, ponto, espaço
-  if (!/^[\w\-. ]+$/i.test(name)) return false;
+  if (name.includes('\\')) return false; // normaliza só /
+  // Cada segmento entre / precisa ser ascii-safe (alfanumérico, hífen, underline, ponto, espaço).
+  // Permite subdiretórios tipo "products/foo.jpg" mas bloqueia ".." e chars exóticos.
+  const segments = name.split('/');
+  for (const seg of segments) {
+    if (!seg || seg === '.' || seg === '..') return false;
+    if (!/^[\w\-. ]+$/i.test(seg)) return false;
+  }
   return true;
 }
 
