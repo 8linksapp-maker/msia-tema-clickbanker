@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle, Loader2, Plus, Trash2, Tag, X, Edit2 } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+import { normalizeCategories, slugifyCategory, type CategoryEntry } from '../../lib/categorySlug';
 
 export default function CategoriesEditor() {
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<CategoryEntry[]>([]);
     const [fileSha, setFileSha] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [tempCategory, setTempCategory] = useState('');
+    const [tempName, setTempName] = useState('');
+    const [tempSlug, setTempSlug] = useState('');
+    const [slugTouched, setSlugTouched] = useState(false);
+    const [tempDesc, setTempDesc] = useState('');
 
     useEffect(() => {
         githubApi('read', 'src/data/categories.json')
             .then(data => {
-                const parsed = JSON.parse(data?.content || "{}");
-                setCategories(Array.isArray(parsed) ? parsed : []);
+                const parsed = JSON.parse(data?.content || "[]");
+                setCategories(normalizeCategories(parsed));
                 setFileSha(data.sha);
             })
             .catch(err => {
@@ -27,8 +31,39 @@ export default function CategoriesEditor() {
             .finally(() => setLoading(false));
     }, []);
 
-    const saveToGithub = async (newList: string[]) => {
-        setSaving(true); setError('');
+    const openCreate = () => {
+        setTempName('');
+        setTempSlug('');
+        setTempDesc('');
+        setSlugTouched(false);
+        setEditingIndex(null);
+        setIsModalOpen(true);
+    };
+    const openEdit = (idx: number) => {
+        const c = categories[idx];
+        setTempName(c.name);
+        setTempSlug(c.slug);
+        setTempDesc(c.description || '');
+        setSlugTouched(true); // slug existente: assume editado manualmente
+        setEditingIndex(idx);
+        setIsModalOpen(true);
+    };
+    const closeModal = () => setIsModalOpen(false);
+
+    // Auto-slug quando o usuário ainda não tocou no campo de slug
+    const handleNameChange = (value: string) => {
+        setTempName(value);
+        if (!slugTouched) setTempSlug(slugifyCategory(value));
+    };
+    const handleSlugChange = (value: string) => {
+        setSlugTouched(true);
+        // Limpa o input pra slug-safe
+        setTempSlug(value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-'));
+    };
+
+    const saveCategoriesArray = async (newList: CategoryEntry[]) => {
+        setSaving(true);
+        setError('');
         triggerToast('Sincronizando categorias...', 'progress', 20);
         try {
             const data = await githubApi('write', 'src/data/categories.json', {
@@ -47,48 +82,75 @@ export default function CategoriesEditor() {
     };
 
     const saveModalCategory = async () => {
-        if (!tempCategory.trim()) { alert('O nome da categoria é obrigatório!'); return; }
-        const trimmed = tempCategory.trim();
+        const name = tempName.trim();
+        const slug = (tempSlug.trim() || slugifyCategory(name)).replace(/^-|-$/g, '');
+        const description = tempDesc.trim();
+
+        if (!name) { alert('O nome da categoria é obrigatório!'); return; }
+        if (!slug) { alert('O slug é obrigatório!'); return; }
+
+        const collision = categories.find((c, i) => i !== editingIndex && (c.name === name || c.slug === slug));
+        if (collision) {
+            alert(`Já existe categoria com ${collision.name === name ? 'esse nome' : 'esse slug'}: "${collision.name}" → /${collision.slug}`);
+            return;
+        }
 
         // Nova categoria
         if (editingIndex === null) {
-            if (categories.includes(trimmed)) { alert('Esta categoria já existe!'); return; }
-            const arr = [...categories, trimmed];
+            const entry: CategoryEntry = description ? { name, slug, description } : { name, slug };
+            const arr = [...categories, entry];
             setCategories(arr);
-            setIsModalOpen(false);
-            await saveToGithub(arr);
+            closeModal();
+            await saveCategoriesArray(arr);
             return;
         }
 
         // Edição
-        const oldName = categories[editingIndex];
-        if (oldName === trimmed) { setIsModalOpen(false); return; } // sem mudança
-        if (categories.some((c, i) => i !== editingIndex && c === trimmed)) {
-            alert('Esta categoria já existe!'); return;
+        const old = categories[editingIndex];
+        const sameName = old.name === name;
+        const sameSlug = old.slug === slug;
+        if (sameName && sameSlug && (old.description || '') === description) {
+            closeModal();
+            return;
         }
 
-        // Renomear: chama endpoint server-side que atualiza categories.json + posts
-        // afetados + cria redirect 301 — tudo em uma transação lógica.
-        setIsModalOpen(false);
+        // Se mudou só descrição/slug (mesmo nome), update local — não precisa cascade
+        if (sameName) {
+            const arr = [...categories];
+            arr[editingIndex] = description ? { name, slug, description } : { name, slug };
+            setCategories(arr);
+            closeModal();
+            await saveCategoriesArray(arr);
+            return;
+        }
+
+        // Renomear nome: chama endpoint server-side que atualiza posts + redirect 301
+        closeModal();
         setSaving(true);
-        triggerToast(`Renomeando "${oldName}" → "${trimmed}" e atualizando posts...`, 'progress', 20);
+        triggerToast(`Renomeando "${old.name}" → "${name}" e atualizando posts...`, 'progress', 20);
         try {
             const res = await fetch('/api/admin/categories/rename', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oldName, newName: trimmed, createRedirect: true }),
+                body: JSON.stringify({
+                    oldName: old.name,
+                    newName: name,
+                    newSlug: slug,
+                    description: description || undefined,
+                    createRedirect: true,
+                }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || 'Falha ao renomear');
             const arr = [...categories];
-            arr[editingIndex] = trimmed;
+            arr[editingIndex] = description ? { name, slug, description } : { name, slug };
             setCategories(arr);
-            const parts = [`Categoria renomeada para "${trimmed}"`];
+            const parts = [`Categoria renomeada para "${name}"`];
             if (data.postsUpdated) parts.push(`${data.postsUpdated} post(s) atualizado(s)`);
             if (data.redirectsCreated) parts.push(`redirect 301 criado`);
             triggerToast(parts.join(' · '), 'success', 100);
-            // Recarrega sha do categories.json (porque o endpoint reescreveu)
-            githubApi('read', 'src/data/categories.json').then(d => setFileSha(d.sha)).catch(() => {});
+            // Recarrega sha do categories.json
+            githubApi('read', 'src/data/categories.json').then(d => setFileSha(d.sha)).catch(() => { });
         } catch (err: any) {
             setError(err.message);
             triggerToast(`Erro: ${err.message}`, 'error');
@@ -102,7 +164,7 @@ export default function CategoriesEditor() {
         const arr = [...categories];
         arr.splice(index, 1);
         setCategories(arr);
-        await saveToGithub(arr);
+        await saveCategoriesArray(arr);
     };
 
     if (loading) return (
@@ -124,7 +186,7 @@ export default function CategoriesEditor() {
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     {saving && <div className="flex items-center gap-2 text-slate-600 bg-slate-50 px-4 py-2 rounded-lg text-sm font-bold mr-2"><Loader2 className="w-4 h-4 animate-spin" /> Sincronizando...</div>}
-                    <button onClick={() => { setTempCategory(''); setEditingIndex(null); setIsModalOpen(true); }} disabled={saving}
+                    <button onClick={openCreate} disabled={saving}
                         className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 hover:-translate-y-0.5 transition-all">
                         <Plus className="w-5 h-5" /> Nova Categoria
                     </button>
@@ -139,41 +201,83 @@ export default function CategoriesEditor() {
                         <Tag className="w-12 h-12 text-slate-300 mb-4" />
                         <h3 className="text-xl font-bold text-slate-700 mb-2">Nenhuma categoria!</h3>
                         <p className="text-slate-500 mb-6">Crie categorias para organizar seus artigos do blog.</p>
-                        <button onClick={() => { setTempCategory(''); setEditingIndex(null); setIsModalOpen(true); }} className="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition-colors">
+                        <button onClick={openCreate} className="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition-colors">
                             Criar minha primeira categoria
                         </button>
                     </div>
                 ) : categories.map((cat, idx) => (
-                    <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center font-bold"><Tag className="w-5 h-5" /></div>
-                            <span className="font-bold text-slate-700">{cat}</span>
+                    <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center font-bold shrink-0"><Tag className="w-5 h-5" /></div>
+                                <div className="min-w-0">
+                                    <p className="font-bold text-slate-800 truncate">{cat.name}</p>
+                                    <p className="text-[11px] font-mono text-slate-400 truncate">/categoria/{cat.slug}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                <button onClick={() => openEdit(idx)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><Edit2 className="w-4 h-4" /></button>
+                                <button onClick={() => removeCategory(idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => { setTempCategory(cat); setEditingIndex(idx); setIsModalOpen(true); }} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><Edit2 className="w-4 h-4" /></button>
-                            <button onClick={() => removeCategory(idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
-                        </div>
+                        {cat.description && (
+                            <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{cat.description}</p>
+                        )}
                     </div>
                 ))}
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal}>
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between p-6 border-b border-slate-100">
                             <h3 className="text-lg font-bold text-slate-800">{editingIndex !== null ? 'Editar Categoria' : 'Nova Categoria'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+                            <button onClick={closeModal} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
                         </div>
-                        <div className="p-6">
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Nome da Categoria</label>
-                            <input type="text" value={tempCategory} onChange={e => setTempCategory(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
-                                placeholder="Ex: Tecnologia, Saúde, etc..." autoFocus
-                                onKeyDown={e => { if (e.key === 'Enter') saveModalCategory(); }}
-                            />
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Nome</label>
+                                <input
+                                    type="text"
+                                    value={tempName}
+                                    onChange={e => handleNameChange(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    placeholder="Ex: Tecnologia, Saúde…"
+                                    autoFocus
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    Slug da URL
+                                    {!slugTouched && tempName && <span className="font-mono text-[9px] text-indigo-500 normal-case tracking-normal">(auto-gerado)</span>}
+                                </label>
+                                <div className="flex items-stretch gap-0 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
+                                    <span className="px-3 flex items-center font-mono text-xs text-slate-400 bg-slate-100 border-r border-slate-200">/categoria/</span>
+                                    <input
+                                        type="text"
+                                        value={tempSlug}
+                                        onChange={e => handleSlugChange(e.target.value)}
+                                        className="flex-1 bg-transparent px-3 py-3 text-slate-900 font-mono text-sm focus:outline-none"
+                                        placeholder="exemplo-de-slug"
+                                    />
+                                </div>
+                                <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                                    URL final: <code className="bg-slate-100 px-1 rounded">/categoria/{tempSlug || '...'}</code>
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Descrição <span className="text-slate-300 normal-case tracking-normal">(opcional, aparece no topo da página da categoria)</span></label>
+                                <textarea
+                                    rows={2}
+                                    value={tempDesc}
+                                    onChange={e => setTempDesc(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-y"
+                                    placeholder="Breve descrição do tópico…"
+                                />
+                            </div>
                         </div>
                         <div className="p-6 border-t border-slate-100 flex gap-3 justify-end">
-                            <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 font-bold text-slate-500 hover:bg-slate-100 rounded-xl">Cancelar</button>
+                            <button onClick={closeModal} className="px-5 py-2.5 font-bold text-slate-500 hover:bg-slate-100 rounded-xl">Cancelar</button>
                             <button onClick={saveModalCategory} className="px-6 py-2.5 font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-all">Salvar Categoria</button>
                         </div>
                     </div>

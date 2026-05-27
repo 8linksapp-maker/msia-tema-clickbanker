@@ -1,16 +1,17 @@
 ---
 import { readData } from '../../lib/readData';
-import { slugify } from '../../lib/slugify';
+import { normalizeCategories, collectOrphanCategories } from '../../lib/categorySlug';
 import { getCollection } from 'astro:content';
 
 const siteConfig = readData('siteConfig.json');
 const menuItems: any[] = readData('menu.json', { items: [] }).items || [];
 
 const posts = await getCollection('blog');
-const categoriesFromPosts = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
 const categoriesData = readData('categories.json', []);
-const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
-const allCategories = finalCategoriesData.length > 0 ? finalCategoriesData : categoriesFromPosts;
+const registered = normalizeCategories(categoriesData);
+const postCats = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
+const orphans = collectOrphanCategories(postCats, registered);
+const allCategories = registered.length > 0 ? [...registered, ...orphans] : orphans;
 
 const pathname = Astro.url.pathname;
 const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -44,8 +45,8 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
             </button>
             <ul class="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[200px] bg-elev border border-rule rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all py-2 z-50 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]">
               <li><a href={item.href} class="block px-4 py-2 text-sm text-ink hover:text-primary">Todos os artigos</a></li>
-              {allCategories.map((cat: string) => (
-                <li><a href={`/categoria/${slugify(cat)}`} class="block px-4 py-2 text-sm text-ink hover:text-primary">{cat}</a></li>
+              {allCategories.map((cat) => (
+                <li><a href={`/categoria/${cat.slug}`} class="block px-4 py-2 text-sm text-ink hover:text-primary">{cat.name}</a></li>
               ))}
             </ul>
           </div>

@@ -1,1 +1,22 @@
-["Saúde & Emagrecimento", "Finanças Pessoais", "Relacionamentos", "Negócios Online", "Desenvolvimento Pessoal"]
+[
+  {
+    "name": "Saúde & Emagrecimento",
+    "slug": "saude-emagrecimento"
+  },
+  {
+    "name": "Finanças Pessoais",
+    "slug": "financas-pessoais"
+  },
+  {
+    "name": "Relacionamentos",
+    "slug": "relacionamentos"
+  },
+  {
+    "name": "Negócios Online",
+    "slug": "negocios-online"
+  },
+  {
+    "name": "Desenvolvimento Pessoal",
+    "slug": "desenvolvimento-pessoal"
+  }
+]

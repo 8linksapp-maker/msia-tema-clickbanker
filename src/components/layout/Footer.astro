@@ -1,16 +1,17 @@
 ---
 import { readData } from '../../lib/readData';
-import { slugify } from '../../lib/slugify';
+import { normalizeCategories, collectOrphanCategories } from '../../lib/categorySlug';
 import { getCollection } from 'astro:content';
 
 const siteConfig = readData('siteConfig.json');
 const menuItems: any[] = readData('menu.json', { items: [] }).items || [];
 
 const posts = await getCollection('blog');
-const categoriesFromPosts = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
 const categoriesData = readData('categories.json', []);
-const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
-const allCategories = (finalCategoriesData.length > 0 ? finalCategoriesData : categoriesFromPosts).slice(0, 6);
+const registered = normalizeCategories(categoriesData);
+const postCats = [...new Set(posts.map(p => p.data.category).filter(Boolean))];
+const orphans = collectOrphanCategories(postCats, registered);
+const allCategories = (registered.length > 0 ? [...registered, ...orphans] : orphans).slice(0, 6);
 
 const year = new Date().getFullYear();
 
@@ -47,8 +48,8 @@ const socials: Array<[string, string, string]> = [
         <div class="md:col-span-2">
           <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">tópicos</div>
           <ul class="space-y-2.5 text-sm">
-            {allCategories.map((cat: string) => (
-              <li><a href={`/categoria/${slugify(cat)}`} class="text-ink-muted hover:text-ink transition-colors">{cat}</a></li>
+            {allCategories.map((cat) => (
+              <li><a href={`/categoria/${cat.slug}`} class="text-ink-muted hover:text-ink transition-colors">{cat.name}</a></li>
             ))}
           </ul>
         </div>
@@ -69,16 +70,6 @@ const socials: Array<[string, string, string]> = [
           </ul>
         </div>
       )}
-    </div>
-
-    <!-- Disclaimer afiliado (compliance FTC/CDC) -->
-    <div class="border-t border-rule pt-6 mb-6">
-      <p class="text-xs text-ink-faint leading-relaxed max-w-3xl">
-        <strong class="text-ink-muted">Aviso de afiliado:</strong> este site contém links de afiliado para
-        produtos da plataforma ClickBank. Compras realizadas através desses links podem gerar uma
-        comissão para este site, sem custo adicional para você. Recomendamos apenas produtos que
-        analisamos e consideramos úteis ao público leitor.
-      </p>
     </div>
 
     <div class="border-t border-rule pt-6 flex items-center justify-between flex-wrap gap-3 text-xs">

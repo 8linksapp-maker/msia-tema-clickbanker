@@ -6,6 +6,7 @@
  * Schemas: Article, BreadcrumbList, WebSite (SearchAction).
  */
 import { readData } from '../../lib/readData';
+import { normalizeCategories, getCategorySlug } from '../../lib/categorySlug';
 
 interface Props {
   title: string;
@@ -34,7 +35,8 @@ const orgName = seoConfig?.orgName || siteName;
 const orgLogo = seoConfig?.orgLogo || siteConfig?.logo || '';
 const sameAs: string[] = seoConfig?.sameAs || [];
 
-const categorySlug = category ? category.toLowerCase().replace(/[^a-z0-9]/g, '-') : '';
+const allCategories = normalizeCategories(readData('categories.json', []));
+const categorySlug = category ? getCategorySlug(category, allCategories) : '';
 
 const articleData = articleSchema ? {
   '@context': 'https://schema.org',

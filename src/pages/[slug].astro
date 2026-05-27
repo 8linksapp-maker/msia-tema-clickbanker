@@ -3,7 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { readData } from '../lib/readData';
 import { colorForCategory } from '../lib/categoryColors';
-import { slugify } from '../lib/slugify';
+import { normalizeCategories, getCategorySlug } from '../lib/categorySlug';
+
+const allCategoriesForLinks = normalizeCategories(readData('categories.json', []));
 import { findProductBySlug } from '../lib/products';
 import type { Product } from '../lib/products';
 import { renderShortcodes } from '../lib/shortcodes';
@@ -104,7 +106,7 @@ const isUpdated = data.updatedDate && new Date(data.updatedDate).getTime() > new
           <span class="mx-2 opacity-60">/</span>
           {data.category && (
             <>
-              <a href={`/categoria/${slugify(data.category)}`} class="hover:opacity-100 transition-opacity uppercase">
+              <a href={`/categoria/${getCategorySlug(data.category, allCategoriesForLinks)}`} class="hover:opacity-100 transition-opacity uppercase">
                 {data.category}
               </a>
               <span class="mx-2 opacity-60">/</span>

@@ -12,6 +12,8 @@
  */
 import type { APIRoute } from 'astro';
 import { readFileFromRepo, writeFileToRepo } from '../../../../plugins/_server';
+import { normalizeCategories, slugifyCategory, type CategoryEntry } from '../../../../lib/categorySlug';
+import { buildVercelRedirects } from '../../../../lib/vercelJson';
 
 export const prerender = false;
 
@@ -20,26 +22,7 @@ const REDIRECTS_PATH = 'src/data/redirects.json';
 const VERCEL_JSON_PATH = 'vercel.json';
 const BLOG_DIR = 'src/content/blog';
 
-function slugify(s: string): string {
-    return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-}
-
-function toPath(input: string): string {
-    if (!input) return input;
-    const v = String(input).trim();
-    return v.startsWith('/') ? v : '/' + v;
-}
-
-function sanitizeVercelSource(input: string): string {
-    let v = toPath(input);
-    v = v.replace(/\/\?+$/, '');
-    v = v.replace(/\(\.\*\)/g, ':rest*');
-    v = v.replace(/\(\\d\+\)/g, ':num');
-    v = v.replace(/\(\[\^\/\]\+\)/g, ':segment');
-    v = v.replace(/^\^/, '').replace(/\$$/, '');
-    return v;
-}
+const slugify = slugifyCategory;
 
 async function syncVercelJson(redirects: any[]) {
     try {
@@ -48,14 +31,7 @@ async function syncVercelJson(redirects: any[]) {
         if (existing) {
             try { vercelConfig = JSON.parse(existing); } catch {}
         }
-        const vercelRedirects = redirects
-            .filter((r: any) => r.enabled && r.from && r.to)
-            .map((r: any) => ({
-                source: sanitizeVercelSource(r.from),
-                destination: toPath(r.to),
-                permanent: r.type === 301,
-            }));
-        vercelConfig.redirects = vercelRedirects;
+        vercelConfig.redirects = buildVercelRedirects(redirects);
         await writeFileToRepo(VERCEL_JSON_PATH, JSON.stringify(vercelConfig, null, 2), {
             message: 'CMS: Sync vercel.json (rename categoria)',
         });
@@ -67,29 +43,36 @@ export const POST: APIRoute = async ({ request }) => {
         const body = await request.json();
         const oldName = String(body.oldName || '').trim();
         const newName = String(body.newName || '').trim();
+        const newSlugRaw = String(body.newSlug || '').trim();
+        const description = body.description ? String(body.description).trim() : undefined;
         const createRedirect = body.createRedirect !== false;
 
         if (!oldName || !newName) {
             return new Response(JSON.stringify({ error: 'oldName e newName são obrigatórios' }), { status: 400 });
         }
-        if (oldName === newName) {
-            return new Response(JSON.stringify({ error: 'oldName e newName são iguais' }), { status: 400 });
-        }
 
-        // 1) Atualiza categories.json
+        // 1) Atualiza categories.json (suporta legacy string[] e novo {name,slug}[])
         const catRaw = await readFileFromRepo(CATEGORIES_PATH);
-        let categories: string[] = [];
-        try { categories = JSON.parse(catRaw || '[]'); } catch {}
-        if (!Array.isArray(categories)) categories = [];
+        let parsedRaw: any = [];
+        try { parsedRaw = JSON.parse(catRaw || '[]'); } catch {}
+        const categories: CategoryEntry[] = normalizeCategories(parsedRaw);
 
-        const idx = categories.indexOf(oldName);
+        const idx = categories.findIndex(c => c.name === oldName || c.slug === oldName);
         if (idx === -1) {
             return new Response(JSON.stringify({ error: `Categoria "${oldName}" não existe` }), { status: 404 });
         }
-        if (categories.includes(newName)) {
-            return new Response(JSON.stringify({ error: `Categoria "${newName}" já existe` }), { status: 409 });
+        const oldEntry = categories[idx];
+        const newSlug = newSlugRaw || slugify(newName);
+        const collision = categories.find((c, i) => i !== idx && (c.name === newName || c.slug === newSlug));
+        if (collision) {
+            return new Response(JSON.stringify({ error: `Já existe categoria "${collision.name}" (slug: ${collision.slug})` }), { status: 409 });
         }
-        categories[idx] = newName;
+        if (oldEntry.name === newName && oldEntry.slug === newSlug && (oldEntry.description || '') === (description || '')) {
+            return new Response(JSON.stringify({ success: true, postsUpdated: 0, redirectsCreated: 0, noop: true }), { status: 200 });
+        }
+        categories[idx] = description
+            ? { name: newName, slug: newSlug, description }
+            : { name: newName, slug: newSlug };
         await writeFileToRepo(CATEGORIES_PATH, JSON.stringify(categories, null, 2), {
             message: `CMS: Renomeando categoria "${oldName}" → "${newName}"`,
         });
@@ -122,8 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
         // 3) Redirect 301 /categoria/old-slug → /categoria/new-slug
         let redirectsCreated = 0;
         if (createRedirect) {
-            const oldSlug = slugify(oldName);
-            const newSlug = slugify(newName);
+            const oldSlug = oldEntry.slug || slugify(oldName);
             if (oldSlug && newSlug && oldSlug !== newSlug) {
                 const redRaw = await readFileFromRepo(REDIRECTS_PATH);
                 let redirects: any[] = [];

@@ -1,11 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import { readData } from '../../lib/readData';
-import { slugify } from '../../lib/slugify';
+import { normalizeCategories, collectOrphanCategories } from '../../lib/categorySlug';
 
 const siteConfig = readData('siteConfig.json');
 const homeData = readData('home.json', {});
-const featuredProducts = readData('featuredProducts.json', []) as any[];
 
 const allPosts = await getCollection('blog');
 const recentPosts = allPosts
@@ -17,12 +16,12 @@ const recentPosts = allPosts
   .slice(0, 5);
 
 const categoriesData = readData('categories.json', []);
-const finalCategoriesData = Array.isArray(categoriesData) ? categoriesData : [];
-const categoriesFromPosts = [...new Set(allPosts.map((p: any) => p.data.category).filter(Boolean))];
-const allCategories: string[] = finalCategoriesData.length > 0 ? finalCategoriesData : categoriesFromPosts;
+const registered = normalizeCategories(categoriesData);
+const postCats = [...new Set(allPosts.map((p: any) => p.data.category).filter(Boolean))];
+const orphans = collectOrphanCategories(postCats, registered);
+const allCategories = registered.length > 0 ? [...registered, ...orphans] : orphans;
 
 const highlight = (homeData as any)?.sidebar?.highlight;
-const products = Array.isArray(featuredProducts) ? featuredProducts.slice(0, 3) : [];
 
 function fmtDate(d: any): string {
   if (!d) return '';
@@ -33,42 +32,6 @@ function fmtDate(d: any): string {
 ---
 
 <aside class="lg:sticky lg:top-24 space-y-12">
-
-  <!-- ===== Produtos em destaque (ClickBank widget) ===== -->
-  {products.length > 0 && (
-    <div class="side-section">
-      <div class="side-section-label uppercase">produtos em destaque</div>
-      <div class="space-y-3">
-        {products.map((product: any) => (
-          <a href={product.link || '#'} class="product-card group" target="_blank" rel="noopener nofollow sponsored">
-            <div class="flex items-start justify-between gap-2">
-              <h4 class="font-display text-base font-bold text-ink leading-tight group-hover:text-primary transition-colors">
-                {product.name}
-              </h4>
-              {product.rating && (
-                <span class="mono text-ink-faint shrink-0">★ {product.rating}</span>
-              )}
-            </div>
-            {product.category && (
-              <p class="mono uppercase text-ink-faint">{product.category}</p>
-            )}
-            {product.blurb && (
-              <p class="text-sm text-ink-muted leading-relaxed">{product.blurb}</p>
-            )}
-            <div class="flex items-center justify-between pt-2 border-t border-border mt-1">
-              <span class="font-display text-base font-bold text-primary">{product.price}</span>
-              <span class="mono uppercase text-ink-faint inline-flex items-center gap-1 group-hover:text-primary transition-colors">
-                ver
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-              </span>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  )}
-
-  <!-- ===== Posts recentes ===== -->
   <div class="side-section">
     <div class="side-section-label uppercase">recente</div>
     <ol class="space-y-5">
@@ -84,7 +47,7 @@ function fmtDate(d: any): string {
                 <span class="mono text-ink-faint">{num}</span>
                 {date && <span class="mono text-ink-faint">{fmtDate(date)}</span>}
               </div>
-              <h4 class="font-display text-[15px] font-semibold leading-snug text-ink group-hover:text-primary transition-colors line-clamp-2">
+              <h4 class="font-display text-[15px] font-medium leading-snug text-ink group-hover:text-primary transition-colors line-clamp-2">
                 {data.title}
               </h4>
             </a>
@@ -94,15 +57,14 @@ function fmtDate(d: any): string {
     </ol>
   </div>
 
-  <!-- ===== Tópicos ===== -->
   {allCategories.length > 0 && (
     <div class="side-section">
       <div class="side-section-label uppercase">tópicos</div>
       <ul class="flex flex-wrap gap-x-3 gap-y-2">
-        {allCategories.map((cat: string) => (
+        {allCategories.map((cat) => (
           <li>
-            <a href={`/categoria/${slugify(cat)}`} class="mono text-ink-muted hover:text-ink transition-colors">
-              {cat.toLowerCase()}
+            <a href={`/categoria/${cat.slug}`} class="mono text-ink-muted hover:text-ink transition-colors">
+              {cat.name.toLowerCase()}
             </a>
           </li>
         ))}
@@ -110,11 +72,10 @@ function fmtDate(d: any): string {
     </div>
   )}
 
-  <!-- ===== Highlight opcional ===== -->
   {highlight && highlight.title && highlight.href && (
     <div class="side-section">
       <div class="side-section-label uppercase">{highlight.label || 'destaque'}</div>
-      <h3 class="font-display text-lg font-bold text-ink leading-snug mb-2">
+      <h3 class="font-display text-lg font-semibold text-ink leading-snug mb-2">
         {highlight.title}
       </h3>
       {highlight.description && (
