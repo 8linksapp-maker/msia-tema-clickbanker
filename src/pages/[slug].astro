@@ -12,6 +12,8 @@ import { renderShortcodes } from '../lib/shortcodes';
 import ProductCard from '../components/ui/ProductCard.astro';
 import ProductComparator from '../components/ui/ProductComparator.astro';
 import ReviewSchema from '../components/ui/ReviewSchema.astro';
+import PostVideo from '../components/ui/PostVideo.astro';
+import { parseVideoUrl } from '../lib/videoEmbed';
 
 export async function getStaticPaths() {
   const siteConfig = readData('siteConfig.json', {}) as any;
@@ -74,6 +76,11 @@ const related = otherPosts.slice(0, 3);
 
 const postUrl = `${siteConfig.url || Astro.url.origin}/${post.slug ?? post.id}`;
 const isUpdated = data.updatedDate && new Date(data.updatedDate).getTime() > new Date(data.pubDate).getTime();
+
+const videoUrl = data.videoUrl || '';
+const videoInfo = videoUrl ? parseVideoUrl(videoUrl) : null;
+const hasValidVideo = videoInfo && videoInfo.provider !== 'unknown';
+const videoPosition = data.videoPosition || 'after-hero';
 ---
 
 <BaseLayout
@@ -140,7 +147,19 @@ const isUpdated = data.updatedDate && new Date(data.updatedDate).getTime() > new
       </div>
     </header>
 
-    {data.heroImage && (
+    {hasValidVideo && videoPosition === 'hero' ? (
+      <div class="border-b border-rule">
+        <div class="container-x py-8">
+          <PostVideo
+            url={videoUrl}
+            title={data.title}
+            description={data.description}
+            uploadDate={data.pubDate instanceof Date ? data.pubDate.toISOString() : String(data.pubDate)}
+            lite={true}
+          />
+        </div>
+      </div>
+    ) : data.heroImage ? (
       <div class="border-b border-rule">
         <div class="container-x py-8">
           <img
@@ -148,6 +167,20 @@ const isUpdated = data.updatedDate && new Date(data.updatedDate).getTime() > new
             alt=""
             class="w-full aspect-[21/9] object-cover"
             loading="eager"
+          />
+        </div>
+      </div>
+    ) : null}
+
+    {hasValidVideo && videoPosition === 'after-hero' && (
+      <div class="border-b border-rule">
+        <div class="container-x py-8">
+          <PostVideo
+            url={videoUrl}
+            title={data.title}
+            description={data.description}
+            uploadDate={data.pubDate instanceof Date ? data.pubDate.toISOString() : String(data.pubDate)}
+            lite={true}
           />
         </div>
       </div>

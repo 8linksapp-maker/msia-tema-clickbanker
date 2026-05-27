@@ -10,15 +10,19 @@
  */
 
 import type { Product } from './products';
+import { parseVideoUrl } from './videoEmbed';
 
 // Match shortcode possivelmente envolvido por <p>...</p> ou <p>...<br></p>
 // Capturamos a tag p wrapper pra remover (não pode ter <a> ou <table> dentro de <p>)
 const PRODUTO_RE = /(?:<p[^>]*>\s*(?:<br\s*\/?>)?)?\s*\[\[\s*produto\s*:\s*([a-z0-9][a-z0-9-]*)\s*\]\]\s*(?:(?:<br\s*\/?>)?<\/p>)?/gi;
 const COMPARADOR_RE = /(?:<p[^>]*>\s*(?:<br\s*\/?>)?)?\s*\[\[\s*comparador\s*:\s*([a-z0-9,\-\s]+)\s*\]\]\s*(?:(?:<br\s*\/?>)?<\/p>)?/gi;
+// [[video:URL]] — URL pode conter ?, &, = e demais caracteres URL. Tudo até `]]` é capturado
+const VIDEO_RE = /(?:<p[^>]*>\s*(?:<br\s*\/?>)?)?\s*\[\[\s*video\s*:\s*([^\]]+?)\s*\]\]\s*(?:(?:<br\s*\/?>)?<\/p>)?/gi;
 
 // Detector simples só pra checagem (sem strip de p tags)
 const PRODUTO_DETECT = /\[\[\s*produto\s*:\s*([a-z0-9][a-z0-9-]*)\s*\]\]/gi;
 const COMPARADOR_DETECT = /\[\[\s*comparador\s*:\s*([a-z0-9,\-\s]+)\s*\]\]/gi;
+const VIDEO_DETECT = /\[\[\s*video\s*:\s*([^\]]+?)\s*\]\]/gi;
 
 // Tokens do tema afiliado-clickbank (terracota + earthy + Cabinet Grotesk)
 const C = {
@@ -176,6 +180,19 @@ function renderComparator(products: Product[]): string {
   </div>`;
 }
 
+/** Embed responsivo de vídeo (16:9, lazy-load iframe) — sem JS pra ser render-only */
+function renderVideoEmbed(url: string): string {
+  const info = parseVideoUrl(url);
+  if (info.provider === 'unknown') {
+    return `<div class="not-prose" style="padding:.5rem 1rem;background:#fef3c7;border:1px dashed #d97706;border-radius:4px;color:#92400e;font-family:${F.mono};font-size:.8rem;margin:1rem 0;">[[video:${escapeHtml(url)}]] — URL não reconhecida</div>`;
+  }
+  const wrapStyle = `position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;margin:1.75rem 0;`;
+  if (info.provider === 'mp4') {
+    return `<div class="not-prose" style="${wrapStyle}"><video controls preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;"><source src="${escapeHtml(info.embedUrl)}" />Seu navegador não suporta vídeo HTML5.</video></div>`;
+  }
+  return `<div class="not-prose" style="${wrapStyle}"><iframe src="${escapeHtml(info.embedUrl)}" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe></div>`;
+}
+
 /**
  * Processa string HTML do post, substituindo shortcodes pelo HTML renderizado.
  * Server-side OU client-side.
@@ -185,7 +202,7 @@ function renderComparator(products: Product[]): string {
  * (<a> bloco dentro de <p> inline) que o browser tenta "reparar" gerando boxes
  * vazios na renderização.
  */
-export function renderShortcodes(html: string, products: Product[]): string {
+export function renderShortcodes(html: string, products: Product[] = []): string {
   if (!html) return '';
   const byslug = new Map(products.map(p => [p.slug, p]));
 
@@ -205,6 +222,9 @@ export function renderShortcodes(html: string, products: Product[]): string {
     return renderComparator(found);
   });
 
+  // [[video:URL]] — embed responsivo (YouTube/Vimeo/mp4/iframe genérico)
+  out = out.replace(VIDEO_RE, (_match, rawUrl) => renderVideoEmbed(String(rawUrl).trim()));
+
   // Limpa <p></p> vazios consecutivos (do Quill quando aluno aperta Enter várias vezes)
   out = out.replace(/<p[^>]*>\s*(?:<br\s*\/?>)?\s*<\/p>/gi, '');
   // Limpa quebras de linha extras entre blocos
@@ -216,9 +236,15 @@ export function renderShortcodes(html: string, products: Product[]): string {
 /**
  * Detecta shortcodes inseridos no HTML. Útil pra validação/preview.
  */
-export function detectShortcodes(html: string): { produto: string[]; comparador: string[][] } {
+/** Heurística rápida pra detectar se o body tem algum shortcode. */
+export function hasShortcodes(html: string): boolean {
+  return /\[\[\s*(?:produto|comparador|video)\s*:/i.test(html);
+}
+
+export function detectShortcodes(html: string): { produto: string[]; comparador: string[][]; video: string[] } {
   const produto: string[] = [];
   const comparador: string[][] = [];
+  const video: string[] = [];
 
   const m1 = html.matchAll(PRODUTO_DETECT);
   for (const m of m1) produto.push(m[1].trim().toLowerCase());
@@ -228,5 +254,8 @@ export function detectShortcodes(html: string): { produto: string[]; comparador:
     comparador.push(m[1].split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
   }
 
-  return { produto, comparador };
+  const m3 = html.matchAll(VIDEO_DETECT);
+  for (const m of m3) video.push(m[1].trim());
+
+  return { produto, comparador, video };
 }

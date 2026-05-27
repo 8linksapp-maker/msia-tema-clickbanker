@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle, Loader2, ArrowLeft, Image as ImageIcon, Eye, Edit3, ShoppingBag, X, Plus, ExternalLink } from 'lucide-react';
+import { Save, AlertCircle, Loader2, ArrowLeft, Image as ImageIcon, Eye, Edit3, ShoppingBag, X, Plus, ExternalLink, Video, AlertTriangle } from 'lucide-react';
+import { parseVideoUrl } from '../../lib/videoEmbed';
+import { normalizeCategories } from '../../lib/categorySlug';
 import { marked } from 'marked';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
@@ -51,8 +53,9 @@ export default function PostEditor({ filePath }: PostEditorProps) {
 
     // ===== Inserção de shortcodes no editor =====
     const [showInsertModal, setShowInsertModal] = useState(false);
-    const [insertMode, setInsertMode] = useState<'produto' | 'comparativo'>('produto');
+    const [insertMode, setInsertMode] = useState<'produto' | 'comparativo' | 'video'>('produto');
     const [compareSelection, setCompareSelection] = useState<string[]>([]);
+    const [videoShortcodeUrl, setVideoShortcodeUrl] = useState('');
 
     const insertTextInEditor = (text: string) => {
         const editor = quillRef.current?.getEditor?.();
@@ -79,14 +82,29 @@ export default function PostEditor({ filePath }: PostEditorProps) {
         setShowInsertModal(false);
     };
 
+    const insertVideoShortcode = () => {
+        const url = videoShortcodeUrl.trim();
+        if (!url) return;
+        if (parseVideoUrl(url).provider === 'unknown') {
+            alert('URL não reconhecida. Use YouTube, Vimeo, Loom, Wistia ou mp4 direto.');
+            return;
+        }
+        insertTextInEditor(`[[video:${url}]]`);
+        setVideoShortcodeUrl('');
+        setShowInsertModal(false);
+    };
+
     const openInsertModal = () => {
-        setInsertMode('produto');
+        // Default tab: produto se houver produtos, senão video direto
+        setInsertMode(allProducts.length > 0 ? 'produto' : 'video');
         setCompareSelection([]);
+        setVideoShortcodeUrl('');
         setShowInsertModal(true);
     };
     const closeInsertModal = () => {
         setShowInsertModal(false);
         setCompareSelection([]);
+        setVideoShortcodeUrl('');
     };
 
 
@@ -129,6 +147,9 @@ export default function PostEditor({ filePath }: PostEditorProps) {
         comparedProductSlugs: [] as string[],
         featuredProductSlugs: [] as string[],
         affiliate: true,
+        // ===== Video fields =====
+        videoUrl: '',
+        videoPosition: 'after-hero' as 'hero' | 'after-hero' | 'inline',
     });
 
     // Load Quill dynamically
@@ -146,7 +167,7 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                     githubApi('read', 'src/data/products.json'),
                 ]);
                 if (authRes.status === 'fulfilled') { const p = JSON.parse(authRes.value?.content || "{}"); if (Array.isArray(p)) setAuthors(p); }
-                if (catRes.status === 'fulfilled') { const p = JSON.parse(catRes.value?.content || "{}"); if (Array.isArray(p)) setDynamicCategories(p); }
+                if (catRes.status === 'fulfilled') { const p = JSON.parse(catRes.value?.content || "[]"); setDynamicCategories(normalizeCategories(p).map((c) => c.name)); }
                 if (prodRes.status === 'fulfilled') { const p = JSON.parse(prodRes.value?.content || "[]"); if (Array.isArray(p)) setAllProducts(p.filter((x: any) => x.active !== false)); }
 
                 if (isEditing && filePath) {
@@ -194,6 +215,11 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                             comparedProductSlugs: extractList('comparedProductSlugs'),
                             featuredProductSlugs: extractList('featuredProductSlugs'),
                             affiliate: rawAffiliate === '' ? true : (rawAffiliate !== 'false'),
+                            videoUrl: extract('videoUrl'),
+                            videoPosition: (() => {
+                                const v = extract('videoPosition');
+                                return v === 'hero' || v === 'inline' ? v : 'after-hero';
+                            })(),
                         });
                     } else {
                         setPost(p => ({ ...p, content: String(marked.parse(text)), slug: filePath.split('/').pop()?.replace('.md', '') || '' }));
@@ -290,6 +316,12 @@ export default function PostEditor({ filePath }: PostEditorProps) {
             }
             // Sempre escreve affiliate (default true; usuário pode desligar)
             fmLines.push(`affiliate: ${post.affiliate}`);
+
+            // Video fields (só escreve se URL preenchida)
+            if (post.videoUrl?.trim()) {
+                fmLines.push(`videoUrl: "${yamlEscape(post.videoUrl.trim())}"`);
+                fmLines.push(`videoPosition: "${post.videoPosition || 'after-hero'}"`);
+            }
 
             const markdown = `---\n${fmLines.join('\n')}\n---\n${finalHtmlContent}`;
             const targetPath = `src/content/blog/${post.slug}.md`;
@@ -396,13 +428,13 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                                 )}
                             </div>
 
-                            {/* FAB sticky único — só no modo edição */}
-                            {!isPreview && allProducts.length > 0 && (
+                            {/* FAB sticky — vídeo sempre, produto/comparativa se houver produtos */}
+                            {!isPreview && (
                                 <div className="shrink-0 sticky top-4 self-start z-20">
                                     <button
                                         type="button"
                                         onClick={openInsertModal}
-                                        title="Inserir produto ou tabela comparativa"
+                                        title="Inserir vídeo, produto ou tabela comparativa"
                                         className="group relative w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl hover:scale-105"
                                     >
                                         <Plus className="w-5 h-5" />
@@ -415,9 +447,9 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                         </div>
 
                         {/* Hint sobre shortcodes */}
-                        {!isPreview && allProducts.length > 0 && (
+                        {!isPreview && (
                             <p className="mt-3 text-[11px] text-slate-400 leading-relaxed">
-                                💡 Use o botão flutuante <span className="inline-flex items-center justify-center w-4 h-4 bg-amber-600 text-white rounded-full mx-0.5"><Plus className="w-2.5 h-2.5" /></span> ao lado pra inserir produto ou tabela comparativa.
+                                💡 Use o botão flutuante <span className="inline-flex items-center justify-center w-4 h-4 bg-amber-600 text-white rounded-full mx-0.5"><Plus className="w-2.5 h-2.5" /></span> ao lado pra inserir vídeo{allProducts.length > 0 ? ', produto ou tabela comparativa' : ''}.
                             </p>
                         )}
                     </div>
@@ -445,28 +477,85 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                                     {/* Toggle */}
                                     <div className="px-5 pb-4">
                                         <div className="inline-flex p-1 bg-slate-100 rounded-xl">
+                                            {allProducts.length > 0 && (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setInsertMode('produto'); setCompareSelection([]); }}
+                                                        className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${insertMode === 'produto' ? 'bg-white text-amber-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        <ShoppingBag className="w-3.5 h-3.5" />
+                                                        Produto
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setInsertMode('comparativo')}
+                                                        className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${insertMode === 'comparativo' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
+                                                        Comparativa {compareSelection.length > 0 && `(${compareSelection.length})`}
+                                                    </button>
+                                                </>
+                                            )}
                                             <button
                                                 type="button"
-                                                onClick={() => { setInsertMode('produto'); setCompareSelection([]); }}
-                                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${insertMode === 'produto' ? 'bg-white text-amber-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                                                onClick={() => setInsertMode('video')}
+                                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${insertMode === 'video' ? 'bg-white text-rose-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
-                                                <ShoppingBag className="w-3.5 h-3.5" />
-                                                Produto
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setInsertMode('comparativo')}
-                                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${insertMode === 'comparativo' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                Comparativa {compareSelection.length > 0 && `(${compareSelection.length})`}
+                                                <Video className="w-3.5 h-3.5" />
+                                                Vídeo
                                             </button>
                                         </div>
                                     </div>
                                 </header>
 
                                 {/* Body — lista filtra por modo */}
-                                {insertMode === 'produto' ? (
+                                {insertMode === 'video' ? (
+                                    <div className="p-5 space-y-4">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">URL do vídeo</label>
+                                            <input
+                                                type="text"
+                                                value={videoShortcodeUrl}
+                                                onChange={e => setVideoShortcodeUrl(e.target.value)}
+                                                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); insertVideoShortcode(); } }}
+                                                placeholder="https://youtube.com/watch?v=… ou https://vimeo.com/…"
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20"
+                                                autoFocus
+                                            />
+                                            {videoShortcodeUrl.trim() && (() => {
+                                                const info = parseVideoUrl(videoShortcodeUrl);
+                                                if (info.provider === 'unknown') return (
+                                                    <p className="text-[11px] text-amber-700 mt-2 flex items-center gap-1.5">
+                                                        <AlertTriangle className="w-3 h-3 shrink-0" /> URL não reconhecida
+                                                    </p>
+                                                );
+                                                return (
+                                                    <p className="text-[11px] text-emerald-700 mt-2">
+                                                        ✓ {info.provider}{info.id ? ` · ${info.id}` : ''}
+                                                    </p>
+                                                );
+                                            })()}
+                                            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
+                                                Suporta YouTube, Vimeo, Loom, Wistia, Twitch e mp4 self-hosted. Será inserido como <code className="bg-slate-100 px-1 rounded">[[video:URL]]</code> no parágrafo atual.
+                                            </p>
+                                        </div>
+                                        <footer className="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                                            <button type="button" onClick={closeInsertModal} className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-lg">
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={insertVideoShortcode}
+                                                disabled={!videoShortcodeUrl.trim() || parseVideoUrl(videoShortcodeUrl).provider === 'unknown'}
+                                                className="px-4 py-1.5 text-xs font-bold bg-rose-600 hover:bg-rose-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg flex items-center gap-1.5"
+                                            >
+                                                <Video className="w-3 h-3" />
+                                                Inserir vídeo
+                                            </button>
+                                        </footer>
+                                    </div>
+                                ) : insertMode === 'produto' ? (
                                     <ul className="flex-1 overflow-y-auto divide-y divide-slate-100">
                                         {allProducts.map((p: any) => (
                                             <li key={p.slug}>
@@ -674,6 +763,66 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                                 <strong>Sem produtos cadastrados.</strong> <a href="/admin/products" className="underline">Cadastrar produtos</a>
                             </div>
                         )}
+                    </div>
+
+                    {/* Video do post */}
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 className="font-bold text-slate-700 text-sm border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                            <Video className="w-4 h-4 text-rose-500" />
+                            Vídeo do artigo
+                            <span className="text-[10px] font-mono text-slate-400 font-normal ml-auto">opcional</span>
+                        </h3>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">URL do vídeo</label>
+                                <input
+                                    type="text"
+                                    value={post.videoUrl}
+                                    onChange={e => setPost(p => ({ ...p, videoUrl: e.target.value }))}
+                                    placeholder="https://youtube.com/watch?v=… ou https://vimeo.com/…"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-rose-400"
+                                />
+                                {(() => {
+                                    if (!post.videoUrl?.trim()) return (
+                                        <p className="text-[10px] text-slate-400 mt-1.5">YouTube, Vimeo, Loom, Wistia, mp4 self-hosted.</p>
+                                    );
+                                    const info = parseVideoUrl(post.videoUrl);
+                                    if (info.provider === 'unknown') return (
+                                        <p className="text-[10px] text-amber-700 mt-1.5 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> URL não reconhecida — vídeo não será exibido.</p>
+                                    );
+                                    return (
+                                        <p className="text-[10px] text-emerald-700 mt-1.5">
+                                            ✓ {info.provider}{info.id ? ` · ${info.id}` : ''}
+                                        </p>
+                                    );
+                                })()}
+                            </div>
+                            {post.videoUrl?.trim() && parseVideoUrl(post.videoUrl).provider !== 'unknown' && (
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Posição</label>
+                                    <div className="grid grid-cols-3 gap-1.5">
+                                        {[
+                                            { v: 'hero', label: 'Substitui capa' },
+                                            { v: 'after-hero', label: 'Após capa' },
+                                            { v: 'inline', label: 'Só shortcode' },
+                                        ].map((opt) => (
+                                            <button
+                                                type="button"
+                                                key={opt.v}
+                                                onClick={() => setPost(p => ({ ...p, videoPosition: opt.v as any }))}
+                                                className={`px-2 py-2 text-[10px] font-bold rounded-lg transition-all ${
+                                                    post.videoPosition === opt.v
+                                                        ? 'bg-rose-600 text-white shadow-sm'
+                                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                }`}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* SEO Score Widget */}

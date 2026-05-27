@@ -7,11 +7,16 @@ import PostSchemaPlugins from '../../plugins/_slots/PostSchemaPlugins.astro';
 import PostBottomPlugins from '../../plugins/_slots/PostBottomPlugins.astro';
 import PostAfterPlugins from '../../plugins/_slots/PostAfterPlugins.astro';
 import SocialShare from '../../plugins/social-share/SocialShare.astro';
+import PostVideo from '../../components/ui/PostVideo.astro';
 import { getCollection } from 'astro:content';
 import { readData } from '../../lib/readData';
 import { normalizeCategories, getCategorySlug } from '../../lib/categorySlug';
+import { parseVideoUrl } from '../../lib/videoEmbed';
+import { renderShortcodes, hasShortcodes } from '../../lib/shortcodes';
+import type { Product } from '../../lib/products';
 const authorsData = readData('authors.json', []);
 const allCategories = normalizeCategories(readData('categories.json', []));
+const allProducts = readData('products.json', []) as Product[];
 
 const pluginsConfig = readData('pluginsConfig.json', {}) as any;
 const inlineConfig = pluginsConfig?.emailList?.inline;
@@ -41,6 +46,15 @@ const currentAuthor = authorsData.find((a: any) => a.id === post.data.author) ||
 const categorySlug = post.data.category ? getCategorySlug(post.data.category, allCategories) : '';
 const siteConfig = readData('siteConfig.json', {}) as any;
 const postUrl = `${siteConfig.url || Astro.url.origin}/blog/${post.slug}`;
+
+const videoUrl = post.data.videoUrl || '';
+const videoInfo = videoUrl ? parseVideoUrl(videoUrl) : null;
+const hasValidVideo = videoInfo && videoInfo.provider !== 'unknown';
+const videoPosition = post.data.videoPosition || 'after-hero';
+
+const rawBody = (post.body || '') as string;
+const isHtmlBody = /^\s*</.test(rawBody.trim());
+const processedHtml = isHtmlBody && hasShortcodes(rawBody) ? renderShortcodes(rawBody, allProducts) : null;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} image={post.data.heroImage} type="article">
@@ -52,6 +66,7 @@ const postUrl = `${siteConfig.url || Astro.url.origin}/blog/${post.slug}`;
     datePublished={post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : post.data.pubDate}
     authorName={currentAuthor?.name}
     category={post.data.category}
+    videoUrl={hasValidVideo ? videoUrl : undefined}
   />
 
   <!-- section main content -->
@@ -92,15 +107,39 @@ const postUrl = `${siteConfig.url || Astro.url.origin}/blog/${post.slug}`;
                 </li>
               </ul>
             </div>
-            <!-- featured image -->
-            {post.data.heroImage && (
+            <!-- featured image OR video hero -->
+            {hasValidVideo && videoPosition === 'hero' ? (
+              <div class="featured-image">
+                <PostVideo
+                url={videoUrl}
+                title={post.data.title}
+                description={post.data.description}
+                uploadDate={post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : String(post.data.pubDate)}
+                lite={true}
+              />
+              </div>
+            ) : post.data.heroImage ? (
               <div class="featured-image">
                 <img src={post.data.heroImage} alt={post.data.title} />
               </div>
+            ) : null}
+            <!-- video after hero -->
+            {hasValidVideo && videoPosition === 'after-hero' && (
+              <PostVideo
+                url={videoUrl}
+                title={post.data.title}
+                description={post.data.description}
+                uploadDate={post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : String(post.data.pubDate)}
+                lite={true}
+              />
             )}
             <!-- post content -->
             <div class="post-content clearfix">
-              <Content />
+              {processedHtml ? (
+                <Fragment set:html={processedHtml} />
+              ) : (
+                <Content />
+              )}
             </div>
             {inlineEnabled && (
               <div id="email-inline-source" data-position={inlinePosition} style="display:none">

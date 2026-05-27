@@ -7,8 +7,9 @@ interface Props {
   datePublished?: string;
   authorName?: string;
   category?: string;
+  videoUrl?: string;
 }
-const { title, description, url, image, datePublished, authorName, category } = Astro.props;
+const { title, description, url, image, datePublished, authorName, category, videoUrl } = Astro.props;
 import SchemaMarkup from '../seo/SchemaMarkup.astro';
 ---
 <SchemaMarkup
@@ -19,4 +20,5 @@ import SchemaMarkup from '../seo/SchemaMarkup.astro';
   datePublished={datePublished}
   authorName={authorName}
   category={category}
+  videoUrl={videoUrl}
 />

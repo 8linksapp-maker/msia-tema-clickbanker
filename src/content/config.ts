@@ -24,6 +24,12 @@ const blog = defineCollection({
 
         // Disclaimer ético inline no topo (default true em sites afiliado)
         affiliate: z.boolean().default(true),
+
+        // ===== Video features =====
+        /** URL de vídeo a embedar no post (YouTube, Vimeo, ou iframe genérico). */
+        videoUrl: z.string().optional(),
+        /** Posição do vídeo: 'hero' (substitui imagem) | 'after-hero' (default) | 'inline'. */
+        videoPosition: z.enum(['hero', 'after-hero', 'inline']).optional(),
     }),
 });
 

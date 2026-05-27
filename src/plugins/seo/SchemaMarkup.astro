@@ -7,6 +7,7 @@
  */
 import { readData } from '../../lib/readData';
 import { normalizeCategories, getCategorySlug } from '../../lib/categorySlug';
+import { parseVideoUrl } from '../../lib/videoEmbed';
 
 interface Props {
   title: string;
@@ -17,9 +18,10 @@ interface Props {
   dateModified?: string;
   authorName?: string;
   category?: string;
+  videoUrl?: string;
 }
 
-const { title, description, url, image, datePublished, dateModified, authorName, category } = Astro.props;
+const { title, description, url, image, datePublished, dateModified, authorName, category, videoUrl } = Astro.props;
 
 const pluginsConfig = readData('pluginsConfig.json', {}) as any;
 const seoConfig = pluginsConfig?.seo;
@@ -68,6 +70,10 @@ const breadcrumbData = breadcrumbSchema ? {
     { '@type': 'ListItem', position: category ? 3 : 2, name: title, item: url },
   ],
 } : null;
+
+// NOTA: VideoObject JSON-LD agora é emitido direto pelo `<PostVideo />` component
+// (auto-contido, funciona em qualquer rota que renderize o vídeo). Aqui só seria
+// duplicado, então removido.
 
 const websiteData = websiteSchema ? {
   '@context': 'https://schema.org',
