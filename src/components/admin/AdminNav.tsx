@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    LayoutDashboard, FileText, Tag, Users, Info, Phone,
-    Shield, Settings, LogOut, ChevronRight, ExternalLink, Navigation,
-    Sparkles, Package, ShoppingBag, Megaphone, Rocket, MousePointerClick, FileArchive,
+    FileText, Tag, Users, Info, Phone,
+    Shield, Settings, LogOut, ExternalLink, Navigation,
+    Package, FileArchive, PenLine, ChevronRight, Home, Sparkles,
+    ShoppingBag, Rocket, Megaphone, MousePointerClick,
 } from 'lucide-react';
 
 interface NavItem {
@@ -12,29 +13,19 @@ interface NavItem {
     section: string;
 }
 
-const mainItems: NavItem[] = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, section: 'dashboard' },
-    { label: 'Artigos', href: '/admin/posts', icon: FileText, section: 'posts' },
-    { label: 'Produtos', href: '/admin/products', icon: ShoppingBag, section: 'products' },
-    { label: 'Categorias', href: '/admin/categories', icon: Tag, section: 'categories' },
-    { label: 'Autores', href: '/admin/authors', icon: Users, section: 'authors' },
-];
+const contentSections = ['posts', 'categories', 'authors', 'ai'];
 
 const afiliadoItems: NavItem[] = [
+    { label: 'Produtos', href: '/admin/products', icon: ShoppingBag, section: 'products' },
     { label: 'Landing Pages', href: '/admin/landing-pages', icon: Rocket, section: 'landing-pages' },
     { label: 'Promo Bar', href: '/admin/promo', icon: Megaphone, section: 'promo' },
 ];
 
 const pageItems: NavItem[] = [
-    { label: 'Menu', href: '/admin/menu', icon: Navigation, section: 'menu' },
+    { label: 'Navegação do site', href: '/admin/menu', icon: Navigation, section: 'menu' },
     { label: 'Sobre', href: '/admin/sobre', icon: Info, section: 'sobre' },
     { label: 'Contato', href: '/admin/contato', icon: Phone, section: 'contato' },
     { label: 'Privacidade & Termos', href: '/admin/legal', icon: Shield, section: 'legal' },
-];
-
-const pluginItems: NavItem[] = [
-    { label: 'Plugins', href: '/admin/plugins', icon: Sparkles, section: 'plugins' },
-    { label: 'Google Tag', href: '/admin/google-tag', icon: Tag, section: 'google-tag' },
 ];
 
 interface AdminNavProps {
@@ -43,84 +34,152 @@ interface AdminNavProps {
 }
 
 export default function AdminNav({ activeSection = '', extraItems = [] }: AdminNavProps) {
-    const allMainItems = [...mainItems, ...extraItems];
-
     return (
-        <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-100 flex flex-col z-50 shadow-sm">
-            {/* Logo */}
-            <a href="/admin" className="h-16 flex items-center px-5 border-b border-slate-100 hover:bg-slate-50/60 transition-colors group">
-                <div className="flex items-center gap-3 w-full">
-                    <div className="relative w-9 h-9 rounded-lg flex items-center justify-center shrink-0 shadow-sm" style={{ background: 'linear-gradient(135deg, #a3592d 0%, #c47238 100%)' }}>
-                        <MousePointerClick className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
-                        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
-                    </div>
-                    <div className="leading-none flex-1 min-w-0">
-                        <div className="font-extrabold text-slate-900 tracking-tight" style={{ letterSpacing: '-0.02em' }}>
-                            Click<span className="text-amber-700">Banker</span>
-                        </div>
-                        <div className="text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-1">afiliado clickbank</div>
-                    </div>
-                </div>
+        <aside
+            className="fixed inset-y-0 left-0 w-64 bg-surface border-r border-border flex flex-col z-50"
+            aria-label="Navegação do painel"
+            style={{ boxShadow: '1px 0 0 0 rgb(224 218 206)' }}
+        >
+            {/* Skip link */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-surface focus:rounded focus:text-sm focus:font-semibold"
+            >
+                Pular para o conteúdo principal
             </a>
 
+            {/* Logo */}
+            <div className="h-16 flex items-center px-5 border-b border-border">
+                <a
+                    href="/admin"
+                    aria-label="Ir para o início do painel"
+                    className="flex items-center gap-2.5 no-underline w-full min-w-0"
+                >
+                    <div
+                        className="relative w-8 h-8 rounded flex items-center justify-center shrink-0"
+                        style={{ background: 'linear-gradient(135deg, #a3592d 0%, #c47238 100%)' }}
+                        aria-hidden="true"
+                    >
+                        <MousePointerClick className="w-[17px] h-[17px] text-white" strokeWidth={2.5} />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-surface rounded-full"></span>
+                    </div>
+                    <div className="leading-none flex-1 min-w-0">
+                        <div className="font-bold text-ink text-sm tracking-tight">
+                            Click<span className="text-primary">Banker</span>
+                        </div>
+                        <div className="text-[9px] font-mono text-ink-faint uppercase tracking-widest mt-1">afiliado clickbank</div>
+                    </div>
+                </a>
+            </div>
+
+            {/* CTA persistente — Novo artigo */}
+            <div className="px-3 pt-4 pb-3 border-b border-border">
+                <a
+                    href="/admin/posts/new"
+                    className="flex items-center justify-center gap-2 w-full bg-primary hover:brightness-90 text-surface rounded px-4 py-2.5 min-h-[44px] text-sm font-semibold transition-all"
+                    aria-label="Escrever novo artigo"
+                >
+                    <PenLine className="w-4 h-4 shrink-0" aria-hidden="true" />
+                    Novo artigo
+                </a>
+            </div>
+
             {/* Nav */}
-            <nav className="flex-1 overflow-y-auto py-4 px-3">
-                {/* Seção Principal */}
-                <div className="mb-6">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Principal</p>
-                    {allMainItems.map(item => (
-                        <NavLink key={item.href} item={item} active={activeSection === item.section} />
-                    ))}
+            <nav className="flex-1 overflow-y-auto py-4 px-3" aria-label="Principal">
+
+                {/* Início */}
+                <div className="mb-5">
+                    <NavLink
+                        item={{ label: 'Início', href: '/admin', icon: Home, section: 'dashboard' }}
+                        active={activeSection === 'dashboard'}
+                    />
                 </div>
 
-                {/* Páginas */}
-                <div className="mb-6">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Páginas</p>
-                    {pageItems.map(item => (
-                        <NavLink key={item.href} item={item} active={activeSection === item.section} />
-                    ))}
+                {/* Conteúdo */}
+                <div className="mb-5" role="group" aria-labelledby="nav-conteudo">
+                    <p id="nav-conteudo" className="text-[10px] font-bold text-ink-faint uppercase tracking-widest px-3 mb-1.5">Conteúdo</p>
+
+                    {/* Artigos — sempre visível */}
+                    <NavLink
+                        item={{ label: 'Artigos', href: '/admin/posts', icon: FileText, section: 'posts' }}
+                        active={activeSection === 'posts'}
+                    />
+
+                    {/* Sub-itens de Artigos — indentados, sempre visíveis */}
+                    <div className="pl-3 mt-0.5 space-y-0.5">
+                        <SubNavLink
+                            label="Categorias"
+                            href="/admin/categories"
+                            icon={Tag}
+                            active={activeSection === 'categories'}
+                        />
+                        <SubNavLink
+                            label="Autores"
+                            href="/admin/authors"
+                            icon={Users}
+                            active={activeSection === 'authors'}
+                        />
+                        <SubNavLink
+                            label="Gerar com IA"
+                            href="/admin/ai"
+                            icon={Sparkles}
+                            active={activeSection === 'ai'}
+                        />
+                        {extraItems.map(item => (
+                            <SubNavLink
+                                key={item.href}
+                                label={item.label}
+                                href={item.href}
+                                icon={item.icon}
+                                active={activeSection === item.section}
+                            />
+                        ))}
+                    </div>
                 </div>
 
-                {/* Afiliado */}
-                <div className="mb-6">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Afiliado</p>
+                {/* Afiliado (exclusivo ClickBanker) */}
+                <div className="mb-5" role="group" aria-labelledby="nav-afiliado">
+                    <p id="nav-afiliado" className="text-[10px] font-bold text-ink-faint uppercase tracking-widest px-3 mb-1.5">Afiliado</p>
                     {afiliadoItems.map(item => (
                         <NavLink key={item.href} item={item} active={activeSection === item.section} />
                     ))}
                 </div>
 
-                {/* Plugins */}
-                <div className="mb-6">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Plugins</p>
-                    {pluginItems.map(item => (
+                {/* Páginas */}
+                <div className="mb-5" role="group" aria-labelledby="nav-paginas">
+                    <p id="nav-paginas" className="text-[10px] font-bold text-ink-faint uppercase tracking-widest px-3 mb-1.5">Páginas</p>
+                    {pageItems.map(item => (
                         <NavLink key={item.href} item={item} active={activeSection === item.section} />
                     ))}
                 </div>
 
-                {/* Configurações */}
-                <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Sistema</p>
+                {/* Plugins + Config */}
+                <div role="group" aria-labelledby="nav-config">
+                    <p id="nav-config" className="text-[10px] font-bold text-ink-faint uppercase tracking-widest px-3 mb-1.5">Configurações</p>
+                    <NavLink item={{ label: 'Plugins', href: '/admin/plugins', icon: Package, section: 'plugins' }} active={activeSection === 'plugins'} />
                     <NavLink item={{ label: 'Configurações', href: '/admin/config', icon: Settings, section: 'config' }} active={activeSection === 'config'} />
                     <NavLink item={{ label: 'Backup', href: '/admin/backup', icon: FileArchive, section: 'backup' }} active={activeSection === 'backup'} />
                 </div>
             </nav>
 
-            {/* Ver site + Logout */}
-            <div className="p-3 border-t border-slate-100 space-y-1">
+            {/* Rodapé */}
+            <div className="p-3 border-t border-border space-y-0.5">
                 <a
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition-all group"
+                    aria-label="Ver site publicado (abre em nova aba)"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded text-ink-muted hover:text-primary hover:bg-primary-soft transition-colors"
                 >
-                    <ExternalLink className="w-4 h-4 shrink-0 group-hover:text-amber-600" />
+                    <ExternalLink className="w-4 h-4 shrink-0" aria-hidden="true" />
                     <span className="text-sm font-medium">Ver site</span>
                 </a>
                 <a
                     href="/api/admin/logout"
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all group"
+                    aria-label="Sair do painel"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded text-ink-muted hover:text-red-700 hover:bg-red-50 transition-colors"
                 >
-                    <LogOut className="w-4 h-4 shrink-0 group-hover:text-red-500" />
+                    <LogOut className="w-4 h-4 shrink-0" aria-hidden="true" />
                     <span className="text-sm font-medium">Sair</span>
                 </a>
             </div>
@@ -133,15 +192,29 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
     return (
         <a
             href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 transition-all group ${
-                active
-                    ? 'bg-amber-50 text-amber-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            aria-current={active ? 'page' : undefined}
+            className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded mb-0.5 transition-colors ${
+                active ? 'bg-primary-soft text-primary' : 'text-ink-muted hover:text-ink hover:bg-elev'
             }`}
         >
-            <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-amber-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-            <span className={`text-sm font-medium flex-1 ${active ? 'font-semibold' : ''}`}>{item.label}</span>
-            {active && <ChevronRight className="w-3 h-3 text-amber-400" />}
+            <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-primary' : 'text-ink-faint'}`} aria-hidden="true" />
+            <span className={`text-sm flex-1 ${active ? 'font-semibold' : 'font-medium'}`}>{item.label}</span>
+            {active && <ChevronRight className="w-3 h-3 text-primary/60" aria-hidden="true" />}
+        </a>
+    );
+}
+
+function SubNavLink({ label, href, icon: Icon, active }: { label: string; href: string; icon: React.ElementType; active: boolean }) {
+    return (
+        <a
+            href={href}
+            aria-current={active ? 'page' : undefined}
+            className={`flex items-center gap-2.5 px-3 py-2 min-h-[40px] rounded transition-colors text-xs ${
+                active ? 'bg-primary-soft text-primary font-semibold' : 'text-ink-faint hover:text-ink-muted hover:bg-elev font-medium'
+            }`}
+        >
+            <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+            {label}
         </a>
     );
 }

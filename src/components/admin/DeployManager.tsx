@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Rocket, AlertCircle, CheckCircle2, Loader2, Clock, X } from 'lucide-react';
 
 type Status = {
@@ -71,7 +71,7 @@ export default function DeployManager() {
             if (!r.ok) {
                 if (r.status === 401) return;
                 setUi('error');
-                setErrorMsg('Não foi possível verificar status do deploy.');
+                setErrorMsg('Não conseguimos verificar as alterações pendentes. Tente novamente em instantes.');
                 return;
             }
             const data = await r.json() as Status;
@@ -174,7 +174,7 @@ export default function DeployManager() {
 
     if (showSuccess) {
         return (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-6 flex items-center gap-3">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-md px-4 py-3 mb-6 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <p className="text-sm text-emerald-800 font-medium">Deploy iniciado! O site será atualizado em ~1 minuto.</p>
             </div>
@@ -183,10 +183,10 @@ export default function DeployManager() {
 
     if (ui === 'not_configured') {
         return (
-            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6 flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-slate-500 shrink-0" />
-                <p className="text-sm text-slate-700">
-                    Deploy manual ainda não está configurado neste site. Contate o suporte para ativar.
+            <div className="bg-elev border border-border rounded-md px-4 py-3 mb-6 flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-ink-muted shrink-0" />
+                <p className="text-sm text-ink">
+                    Publicação automática ainda não está ativa neste blog. Fale com o suporte para habilitar.
                 </p>
             </div>
         );
@@ -194,7 +194,7 @@ export default function DeployManager() {
 
     if (ui === 'error') {
         return (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-6 flex items-center justify-between gap-4">
+            <div className="bg-red-50 border border-red-200 rounded-md px-4 py-3 mb-6 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
                     <div>
@@ -209,7 +209,7 @@ export default function DeployManager() {
 
     if (ui === 'deploying') {
         return (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-6 flex items-center gap-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3 mb-6 flex items-center gap-3">
                 <Loader2 className="w-5 h-5 text-blue-600 shrink-0 animate-spin" />
                 <div className="flex-1">
                     <p className="text-sm font-semibold text-blue-900">Publicando no ar...</p>
@@ -222,15 +222,15 @@ export default function DeployManager() {
     if (ui === 'snoozed') {
         const minsLeft = Math.max(1, Math.round((snoozedUntil - Date.now()) / 60000));
         return (
-            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 mb-6 flex items-center justify-between gap-4">
+            <div className="bg-elev border border-border rounded-md px-4 py-2.5 mb-6 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-500 shrink-0" />
-                    <p className="text-xs text-slate-600">
+                    <Clock className="w-4 h-4 text-ink-muted shrink-0" />
+                    <p className="text-xs text-ink-muted">
                         Aviso de deploy oculto por ~{minsLeft >= 60 ? `${Math.round(minsLeft/60)}h` : `${minsLeft}min`}.
                         Suas alterações ainda não estão no ar.
                     </p>
                 </div>
-                <button onClick={unsnooze} className="text-xs font-medium text-violet-700 hover:text-violet-900 underline">Mostrar agora</button>
+                <button onClick={unsnooze} className="text-xs font-medium text-primary hover:text-violet-900 underline">Mostrar agora</button>
             </div>
         );
     }
@@ -239,7 +239,7 @@ export default function DeployManager() {
     const count = status?.pendingCommits ?? 0;
     const lastMsg = status?.lastCommitMessage ?? '';
     return (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
+        <div className="bg-amber-50 border border-amber-200 rounded-md px-4 py-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-start gap-3 min-w-0 flex-1">
                 <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="min-w-0">
@@ -263,7 +263,7 @@ export default function DeployManager() {
                     onClick={triggerDeploy}
                     className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors"
                 >
-                    <Rocket className="w-4 h-4" />
+                    <Rocket className="w-4 h-4" aria-hidden="true" />
                     Fazer Deploy
                 </button>
             </div>

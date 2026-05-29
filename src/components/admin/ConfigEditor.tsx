@@ -66,8 +66,8 @@ export default function ConfigEditor() {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
-            <Loader2 className="w-8 h-8 animate-spin mb-4 text-violet-500" />
+        <div className="flex flex-col items-center justify-center p-20 text-ink-faint bg-white rounded-3xl border border-border">
+            <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
             <p className="font-medium animate-pulse">Conectando ao Repositório...</p>
         </div>
     );
@@ -79,8 +79,8 @@ export default function ConfigEditor() {
         </div>
     );
 
-    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm text-slate-800 font-medium";
-    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
+    const inputClass = "w-full bg-white border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm text-ink font-medium";
+    const labelClass = "block text-sm font-bold text-ink-muted uppercase tracking-wider mb-2 ml-1";
 
     const presetThemes = [
         { name: 'Rosa Original', primary: '#FE4F70', accent: '#FFA387', dark: '#203656' },
@@ -94,12 +94,12 @@ export default function ConfigEditor() {
     return (
         <form onSubmit={handleSave} className="space-y-8 pb-32 max-w-3xl">
             {/* Action Bar */}
-            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-border shadow-sm">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-800">Configurações Gerais</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">src/data/siteConfig.json</code></p>
+                    <h2 className="text-lg font-bold text-ink">Configurações Gerais</h2>
+                    <p className="text-xs text-ink-muted mt-0.5">Edita o arquivo <code className="bg-elev px-1 rounded">src/data/siteConfig.json</code></p>
                 </div>
-                <button type="submit" disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 shadow-sm shadow-violet-600/20 transition-all">
+                <button type="submit" disabled={saving} className="bg-primary hover:bg-primary disabled:bg-rule disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 shadow-sm shadow-primary/20 transition-all">
                     {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                     {saving ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
@@ -108,13 +108,13 @@ export default function ConfigEditor() {
             {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200 flex gap-3"><AlertCircle className="w-5 h-5 shrink-0" /> {error}</div>}
 
             {/* Identidade */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Identidade Base</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Identidade Base</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="md:col-span-2 flex flex-col sm:flex-row gap-8 items-start">
                         <div className="w-full sm:w-1/3">
                             <label className={labelClass}>Logo Principal</label>
-                            <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
+                            <label className="group relative border-2 border-dashed border-rule hover:border-primary bg-elev hover:bg-primary-soft/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
                                 <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) { setPendingLogo(file); setConfig({ ...config, logo: URL.createObjectURL(file) }); }
@@ -122,25 +122,25 @@ export default function ConfigEditor() {
                                 {config?.logo ? (
                                     <img src={config.logo} alt="Logo" className="max-h-24 w-auto object-contain mb-4 group-hover:scale-105 transition-transform" />
                                 ) : (
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-300 shadow-sm mb-3 group-hover:text-violet-500 transition-colors">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-rule shadow-sm mb-3 group-hover:text-primary transition-colors">
                                         <ImageIcon className="w-8 h-8" />
                                     </div>
                                 )}
-                                <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700 transition-colors">
+                                <span className="text-sm font-semibold text-ink-muted group-hover:text-primary transition-colors">
                                     {config?.logo ? 'Trocar Logo' : 'Enviar Logo (PNG/SVG)'}
                                 </span>
                             </label>
                             <div className="mt-3">
-                                <label className="text-xs font-semibold text-slate-600 flex justify-between mb-1">
+                                <label className="text-xs font-semibold text-ink-muted flex justify-between mb-1">
                                     <span>Tamanho da logo (header)</span>
-                                    <span className="font-mono text-violet-600">{config?.logoHeight ?? 40}px</span>
+                                    <span className="font-mono text-primary">{config?.logoHeight ?? 40}px</span>
                                 </label>
-                                <input type="range" min={24} max={120} step={2} value={config?.logoHeight ?? 40} onChange={e => setConfig({ ...config, logoHeight: Number(e.target.value) })} className="w-full accent-violet-500" />
+                                <input type="range" min={24} max={120} step={2} value={config?.logoHeight ?? 40} onChange={e => setConfig({ ...config, logoHeight: Number(e.target.value) })} className="w-full accent-primary" />
                             </div>
                         </div>
                         <div className="w-full sm:w-1/3">
                             <label className={labelClass}>Favicon</label>
-                            <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
+                            <label className="group relative border-2 border-dashed border-rule hover:border-primary bg-elev hover:bg-primary-soft/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
                                 <input type="file" accept="image/png,image/svg+xml,image/x-icon,image/ico" className="hidden" onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) { setPendingFavicon(file); setConfig({ ...config, favicon: URL.createObjectURL(file) }); }
@@ -148,12 +148,12 @@ export default function ConfigEditor() {
                                 {config?.favicon ? (
                                     <img src={config.favicon} alt="Favicon" className="max-h-16 w-auto object-contain mb-4 group-hover:scale-105 transition-transform" />
                                 ) : (
-                                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-slate-300 shadow-sm mb-3 group-hover:text-violet-500 transition-colors text-2xl">⭐</div>
+                                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-rule shadow-sm mb-3 group-hover:text-primary transition-colors text-2xl">⭐</div>
                                 )}
-                                <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700 transition-colors">
+                                <span className="text-sm font-semibold text-ink-muted group-hover:text-primary transition-colors">
                                     {config?.favicon ? 'Trocar Favicon' : 'Enviar Favicon'}
                                 </span>
-                                <span className="text-[10px] text-slate-400 mt-1">PNG, SVG ou ICO</span>
+                                <span className="text-[10px] text-ink-faint mt-1">PNG, SVG ou ICO</span>
                             </label>
                         </div>
                     </div>
@@ -175,7 +175,7 @@ export default function ConfigEditor() {
                                         key={preset.name}
                                         type="button"
                                         onClick={() => setConfig({ ...config, theme: { ...config.theme, primary: preset.primary, accent: preset.accent, dark: preset.dark } })}
-                                        className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50 transition-all text-sm font-semibold text-slate-700"
+                                        className="flex items-center gap-2 px-3 py-2 bg-elev border border-border rounded-xl hover:border-primary hover:bg-primary-soft transition-all text-sm font-semibold text-ink-muted"
                                     >
                                         <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.primary }} />
                                         <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.accent }} />
@@ -193,9 +193,9 @@ export default function ConfigEditor() {
                             ].map(f => (
                                 <div key={f.key}>
                                     <label className={labelClass}>{f.label}</label>
-                                    <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                    <div className="flex gap-4 p-2 bg-elev border border-border rounded-xl">
                                         <input type="color" value={config?.theme?.[f.key] || '#000000'} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
-                                        <input type="text" value={config?.theme?.[f.key] || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
+                                        <input type="text" value={config?.theme?.[f.key] || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-ink-muted font-bold" />
                                     </div>
                                 </div>
                             ))}
@@ -229,10 +229,10 @@ export default function ConfigEditor() {
             </div>
 
             {/* Prefixo da URL dos Posts */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-2 border-b border-slate-100 pb-4">Estrutura da URL dos posts</h3>
-                <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-                    Quando você muda essa opção, as URLs antigas ganham redirect 301 automático no <code className="bg-slate-100 px-1 rounded">vercel.json</code>. SEO preservado.
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-2 border-b border-elev pb-4">Estrutura da URL dos posts</h3>
+                <p className="text-xs text-ink-muted mb-6 leading-relaxed">
+                    Quando você muda essa opção, as URLs antigas ganham redirect 301 automático no <code className="bg-elev px-1 rounded">vercel.json</code>. SEO preservado.
                 </p>
                 <div className="flex gap-2">
                     {[
@@ -242,13 +242,13 @@ export default function ConfigEditor() {
                         const current = config?.postUrlPrefix ?? '';
                         const active = current === opt.value;
                         return (
-                            <label key={opt.value} className={`relative flex-1 p-4 border-2 rounded-xl cursor-pointer transition-all text-center ${active ? 'border-amber-500 bg-amber-50 shadow-sm' : 'border-slate-200 hover:border-slate-300'}`}>
+                            <label key={opt.value} className={`relative flex-1 p-4 border-2 rounded-xl cursor-pointer transition-all text-center ${active ? 'border-primary bg-primary-soft shadow-sm' : 'border-border hover:border-rule'}`}>
                                 <input type="radio" name="postUrlPrefix" value={opt.value} checked={active} onChange={e => setConfig({ ...config, postUrlPrefix: e.target.value })} className="hidden" />
                                 {opt.recommended && (
-                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-600 text-white">recomendado</span>
+                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary text-white">recomendado</span>
                                 )}
-                                <p className="text-sm font-mono font-bold text-slate-800 mt-1">{opt.label}</p>
-                                <p className="text-[11px] text-slate-500 mt-1">{opt.desc}</p>
+                                <p className="text-sm font-mono font-bold text-ink mt-1">{opt.label}</p>
+                                <p className="text-[11px] text-ink-muted mt-1">{opt.desc}</p>
                             </label>
                         );
                     })}
@@ -256,20 +256,20 @@ export default function ConfigEditor() {
             </div>
 
             {/* Exibição dos Posts */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Exibição dos Posts</h3>
-                <label className="flex items-center justify-between gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:border-violet-400 transition-all">
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Exibição dos Posts</h3>
+                <label className="flex items-center justify-between gap-4 p-4 bg-elev border border-border rounded-xl cursor-pointer hover:border-primary transition-all">
                     <div>
-                        <p className="text-sm font-bold text-slate-800">Ocultar data de publicação</p>
-                        <p className="text-xs text-slate-500">Esconde a data nos cards e na página dos artigos</p>
+                        <p className="text-sm font-bold text-ink">Ocultar data de publicação</p>
+                        <p className="text-xs text-ink-muted">Esconde a data nos cards e na página dos artigos</p>
                     </div>
-                    <input type="checkbox" checked={!!config?.hidePostDate} onChange={e => setConfig({ ...config, hidePostDate: e.target.checked })} className="w-5 h-5 accent-violet-500" />
+                    <input type="checkbox" checked={!!config?.hidePostDate} onChange={e => setConfig({ ...config, hidePostDate: e.target.checked })} className="w-5 h-5 accent-primary" />
                 </label>
             </div>
 
             {/* Informações de Contato */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Informações de Contato</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Informações de Contato</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* URL do site — nível raiz do siteConfig */}
                     <div>
@@ -297,8 +297,8 @@ export default function ConfigEditor() {
             </div>
 
             {/* Redes Sociais */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Redes Sociais (Rodapé)</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Redes Sociais (Rodapé)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {['instagram', 'twitter', 'linkedin', 'github', 'youtube', 'facebook', 'pinterest'].map(social => (
                         <div key={social}>
@@ -310,9 +310,9 @@ export default function ConfigEditor() {
             </div>
 
             {/* Feed do Instagram (home) */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-2 border-b border-slate-100 pb-4">Galeria do Instagram (rodapé do site)</h3>
-                <p className="text-sm text-slate-500 mb-6">Cole até 6 URLs de imagens (ex: capturas dos seus posts no Instagram). Se vazio, mostra placeholders. Cada imagem linka pro perfil definido em Redes Sociais &gt; instagram.</p>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-2 border-b border-elev pb-4">Galeria do Instagram (rodapé do site)</h3>
+                <p className="text-sm text-ink-muted mb-6">Cole até 6 URLs de imagens (ex: capturas dos seus posts no Instagram). Se vazio, mostra placeholders. Cada imagem linka pro perfil definido em Redes Sociais &gt; instagram.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Array.from({ length: 6 }).map((_, i) => {
                         const arr = Array.isArray(config?.instagramFeed) ? config.instagramFeed : [];
@@ -328,12 +328,12 @@ export default function ConfigEditor() {
                             setConfig({ ...config, instagramFeed: next });
                         };
                         return (
-                            <div key={i} className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
+                            <div key={i} className="bg-elev border border-border rounded-lg p-3 space-y-2">
                                 <div className="flex items-center gap-3">
                                     {src ? (
-                                        <img src={src} alt={`Insta ${i+1}`} className="w-14 h-14 rounded-md object-cover border border-slate-200" />
+                                        <img src={src} alt={`Insta ${i+1}`} className="w-14 h-14 rounded-md object-cover border border-border" />
                                     ) : (
-                                        <div className="w-14 h-14 rounded-md bg-slate-200 flex items-center justify-center text-slate-400 text-xs">{i+1}</div>
+                                        <div className="w-14 h-14 rounded-md bg-border flex items-center justify-center text-ink-faint text-xs">{i+1}</div>
                                     )}
                                     <div className="flex-1 space-y-2">
                                         <input type="url" placeholder="URL da imagem" value={src} onChange={e => updateItem('src', e.target.value)} className={`${inputClass} font-mono text-xs`} />
@@ -347,8 +347,8 @@ export default function ConfigEditor() {
             </div>
 
             {/* Rodape (Footer) */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Rodape (Footer)</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Rodape (Footer)</h3>
                 <div className="space-y-4">
                     <div><label className={labelClass}>Descricao do Footer</label><textarea rows={3} placeholder="Texto que aparece no rodape do site" value={config?.footer?.description || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
                     <div><label className={labelClass}>Texto de Copyright</label><input type="text" placeholder="Nome da empresa ou site" value={config?.footer?.copyright || ''} onChange={e => setConfig({ ...config, footer: { ...config.footer, copyright: e.target.value } })} className={inputClass} /></div>
@@ -356,8 +356,8 @@ export default function ConfigEditor() {
             </div>
 
             {/* SEO Global */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">SEO Global</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">SEO Global</h3>
                 <div className="space-y-4">
                     <div><label className={labelClass}>Título Padrão (SEO)</label><input type="text" value={config?.seo?.title || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, title: e.target.value } })} className={inputClass} /></div>
                     <div><label className={labelClass}>Descrição Padrão</label><textarea rows={3} value={config?.seo?.description || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
@@ -365,8 +365,8 @@ export default function ConfigEditor() {
             </div>
 
             {/* Sitemap */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Sitemap</h3>
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-8 border-b border-elev pb-4">Sitemap</h3>
                 <div className="space-y-4">
                     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                         <p className="text-sm font-bold text-emerald-700 mb-1">Sitemap XML gerado automaticamente</p>
@@ -377,11 +377,11 @@ export default function ConfigEditor() {
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                                     {config.url.replace(/\/$/, '')}/sitemap-index.xml
                                 </a>
-                                <p className="text-xs text-slate-500">Use esta URL no Google Search Console para enviar seu sitemap.</p>
+                                <p className="text-xs text-ink-muted">Use esta URL no Google Search Console para enviar seu sitemap.</p>
                             </div>
                         ) : (
-                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                                <p className="text-xs text-amber-700 font-medium">Configure a URL do Site acima para ver o link do sitemap.</p>
+                            <div className="bg-primary-soft border border-primary-soft rounded-lg p-3">
+                                <p className="text-xs text-primary font-medium">Configure a URL do Site acima para ver o link do sitemap.</p>
                             </div>
                         )}
                     </div>
@@ -389,23 +389,23 @@ export default function ConfigEditor() {
             </div>
 
             {/* Robots.txt */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">🤖 Robots.txt</h3>
-                <p className="text-sm text-slate-500 mb-6 border-b border-slate-100 pb-4">
-                    Controla quais páginas os buscadores (Google, Bing) podem indexar. <code className="bg-slate-100 px-1 rounded">/admin</code> e <code className="bg-slate-100 px-1 rounded">/api</code> já são bloqueados por padrão. O sitemap é linkado automaticamente.
+            <div className="p-8 bg-white border border-border rounded-2xl shadow-sm">
+                <h3 className="text-xl font-bold text-ink mb-2 flex items-center gap-2">🤖 Robots.txt</h3>
+                <p className="text-sm text-ink-muted mb-6 border-b border-elev pb-4">
+                    Controla quais páginas os buscadores (Google, Bing) podem indexar. <code className="bg-elev px-1 rounded">/admin</code> e <code className="bg-elev px-1 rounded">/api</code> já são bloqueados por padrão. O sitemap é linkado automaticamente.
                 </p>
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center justify-between p-4 bg-elev border border-border rounded-xl">
                         <div>
-                            <label className="text-sm font-bold text-slate-700">Bloquear todos os buscadores</label>
-                            <p className="text-xs text-slate-500 mt-0.5">Use no modo desenvolvimento — impede Google/Bing de indexar o site enquanto você ajusta. Desligue antes de divulgar.</p>
+                            <label className="text-sm font-bold text-ink-muted">Bloquear todos os buscadores</label>
+                            <p className="text-xs text-ink-muted mt-0.5">Use no modo desenvolvimento — impede Google/Bing de indexar o site enquanto você ajusta. Desligue antes de divulgar.</p>
                         </div>
                         <button
                             type="button"
                             role="switch"
                             aria-checked={!!config?.robots?.noindex}
                             onClick={() => setConfig({ ...config, robots: { ...(config?.robots || {}), noindex: !config?.robots?.noindex } })}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ml-4 ${config?.robots?.noindex ? 'bg-red-600' : 'bg-slate-300'}`}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ml-4 ${config?.robots?.noindex ? 'bg-red-600' : 'bg-rule'}`}
                         >
                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config?.robots?.noindex ? 'translate-x-6' : 'translate-x-1'}`} />
                         </button>
@@ -426,13 +426,13 @@ export default function ConfigEditor() {
                                 placeholder="/promocao-secreta&#10;/area-restrita"
                                 className={`${inputClass} font-mono resize-y`}
                             />
-                            <p className="text-[11px] text-slate-400 mt-1">Outras páginas que você quer esconder dos buscadores (ex: páginas de promoção temporária).</p>
+                            <p className="text-[11px] text-ink-faint mt-1">Outras páginas que você quer esconder dos buscadores (ex: páginas de promoção temporária).</p>
                         </div>
                     )}
                     {config?.url ? (
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                            <p className="text-xs font-bold text-slate-500 mb-2">Preview / Verificar:</p>
-                            <a href={`${config.url.replace(/\/$/, '')}/robots.txt`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-violet-600 transition-colors">
+                        <div className="bg-elev border border-border rounded-xl p-4">
+                            <p className="text-xs font-bold text-ink-muted mb-2">Preview / Verificar:</p>
+                            <a href={`${config.url.replace(/\/$/, '')}/robots.txt`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-ink-muted hover:text-primary transition-colors">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                                 {config.url.replace(/\/$/, '')}/robots.txt
                             </a>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle, Loader2, Plus, Trash2, Edit2, Package, X, ExternalLink, Star, MousePointerClick, Upload, Link2, ImageIcon } from 'lucide-react';
+import { Save, AlertCircle, Loader2, Plus, Trash2, Edit2, Package, X, ExternalLink, Star, MousePointerClick, Upload, Link2 } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
+import { confirmDialog } from './CmsDialog';
 import { githubApi } from '../../lib/adminApi';
 
 interface Product {
@@ -158,8 +159,8 @@ export default function ProductsManager() {
 
   const saveModal = async () => {
     if (!temp) return;
-    if (!temp.name.trim()) { alert('Nome é obrigatório'); return; }
-    if (!temp.hoplink.trim()) { alert('Hoplink é obrigatório'); return; }
+    if (!temp.name.trim()) { triggerToast('Nome é obrigatório', 'error'); return; }
+    if (!temp.hoplink.trim()) { triggerToast('Hoplink é obrigatório', 'error'); return; }
     if (!temp.slug.trim()) temp.slug = slugify(temp.name);
 
     let finalTemp = { ...temp };
@@ -200,7 +201,7 @@ export default function ProductsManager() {
   };
 
   const removeProduct = async (i: number) => {
-    if (!confirm(`Excluir "${products[i].name}"?`)) return;
+    if (!(await confirmDialog({ title: `Excluir "${products[i].name}"?`, message: 'Esta ação não pode ser desfeita.', confirmLabel: 'Excluir', danger: true }))) return;
     const arr = products.filter((_, idx) => idx !== i);
     setProducts(arr);
     await saveToGithub(arr);
@@ -214,22 +215,22 @@ export default function ProductsManager() {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center p-20 text-slate-400 bg-white rounded-2xl border border-slate-200">
-      <Loader2 className="w-8 h-8 animate-spin mb-4 text-amber-500" />
+    <div className="flex flex-col items-center justify-center p-20 text-ink-faint bg-white rounded-2xl border border-border">
+      <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
       <p className="font-medium animate-pulse">Carregando produtos...</p>
     </div>
   );
 
   return (
     <div className="space-y-6 pb-32">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 px-7 rounded-2xl border border-slate-200 shadow-sm sticky top-0 z-40">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 px-7 rounded-2xl border border-border shadow-sm sticky top-0 z-40">
         <div>
-          <h2 className="text-lg font-bold text-slate-800">Banco de Produtos</h2>
-          <p className="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+          <h2 className="text-lg font-bold text-ink">Banco de Produtos</h2>
+          <p className="text-xs text-ink-muted mt-1 flex items-center gap-2 flex-wrap">
             <span><span className="font-bold">{products.filter(p => p.active).length}</span> ativos</span>
-            <span className="text-slate-400">·</span>
+            <span className="text-ink-faint">·</span>
             <span><span className="font-bold">{products.length}</span> total</span>
-            <span className="text-slate-400">·</span>
+            <span className="text-ink-faint">·</span>
             <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
               <MousePointerClick className="w-3 h-3" />
               <span className="tabular-nums font-bold">{totalAllTime}</span> clicks
@@ -237,16 +238,16 @@ export default function ProductsManager() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {saving && <Loader2 className="w-4 h-4 animate-spin text-amber-600" />}
+          {saving && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
           <button
             onClick={loadClicks}
             title="Atualizar contagem de clicks"
-            className="p-2 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+            className="p-2 text-ink-muted hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
           >
             <MousePointerClick className="w-4 h-4" />
           </button>
           <button onClick={() => { setTemp({ ...EMPTY_PRODUCT }); setEditingIndex(null); setPendingImageFile(null); setImagePreview(''); setImageError(''); setImageTab('upload'); setIsModalOpen(true); }} disabled={saving}
-            className="bg-slate-800 hover:bg-amber-600 disabled:bg-slate-300 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm transition-all">
+            className="bg-ink hover:bg-primary disabled:bg-rule text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm transition-all">
             <Plus className="w-4 h-4" /> Novo produto
           </button>
         </div>
@@ -255,43 +256,43 @@ export default function ProductsManager() {
       {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm font-medium"><AlertCircle className="w-4 h-4 inline mr-2" /> {error}</div>}
 
       {products.length === 0 ? (
-        <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-16 flex flex-col items-center text-center">
-          <Package className="w-16 h-16 text-slate-300 mb-4" />
-          <h3 className="text-xl font-bold text-slate-700 mb-2">Nenhum produto cadastrado</h3>
-          <p className="text-slate-500 max-w-sm mb-6">Cadastre um produto pra usar como referência em posts via slug e ter tracking de clicks via /go/&lt;slug&gt;.</p>
+        <div className="bg-elev border-2 border-dashed border-rule rounded-3xl p-16 flex flex-col items-center text-center">
+          <Package className="w-16 h-16 text-rule mb-4" />
+          <h3 className="text-xl font-bold text-ink-muted mb-2">Nenhum produto cadastrado</h3>
+          <p className="text-ink-muted max-w-sm mb-6">Cadastre um produto pra usar como referência em posts via slug e ter tracking de clicks via /go/&lt;slug&gt;.</p>
           <button onClick={() => { setTemp({ ...EMPTY_PRODUCT }); setEditingIndex(null); setPendingImageFile(null); setImagePreview(''); setImageError(''); setImageTab('upload'); setIsModalOpen(true); }}
-            className="bg-slate-800 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2">
+            className="bg-ink hover:bg-primary text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2">
             <Plus className="w-4 h-4" /> Adicionar primeiro produto
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
           <table className="w-full text-left">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-elev border-b border-border">
               <tr>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Produto</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Categoria</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Preço</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Rating</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Clicks</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Sidebar</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
-                <th className="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Ações</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider">Produto</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider">Categoria</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider">Preço</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider text-center">Rating</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider text-center">Clicks</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider text-center">Sidebar</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider text-center">Status</th>
+                <th className="py-3 px-5 text-xs font-bold text-ink-muted uppercase tracking-wider text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-elev">
               {products.map((p, idx) => (
-                <tr key={p.slug} className={`hover:bg-slate-50 transition-colors ${!p.active ? 'opacity-50' : ''}`}>
+                <tr key={p.slug} className={`hover:bg-elev transition-colors ${!p.active ? 'opacity-50' : ''}`}>
                   <td className="py-4 px-5">
                     <div>
-                      <p className="font-bold text-slate-800 text-sm leading-tight">{p.name}</p>
-                      <p className="text-xs text-slate-400 mt-0.5 font-mono">{p.slug}</p>
+                      <p className="font-bold text-ink text-sm leading-tight">{p.name}</p>
+                      <p className="text-xs text-ink-faint mt-0.5 font-mono">{p.slug}</p>
                     </div>
                   </td>
-                  <td className="py-4 px-5 text-xs text-slate-600">{p.category || '—'}</td>
-                  <td className="py-4 px-5 text-sm font-bold text-amber-700">{p.price}</td>
+                  <td className="py-4 px-5 text-xs text-ink-muted">{p.category || '—'}</td>
+                  <td className="py-4 px-5 text-sm font-bold text-primary">{p.price}</td>
                   <td className="py-4 px-5 text-center">
-                    {p.rating ? <span className="text-amber-600 font-bold text-sm"><Star className="w-3 h-3 inline mr-1 -mt-0.5" />{p.rating}</span> : <span className="text-slate-300">—</span>}
+                    {p.rating ? <span className="text-primary font-bold text-sm"><Star className="w-3 h-3 inline mr-1 -mt-0.5" />{p.rating}</span> : <span className="text-rule">—</span>}
                   </td>
                   <td className="py-4 px-5 text-center">
                     {(() => {
@@ -302,24 +303,24 @@ export default function ProductsManager() {
                           {n}
                         </span>
                       ) : (
-                        <span className="text-slate-300 text-xs">—</span>
+                        <span className="text-rule text-xs">—</span>
                       );
                     })()}
                   </td>
                   <td className="py-4 px-5 text-center">
-                    {p.featuredInSidebar ? <span className="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase px-2 py-1 rounded">Featured</span> : <span className="text-slate-300">—</span>}
+                    {p.featuredInSidebar ? <span className="bg-primary-soft text-primary text-[10px] font-bold uppercase px-2 py-1 rounded">Featured</span> : <span className="text-rule">—</span>}
                   </td>
                   <td className="py-4 px-5 text-center">
-                    <button onClick={() => toggleActive(idx)} className={`text-[10px] font-bold uppercase px-2 py-1 rounded ${p.active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-500'}`}>
+                    <button onClick={() => toggleActive(idx)} className={`text-[10px] font-bold uppercase px-2 py-1 rounded ${p.active ? 'bg-green-100 text-green-800' : 'bg-elev text-ink-muted'}`}>
                       {p.active ? 'Ativo' : 'Inativo'}
                     </button>
                   </td>
                   <td className="py-4 px-5 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <a href={`/go/${p.slug}`} target="_blank" rel="noopener" className="w-8 h-8 bg-slate-100 text-slate-500 rounded-lg inline-flex items-center justify-center hover:bg-slate-200" title="Abrir link">
+                      <a href={`/go/${p.slug}`} target="_blank" rel="noopener" className="w-8 h-8 bg-elev text-ink-muted rounded-lg inline-flex items-center justify-center hover:bg-border" title="Abrir link">
                         <ExternalLink className="w-4 h-4" />
                       </a>
-                      <button onClick={() => { setTemp({ ...p }); setEditingIndex(idx); setPendingImageFile(null); setImagePreview(''); setImageError(''); setImageTab(p.image && /^https?:/.test(p.image) ? 'url' : 'upload'); setIsModalOpen(true); }} className="w-8 h-8 bg-slate-100 text-slate-500 rounded-lg inline-flex items-center justify-center hover:bg-amber-100 hover:text-amber-700">
+                      <button onClick={() => { setTemp({ ...p }); setEditingIndex(idx); setPendingImageFile(null); setImagePreview(''); setImageError(''); setImageTab(p.image && /^https?:/.test(p.image) ? 'url' : 'upload'); setIsModalOpen(true); }} className="w-8 h-8 bg-elev text-ink-muted rounded-lg inline-flex items-center justify-center hover:bg-primary-soft hover:text-primary">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button onClick={() => removeProduct(idx)} className="w-8 h-8 bg-red-50 text-red-500 rounded-lg inline-flex items-center justify-center hover:bg-red-500 hover:text-white">
@@ -335,11 +336,11 @@ export default function ProductsManager() {
       )}
 
       {isModalOpen && temp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
-            <header className="flex items-center justify-between p-5 px-7 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="text-lg font-bold text-slate-800">{editingIndex !== null ? 'Editar produto' : 'Novo produto'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
+            <header className="flex items-center justify-between p-5 px-7 border-b border-elev bg-elev/50">
+              <h3 className="text-lg font-bold text-ink">{editingIndex !== null ? 'Editar produto' : 'Novo produto'}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="w-8 h-8 bg-elev hover:bg-border text-ink-muted rounded-full flex items-center justify-center"><X className="w-4 h-4" /></button>
             </header>
 
             <div className="p-6 px-7 overflow-y-auto space-y-5">
@@ -399,28 +400,28 @@ export default function ProductsManager() {
 
               {/* ===== Imagem do produto ===== */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                   Imagem do produto
                 </label>
-                <div className="bg-amber-50/50 border border-amber-200 rounded-xl p-3 mb-2">
-                  <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
+                <div className="bg-primary-soft/50 border border-primary-soft rounded-xl p-3 mb-2">
+                  <p className="text-[11px] text-primary font-medium leading-relaxed">
                     <strong>Recomendado:</strong> 600×400px (proporção 3:2). Formato JPG, PNG ou WebP. Máximo 500KB.
                   </p>
                 </div>
 
                 {/* Tabs */}
-                <div className="inline-flex p-1 bg-slate-100 rounded-xl mb-3">
+                <div className="inline-flex p-1 bg-elev rounded-xl mb-3">
                   <button
                     type="button"
                     onClick={() => setImageTab('upload')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${imageTab === 'upload' ? 'bg-white text-amber-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${imageTab === 'upload' ? 'bg-white text-primary shadow-sm border border-border' : 'text-ink-muted hover:text-ink-muted'}`}
                   >
                     <Upload className="w-3.5 h-3.5" /> Upload
                   </button>
                   <button
                     type="button"
                     onClick={() => setImageTab('url')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${imageTab === 'url' ? 'bg-white text-amber-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${imageTab === 'url' ? 'bg-white text-primary shadow-sm border border-border' : 'text-ink-muted hover:text-ink-muted'}`}
                   >
                     <Link2 className="w-3.5 h-3.5" /> URL externa
                   </button>
@@ -433,18 +434,18 @@ export default function ProductsManager() {
                     onDragOver={(e) => e.preventDefault()}
                     className="relative"
                   >
-                    <label className="block border-2 border-dashed border-slate-300 hover:border-amber-400 bg-slate-50 hover:bg-amber-50/30 rounded-xl p-6 cursor-pointer transition-colors text-center">
+                    <label className="block border-2 border-dashed border-rule hover:border-primary bg-elev hover:bg-primary-soft/30 rounded-xl p-6 cursor-pointer transition-colors text-center">
                       <input
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,image/webp"
                         onChange={handleImageInputChange}
                         className="hidden"
                       />
-                      <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-slate-700">
+                      <Upload className="w-6 h-6 text-ink-faint mx-auto mb-2" />
+                      <p className="text-sm font-medium text-ink-muted">
                         Clique ou arraste imagem aqui
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1 font-mono uppercase">
+                      <p className="text-[10px] text-ink-faint mt-1 font-mono uppercase">
                         JPG · PNG · WebP — máx 500KB
                       </p>
                     </label>
@@ -474,7 +475,7 @@ export default function ProductsManager() {
                 {/* Preview */}
                 {(imagePreview || temp.image) && !imageError && (
                   <div className="mt-3 relative group">
-                    <div className="aspect-[3/2] w-full max-w-[300px] rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                    <div className="aspect-[3/2] w-full max-w-[300px] rounded-lg overflow-hidden bg-elev border border-border">
                       <img
                         src={imagePreview || temp.image}
                         alt="Preview"
@@ -491,7 +492,7 @@ export default function ProductsManager() {
                       <X className="w-3.5 h-3.5" />
                     </button>
                     {pendingImageFile && (
-                      <p className="text-[10px] text-amber-700 font-bold uppercase mt-2">
+                      <p className="text-[10px] text-primary font-bold uppercase mt-2">
                         ⬆ Upload pendente — vai ser enviado ao salvar
                       </p>
                     )}
@@ -522,8 +523,8 @@ export default function ProductsManager() {
               </div>
 
               {/* Admin only: comissão + gravity */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-3">Admin only (não aparece no site)</p>
+              <div className="bg-primary-soft border border-primary-soft rounded-xl p-4">
+                <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-3">Admin only (não aparece no site)</p>
                 <div className="grid grid-cols-2 gap-3">
                   <ModalField label="Comissão %">
                     <input type="number" value={temp.commission || 0} onChange={e => setTemp({ ...temp, commission: parseInt(e.target.value) || 0 })} className="modal-input" placeholder="50" />
@@ -537,19 +538,19 @@ export default function ProductsManager() {
               {/* Toggles */}
               <div className="flex items-center gap-6 pt-2">
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input type="checkbox" checked={temp.active} onChange={e => setTemp({ ...temp, active: e.target.checked })} className="w-4 h-4 accent-amber-600" />
-                  <span className="font-medium text-slate-700">Ativo (renderiza no site)</span>
+                  <input type="checkbox" checked={temp.active} onChange={e => setTemp({ ...temp, active: e.target.checked })} className="w-4 h-4 accent-primary" />
+                  <span className="font-medium text-ink-muted">Ativo (renderiza no site)</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input type="checkbox" checked={!!temp.featuredInSidebar} onChange={e => setTemp({ ...temp, featuredInSidebar: e.target.checked })} className="w-4 h-4 accent-amber-600" />
-                  <span className="font-medium text-slate-700">Featured (sidebar widget)</span>
+                  <input type="checkbox" checked={!!temp.featuredInSidebar} onChange={e => setTemp({ ...temp, featuredInSidebar: e.target.checked })} className="w-4 h-4 accent-primary" />
+                  <span className="font-medium text-ink-muted">Featured (sidebar widget)</span>
                 </label>
               </div>
             </div>
 
-            <footer className="p-5 px-7 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end">
-              <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl">Cancelar</button>
-              <button onClick={saveModal} className="px-6 py-2.5 text-sm font-bold bg-slate-800 hover:bg-amber-600 text-white rounded-xl flex items-center gap-2">
+            <footer className="p-5 px-7 border-t border-elev bg-elev flex gap-3 justify-end">
+              <button onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-sm font-bold text-ink-muted hover:bg-border rounded-xl">Cancelar</button>
+              <button onClick={saveModal} className="px-6 py-2.5 text-sm font-bold bg-ink hover:bg-primary text-white rounded-xl flex items-center gap-2">
                 <Save className="w-4 h-4" /> Salvar
               </button>
             </footer>
@@ -581,9 +582,9 @@ export default function ProductsManager() {
 function ModalField({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">{label}</label>
+      <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">{label}</label>
       {children}
-      {help && <p className="text-[10px] text-slate-400 mt-1">{help}</p>}
+      {help && <p className="text-[10px] text-ink-faint mt-1">{help}</p>}
     </div>
   );
 }
@@ -644,34 +645,34 @@ function ListItemsEditor({
   return (
     <div className="space-y-1.5 list-editor">
       {items.map((item, i) => (
-        <div key={i} className={`flex items-center gap-2 group bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-slate-300 transition-colors`}>
+        <div key={i} className={`flex items-center gap-2 group bg-white border border-border rounded-lg px-2.5 py-1.5 hover:border-rule transition-colors`}>
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.bullet}`}></span>
           <input
             type="text"
             value={item}
             onChange={(e) => update(i, e.target.value)}
             onKeyDown={(e) => handleEnterKey(e, i)}
-            className={`flex-1 bg-transparent text-xs text-slate-700 focus:outline-none ${colors.input}`}
+            className={`flex-1 bg-transparent text-xs text-ink-muted focus:outline-none ${colors.input}`}
           />
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
             <button
               type="button"
               onClick={() => move(i, -1)}
               disabled={i === 0}
-              className="w-5 h-5 text-slate-300 hover:text-slate-600 disabled:opacity-20 text-[9px] leading-none"
+              className="w-5 h-5 text-rule hover:text-ink-muted disabled:opacity-20 text-[9px] leading-none"
               title="Subir"
             >▲</button>
             <button
               type="button"
               onClick={() => move(i, 1)}
               disabled={i === items.length - 1}
-              className="w-5 h-5 text-slate-300 hover:text-slate-600 disabled:opacity-20 text-[9px] leading-none"
+              className="w-5 h-5 text-rule hover:text-ink-muted disabled:opacity-20 text-[9px] leading-none"
               title="Descer"
             >▼</button>
             <button
               type="button"
               onClick={() => remove(i)}
-              className="w-5 h-5 text-slate-300 hover:text-red-600 leading-none flex items-center justify-center"
+              className="w-5 h-5 text-rule hover:text-red-600 leading-none flex items-center justify-center"
               title="Remover"
             >
               <X className="w-3 h-3" />

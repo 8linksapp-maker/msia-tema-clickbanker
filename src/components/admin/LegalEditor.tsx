@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, Loader2, Plus, Trash2, FileText, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
+import { confirmDialog } from './CmsDialog';
 import { githubApi } from '../../lib/adminApi';
 
 interface LegalSection { title: string; text: string; }
@@ -72,8 +73,8 @@ export default function LegalEditor() {
         setData({ ...currentData, content: [...currentData.content, { title: 'Nova Seção', text: 'Conteúdo aqui...' }] });
     };
 
-    const removeSection = (type: 'privacy' | 'terms', index: number) => {
-        if (!confirm('Excluir esta seção?')) return;
+    const removeSection = async (type: 'privacy' | 'terms', index: number) => {
+        if (!(await confirmDialog({ title: 'Excluir esta seção?', confirmLabel: 'Excluir', danger: true }))) return;
         const setData = type === 'privacy' ? setPrivacyData : setTermsData;
         const currentData = type === 'privacy' ? privacyData : termsData;
         if (!currentData) return;
@@ -92,9 +93,9 @@ export default function LegalEditor() {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-32 text-slate-400 bg-white rounded-md border border-slate-200">
-            <FileText className="w-10 h-10 animate-pulse mb-6 text-slate-300" />
-            <p className="font-semibold text-sm animate-pulse text-slate-500">Buscando dados do repositório Git...</p>
+        <div className="flex flex-col items-center justify-center p-32 text-ink-faint bg-surface rounded-md border border-border">
+            <FileText className="w-10 h-10 animate-pulse mb-6 text-ink-faint" />
+            <p className="font-semibold text-sm animate-pulse text-ink-muted">Buscando dados do repositório Git...</p>
         </div>
     );
 
@@ -103,51 +104,76 @@ export default function LegalEditor() {
     return (
         <div className="space-y-6 pb-32">
             {/* Tabs */}
-            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                <div className="flex p-1 bg-slate-100 rounded-xl w-fit border border-slate-200">
-                    <button onClick={() => setActiveTab('privacy')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'privacy' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}>
+            <div className="flex items-center justify-between bg-surface p-4 rounded-lg border border-border shadow-sm">
+                <div role="tablist" aria-label="Documentos legais" className="flex p-1 bg-elev rounded-md w-fit border border-border">
+                    <button
+                        role="tab"
+                        aria-selected={activeTab === 'privacy'}
+                        aria-controls="tab-panel-legal"
+                        id="tab-privacy"
+                        onClick={() => setActiveTab('privacy')}
+                        className={`px-4 py-2 min-h-[44px] rounded text-xs font-bold transition-all ${activeTab === 'privacy' ? 'bg-surface text-ink shadow-sm border border-border' : 'text-ink-muted hover:text-ink'}`}
+                    >
                         Política de Privacidade
                     </button>
-                    <button onClick={() => setActiveTab('terms')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'terms' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}>
+                    <button
+                        role="tab"
+                        aria-selected={activeTab === 'terms'}
+                        aria-controls="tab-panel-legal"
+                        id="tab-terms"
+                        onClick={() => setActiveTab('terms')}
+                        className={`px-4 py-2 min-h-[44px] rounded text-xs font-bold transition-all ${activeTab === 'terms' ? 'bg-surface text-ink shadow-sm border border-border' : 'text-ink-muted hover:text-ink'}`}
+                    >
                         Termos de Uso
                     </button>
                 </div>
                 <button onClick={() => handleSave(activeTab)} disabled={saving}
-                    className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+                    className="bg-primary hover:bg-primary disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     {saving ? 'Salvando...' : 'Salvar'}
                 </button>
             </div>
 
-            {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200"><AlertCircle className="w-5 h-5 inline mr-2 -mt-1" /> {error}</div>}
+            {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-lg font-bold border border-red-200"><AlertCircle className="w-5 h-5 inline mr-2 -mt-1" /> {error}</div>}
 
             {currentData ? (
-                <div className="space-y-4">
+                <div
+                    id="tab-panel-legal"
+                    role="tabpanel"
+                    aria-labelledby={activeTab === 'privacy' ? 'tab-privacy' : 'tab-terms'}
+                    className="space-y-4"
+                >
                     {currentData.content.map((section, idx) => (
-                        <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm group">
-                            <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">#{idx + 1}</span>
-                                    <input type="text" value={section.title} onChange={(e) => updateSection(activeTab, idx, 'title', e.target.value)}
-                                        className="text-sm font-bold text-slate-800 bg-transparent border-none focus:ring-0 w-full md:w-96 focus:outline-none" placeholder="Título da Seção" />
+                        <div key={idx} className="bg-surface p-6 rounded-lg border border-border shadow-sm group">
+                            <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <span aria-hidden="true" className="w-8 h-8 rounded-md bg-elev flex items-center justify-center text-ink-muted font-bold text-xs shrink-0">#{idx + 1}</span>
+                                    <input
+                                        type="text"
+                                        value={section.title}
+                                        onChange={(e) => updateSection(activeTab, idx, 'title', e.target.value)}
+                                        aria-label={`Título da seção ${idx + 1}`}
+                                        className="text-sm font-bold text-ink bg-transparent border-none focus:ring-0 w-full focus:outline-none"
+                                        placeholder="Título da Seção"
+                                    />
                                 </div>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors disabled:opacity-30"><ChevronUp className="w-4 h-4" /></button>
-                                    <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors disabled:opacity-30"><ChevronDown className="w-4 h-4" /></button>
-                                    <button onClick={() => removeSection(activeTab, idx)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded ml-2 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity shrink-0">
+                                    <button onClick={() => moveSection(activeTab, idx, 'up')} disabled={idx === 0} aria-label={`Mover seção ${idx + 1} para cima`} className="p-2 min-h-[44px] min-w-[44px] text-ink-faint hover:text-primary hover:bg-primary-soft rounded transition-colors disabled:opacity-30"><ChevronUp className="w-4 h-4" aria-hidden="true" /></button>
+                                    <button onClick={() => moveSection(activeTab, idx, 'down')} disabled={idx === currentData.content.length - 1} aria-label={`Mover seção ${idx + 1} para baixo`} className="p-2 min-h-[44px] min-w-[44px] text-ink-faint hover:text-primary hover:bg-primary-soft rounded transition-colors disabled:opacity-30"><ChevronDown className="w-4 h-4" aria-hidden="true" /></button>
+                                    <button onClick={() => removeSection(activeTab, idx)} aria-label={`Excluir seção ${idx + 1}: ${section.title}`} className="p-2 min-h-[44px] min-w-[44px] text-ink-faint hover:text-red-600 hover:bg-red-50 rounded ml-2 transition-colors"><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                                 </div>
                             </div>
                             <textarea value={section.text} onChange={(e) => updateSection(activeTab, idx, 'text', e.target.value)} rows={6}
-                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-base leading-relaxed focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors resize-none shadow-sm"
+                                className="w-full bg-surface border border-border rounded-md px-4 py-3 text-ink text-base leading-relaxed focus:outline-none focus:border-primary/80 focus:ring-1 focus:ring-primary/20 transition-colors resize-none shadow-sm"
                                 placeholder="Escreva o texto jurídico aqui..." />
                         </div>
                     ))}
-                    <button onClick={() => addSection(activeTab)} className="w-full py-8 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 hover:text-violet-600 hover:border-violet-600 hover:bg-violet-50 transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase">
+                    <button onClick={() => addSection(activeTab)} className="w-full py-8 border-2 border-dashed border-border rounded-md text-ink-muted hover:text-primary hover:border-primary hover:bg-primary-soft transition-all font-bold flex flex-col items-center justify-center gap-2 text-xs uppercase">
                         <Plus className="w-6 h-6" /> Adicionar Nova Seção
                     </button>
                 </div>
             ) : (
-                <div className="p-10 bg-red-50 border border-red-100 rounded-2xl text-red-700 flex items-center gap-4">
+                <div className="p-10 bg-red-50 border border-red-100 rounded-lg text-red-700 flex items-center gap-4">
                     <AlertCircle className="w-8 h-8" />
                     <div>
                         <p className="font-bold text-lg">Arquivo não encontrado</p>

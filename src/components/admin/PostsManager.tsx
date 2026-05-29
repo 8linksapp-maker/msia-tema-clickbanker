@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Search, Loader2, Trash2, Edit3, AlertCircle, Save, ChevronUp, ChevronDown, Check, X, ExternalLink } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
+import { confirmDialog } from './CmsDialog';
 import { githubApi } from '../../lib/adminApi';
 import { normalizeCategories } from '../../lib/categorySlug';
 
@@ -20,6 +21,7 @@ export default function PostsManager() {
     const [sortField, setSortField] = useState<'title' | 'pubDate'>('pubDate');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
+    const [quickEditError, setQuickEditError] = useState('');
     const itemsPerPage = 20;
 
     useEffect(() => { fetchInitialData(); }, []);
@@ -83,13 +85,13 @@ export default function PostsManager() {
     };
 
     const handleDelete = async (path: string, sha: string, name: string) => {
-        if (!confirm(`Excluir o post "${name}"?`)) return;
+        if (!(await confirmDialog({ title: `Excluir "${name}"?`, message: 'Esta ação não pode ser desfeita.', confirmLabel: 'Excluir', danger: true }))) return;
         try {
             await githubApi('delete', path, { sha, message: `CMS: Excluindo post ${name}` });
             setPosts(posts.filter(f => f.sha !== sha));
-            triggerToast(`Artigo "${name}" excluído!`, 'success');
+            triggerToast(`Artigo "${name}" excluído.`, 'success');
         } catch (err: any) {
-            triggerToast(`Erro: ${err.message}`, 'error');
+            triggerToast(`Não foi possível excluir "${name}". Verifique sua conexão e tente novamente.`, 'error');
         }
     };
 
@@ -130,14 +132,20 @@ export default function PostsManager() {
                 body: JSON.stringify(updated),
             });
         } catch (e) {
-            console.warn('createSlugRedirect failed (continuando sem redirect):', e);
+            // Redirect 301 não é crítico — o artigo foi salvo. Avisamos sem bloquear.
+            triggerToast('Artigo salvo. Redirecionamento da URL antiga não foi criado automaticamente.', 'info');
         }
     };
 
     const saveQuickEdit = async () => {
-        if (!quickEditData.title || !quickEditData.slug) return alert('Título e Slug não podem ser vazios.');
+        setQuickEditError('');
+        if (!quickEditData.title || !quickEditData.slug) {
+            setQuickEditError('Preencha o título e a URL do artigo. Ambos são obrigatórios.');
+            return;
+        }
         if (quickEditData.slug !== quickEditData._oldSlug && posts.some(p => p.slug === quickEditData.slug && p.sha !== quickEditData._sha)) {
-            return alert(`Já existe um post com o slug "${quickEditData.slug}". Escolha outro.`);
+            setQuickEditError('Essa URL já está em uso por outro artigo. Escolha uma diferente.');
+            return;
         }
         setSaving(true);
         try {
@@ -192,40 +200,41 @@ export default function PostsManager() {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center p-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
-            <Loader2 className="w-8 h-8 animate-spin mb-4 text-violet-500" />
+        <div className="flex flex-col items-center justify-center p-20 text-ink-faint bg-surface rounded-3xl border border-border">
+            <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
             <p className="font-medium animate-pulse">Carregando artigos...</p>
         </div>
     );
 
     return (
         <div className="space-y-6 pb-32">
+
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 px-6 rounded-2xl border border-slate-200 shadow-sm sticky top-0 z-40">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface p-5 px-6 rounded-lg border border-border shadow-sm sticky top-0 z-40">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-800">Artigos do Blog</h2>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">{posts.length} artigos no total</p>
+                    <h2 className="text-lg font-bold text-ink">Artigos do Blog</h2>
+                    <p className="text-xs font-bold text-ink-muted uppercase tracking-widest mt-1">{posts.length} artigos no total</p>
                 </div>
-                <a href="/admin/posts/new" className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-violet-600/25 hover:-translate-y-0.5 transition-all">
+                <a href="/admin/posts/new" className="bg-primary hover:bg-primary text-white px-6 py-3 rounded-md font-bold flex items-center gap-2 shadow-lg shadow-none/25 hover:-translate-y-0.5 transition-all">
                     <Plus className="w-5 h-5" /> Novo Artigo
                 </a>
             </div>
 
-            {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200"><AlertCircle className="w-5 h-5 inline mr-2 -mt-1" /> {error}</div>}
+            {error && <div role="alert" className="p-5 bg-red-100/50 text-red-700 rounded-lg font-bold border border-red-200"><AlertCircle className="w-5 h-5 inline mr-2 -mt-1" aria-hidden="true" /> {error}</div>}
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap gap-3 items-center">
+            <div className="bg-surface p-4 rounded-lg border border-border shadow-sm flex flex-wrap gap-3 items-center">
                 <div className="relative flex-1 min-w-[200px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input type="text" placeholder="Buscar artigos..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint" />
+                    <input type="text" aria-label="Buscar artigos" placeholder="Buscar artigos..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2.5 bg-elev border border-border rounded-md text-sm focus:outline-none focus:border-primary/80 focus:ring-1 focus:ring-primary/20" />
                 </div>
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-violet-500">
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="bg-elev border border-border rounded-md px-3 py-2.5 text-sm text-ink focus:outline-none focus:border-primary/80">
                     <option value="all">Todos</option>
                     <option value="published">Publicados</option>
                     <option value="draft">Rascunhos</option>
                 </select>
                 {dynamicCategories.length > 0 && (
-                    <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-violet-500">
+                    <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="bg-elev border border-border rounded-md px-3 py-2.5 text-sm text-ink focus:outline-none focus:border-primary/80">
                         <option value="all">Todas as categorias</option>
                         {dynamicCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
@@ -234,38 +243,56 @@ export default function PostsManager() {
 
             {/* Table */}
             {paginated.length === 0 ? (
-                <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-16 flex flex-col items-center justify-center text-center">
-                    <FileText className="w-12 h-12 text-slate-300 mb-4" />
-                    <h3 className="text-xl font-bold text-slate-700 mb-2">Nenhum artigo encontrado</h3>
-                    <a href="/admin/posts/new" className="mt-4 bg-violet-600 text-white font-bold px-8 py-3 rounded-xl shadow-md hover:bg-violet-700 transition-colors">Criar primeiro artigo</a>
+                <div className="bg-surface border-2 border-dashed border-border rounded-lg p-16 flex flex-col items-center justify-center text-center">
+                    <FileText className="w-10 h-10 text-ink-faint mb-4" aria-hidden="true" />
+                    {search || statusFilter !== 'all' || categoryFilter !== 'all' ? (
+                        <>
+                            <h3 className="text-base font-semibold text-ink mb-2">Nenhum artigo encontrado</h3>
+                            <p className="text-sm text-ink-muted mb-5">Tente ajustar os filtros ou a busca.</p>
+                            <button
+                                onClick={() => { setSearch(''); setStatusFilter('all'); setCategoryFilter('all'); }}
+                                className="text-sm font-semibold text-primary hover:underline"
+                            >
+                                Limpar filtros
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <h3 className="text-base font-semibold text-ink mb-2">Nenhum artigo ainda</h3>
+                            <p className="text-sm text-ink-muted mb-5 max-w-xs">Escreva o primeiro artigo para começar a publicar conteúdo no seu blog.</p>
+                            <a href="/admin/posts/new" className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-surface font-semibold px-6 py-2.5 rounded text-sm transition-all">
+                                Escrever primeiro artigo
+                            </a>
+                        </>
+                    )}
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="bg-surface rounded-lg border border-border overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="border-b border-slate-200 bg-slate-50">
+                            <thead className="border-b border-border bg-elev">
                                 <tr>
-                                    <th className="py-4 px-4 w-8"><input type="checkbox" className="rounded" onChange={e => setSelectedPosts(e.target.checked ? paginated.map(p => p.sha) : [])} checked={selectedPosts.length === paginated.length && paginated.length > 0} /></th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700" onClick={() => toggleSort('title')}>Título <SortIcon field="title" /></th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Categoria</th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider hidden md:table-cell">Autor</th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 hidden md:table-cell" onClick={() => toggleSort('pubDate')}>Data <SortIcon field="pubDate" /></th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th className="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Ações</th>
+                                    <th scope="col" className="py-4 px-4 w-8"><input type="checkbox" aria-label="Selecionar todos os artigos da página" className="rounded" onChange={e => setSelectedPosts(e.target.checked ? paginated.map(p => p.sha) : [])} checked={selectedPosts.length === paginated.length && paginated.length > 0} /></th>
+                                    <th scope="col" aria-sort={sortField === 'title' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'} className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider cursor-pointer hover:text-ink" onClick={() => toggleSort('title')}>Título <SortIcon field="title" /></th>
+                                    <th scope="col" className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider hidden sm:table-cell">Categoria</th>
+                                    <th scope="col" className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider hidden md:table-cell">Autor</th>
+                                    <th scope="col" aria-sort={sortField === 'pubDate' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'} className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider cursor-pointer hover:text-ink hidden md:table-cell" onClick={() => toggleSort('pubDate')}>Data <SortIcon field="pubDate" /></th>
+                                    <th scope="col" className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider">Status</th>
+                                    <th scope="col" className="py-4 px-4 text-xs font-bold text-ink-muted uppercase tracking-wider text-right">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-border">
                                 {paginated.map(post => (
                                     <React.Fragment key={post.sha}>
-                                        <tr className="hover:bg-slate-50 transition-colors">
-                                            <td className="py-4 px-4"><input type="checkbox" className="rounded" checked={selectedPosts.includes(post.sha)} onChange={e => setSelectedPosts(e.target.checked ? [...selectedPosts, post.sha] : selectedPosts.filter(s => s !== post.sha))} /></td>
+                                        <tr className="hover:bg-elev transition-colors">
+                                            <td className="py-4 px-4"><input type="checkbox" aria-label={`Selecionar artigo: ${post.title}`} className="rounded" checked={selectedPosts.includes(post.sha)} onChange={e => setSelectedPosts(e.target.checked ? [...selectedPosts, post.sha] : selectedPosts.filter(s => s !== post.sha))} /></td>
                                             <td className="py-4 px-4">
-                                                <p className="font-bold text-slate-800 text-sm line-clamp-1">{post.title}</p>
-                                                <p className="text-xs text-slate-400 font-mono mt-0.5">/{post.slug}</p>
+                                                <p className="font-bold text-ink text-sm line-clamp-1">{post.title}</p>
+                                                <p className="text-xs text-ink-faint font-mono mt-0.5">/{post.slug}</p>
                                             </td>
-                                            <td className="py-4 px-4 hidden sm:table-cell"><span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{post.category}</span></td>
-                                            <td className="py-4 px-4 hidden md:table-cell text-sm text-slate-500">{post.author || '—'}</td>
-                                            <td className="py-4 px-4 hidden md:table-cell text-xs text-slate-400 font-mono">{post.pubDate || '—'}</td>
+                                            <td className="py-4 px-4 hidden sm:table-cell"><span className="text-xs font-bold bg-elev text-ink-muted px-2 py-1 rounded-full">{post.category}</span></td>
+                                            <td className="py-4 px-4 hidden md:table-cell text-sm text-ink-muted">{post.author || '—'}</td>
+                                            <td className="py-4 px-4 hidden md:table-cell text-xs text-ink-faint font-mono">{post.pubDate || '—'}</td>
                                             <td className="py-4 px-4">
                                                 {post.draft ? (
                                                     <span className="inline-flex items-center gap-1 text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded-full">Rascunho</span>
@@ -274,62 +301,91 @@ export default function PostsManager() {
                                                 )}
                                             </td>
                                             <td className="py-4 px-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
+                                                <div className="flex items-center justify-end gap-1">
                                                     {!post.draft && (
                                                         <a
                                                             href={`/${post.slug}`}
                                                             target="_blank"
-                                                            rel="noopener"
-                                                            title="Ver post no site"
-                                                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                                            rel="noopener noreferrer"
+                                                            aria-label={`Abrir artigo no site: ${post.title}`}
+                                                            title="Abrir no site"
+                                                            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-ink-faint hover:text-primary hover:bg-primary-soft rounded transition-colors"
                                                         >
-                                                            <ExternalLink className="w-4 h-4" />
+                                                            <ExternalLink className="w-4 h-4" aria-hidden="true" />
                                                         </a>
                                                     )}
-                                                    <button onClick={() => handleQuickAction(post)} title="Edição Rápida" className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"><Edit3 className="w-4 h-4" /></button>
-                                                    <a href={`/admin/posts/edit?file=${encodeURIComponent(post.path)}`} title="Editar Completo" className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"><FileText className="w-4 h-4" /></a>
-                                                    <button onClick={() => handleDelete(post.path, post.sha, post.title)} title="Excluir" className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                                    <button
+                                                        onClick={() => handleQuickAction(post)}
+                                                        aria-label={`Edição rápida: ${post.title}`}
+                                                        aria-expanded={editingSha === post.sha}
+                                                        title="Edição rápida"
+                                                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-ink-faint hover:text-primary hover:bg-primary-soft rounded transition-colors"
+                                                    >
+                                                        <Edit3 className="w-4 h-4" aria-hidden="true" />
+                                                    </button>
+                                                    <a
+                                                        href={`/admin/posts/edit?file=${encodeURIComponent(post.path)}`}
+                                                        aria-label={`Editar artigo completo: ${post.title}`}
+                                                        title="Editar completo"
+                                                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-ink-faint hover:text-ink-muted hover:bg-elev rounded transition-colors"
+                                                    >
+                                                        <FileText className="w-4 h-4" aria-hidden="true" />
+                                                    </a>
+                                                    <button
+                                                        onClick={() => handleDelete(post.path, post.sha, post.title)}
+                                                        aria-label={`Excluir artigo: ${post.title}`}
+                                                        title="Excluir"
+                                                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-ink-faint hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         {/* Quick Edit Row */}
                                         {editingSha === post.sha && quickEditData && (
-                                            <tr className="bg-violet-50">
+                                            <tr className="bg-primary-soft">
                                                 <td colSpan={7} className="px-4 py-4">
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Título</label>
-                                                            <input type="text" value={quickEditData.title} onChange={e => setQuickEditData({ ...quickEditData, title: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">Título</label>
+                                                            <input type="text" value={quickEditData.title} onChange={e => setQuickEditData({ ...quickEditData, title: e.target.value })} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/80" />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Slug (URL)</label>
-                                                            <input type="text" value={quickEditData.slug} onChange={e => setQuickEditData({ ...quickEditData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-violet-500" />
+                                                            <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">URL do artigo</label>
+                                                            <input type="text" value={quickEditData.slug} onChange={e => setQuickEditData({ ...quickEditData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary/80" />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Data</label>
-                                                            <input type="date" value={quickEditData.pubDate} onChange={e => setQuickEditData({ ...quickEditData, pubDate: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">Data</label>
+                                                            <input type="date" value={quickEditData.pubDate} onChange={e => setQuickEditData({ ...quickEditData, pubDate: e.target.value })} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/80" />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Categoria</label>
-                                                            <input type="text" list="cats-list" value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">Categoria</label>
+                                                            <input type="text" list="cats-list" value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/80" />
                                                             <datalist id="cats-list">{dynamicCategories.map(c => <option key={c} value={c} />)}</datalist>
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Autor</label>
-                                                            <input type="text" list="authors-list" value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <label className="block text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1">Autor</label>
+                                                            <input type="text" list="authors-list" value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/80" />
                                                             <datalist id="authors-list">{authors.map(a => <option key={a.id} value={a.name} />)}</datalist>
                                                         </div>
                                                         <div className="flex items-end gap-3">
-                                                            <label className="flex items-center gap-2 text-sm font-bold text-slate-600 cursor-pointer">
+                                                            <label className="flex items-center gap-2 text-sm font-bold text-ink-muted cursor-pointer">
                                                                 <input type="checkbox" checked={quickEditData.draft} onChange={e => setQuickEditData({ ...quickEditData, draft: e.target.checked })} className="rounded" />
                                                                 Rascunho
                                                             </label>
                                                         </div>
                                                     </div>
+                                                    {quickEditError && (
+                                                        <p role="alert" className="mt-3 text-sm text-red-700 font-medium flex items-center gap-1.5">
+                                                            <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                                                            {quickEditError}
+                                                        </p>
+                                                    )}
                                                     <div className="flex gap-3 mt-4 justify-end">
-                                                        <button onClick={() => setEditingSha(null)} className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-lg transition-colors"><X className="w-4 h-4" />Cancelar</button>
-                                                        <button onClick={saveQuickEdit} disabled={saving} className="flex items-center gap-1.5 px-5 py-2 text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-sm transition-all disabled:opacity-60">
+                                                        <button onClick={() => { setEditingSha(null); setQuickEditError(''); }} className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-ink-muted hover:bg-elev rounded-lg transition-colors"><X className="w-4 h-4" aria-hidden="true" />Cancelar</button>
+                                                        <button onClick={saveQuickEdit} disabled={saving} className="flex items-center gap-1.5 px-5 py-2 text-sm font-bold bg-primary hover:bg-primary text-white rounded-lg shadow-sm transition-all disabled:opacity-60">
                                                             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                                             {saving ? 'Salvando...' : 'Salvar'}
                                                         </button>
@@ -349,7 +405,7 @@ export default function PostsManager() {
             {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2">
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                        <button key={p} onClick={() => setCurrentPage(p)} className={`w-9 h-9 rounded-lg text-sm font-bold transition-all ${currentPage === p ? 'bg-violet-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-violet-300'}`}>{p}</button>
+                        <button key={p} onClick={() => setCurrentPage(p)} aria-label={`Página ${p}`} aria-current={currentPage === p ? 'page' : undefined} className={`w-11 h-11 rounded text-sm font-semibold transition-all ${currentPage === p ? 'bg-primary text-surface' : 'bg-surface border border-border text-ink-muted hover:border-primary/40'}`}>{p}</button>
                     ))}
                 </div>
             )}

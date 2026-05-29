@@ -21,26 +21,26 @@ const defaultTab = hasApiKey ? 'generate' : 'settings';
 ---
 <AdminLayout title="Gerar posts com IA" activeSection="ai">
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900">Gerar posts com IA</h1>
-        <p class="text-slate-500 mt-1">Gere posts completos automaticamente e configure as chaves de API.</p>
+        <h1 class="text-2xl font-bold text-ink">Gerar posts com IA</h1>
+        <p class="text-ink-muted mt-1">Gere posts completos automaticamente e configure as chaves de API.</p>
     </div>
 
     <!-- Tabs -->
     <div class="mb-6">
-        <div class="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+        <div class="flex gap-1 bg-elev rounded-xl p-1 w-fit">
             <button
                 id="tab-generate"
                 onclick="showTab('generate')"
-                class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${defaultTab === 'generate' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+                class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${defaultTab === 'generate' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
             >
                 ✨ Gerar Post
             </button>
             <button
                 id="tab-settings"
                 onclick="showTab('settings')"
-                class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${defaultTab === 'settings' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+                class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${defaultTab === 'settings' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
             >
-                ⚙️ Configurações{!hasApiKey && <span class="ml-1.5 w-2 h-2 bg-amber-400 rounded-full inline-block"></span>}
+                ⚙️ Configurações{!hasApiKey && <span class="ml-1.5 w-2 h-2 bg-primary rounded-full inline-block"></span>}
             </button>
         </div>
     </div>
@@ -63,13 +63,13 @@ function showTab(tab) {
     if (tab === 'generate') {
         generate.classList.remove('hidden');
         settings.classList.add('hidden');
-        tabGenerate.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-violet-700 shadow-sm';
-        tabSettings.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-slate-900';
+        tabGenerate.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-primary shadow-sm';
+        tabSettings.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-ink-muted hover:text-ink';
     } else {
         generate.classList.add('hidden');
         settings.classList.remove('hidden');
-        tabGenerate.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-slate-900';
-        tabSettings.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-violet-700 shadow-sm';
+        tabGenerate.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-ink-muted hover:text-ink';
+        tabSettings.className = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-primary shadow-sm';
     }
 }
 </script>

@@ -23,16 +23,11 @@ export default function CmsToaster() {
             if (newToast.type === 'progress') {
                 setToasts(prev => {
                     const exists = prev.find(t => t.type === 'progress');
-                    if (exists) {
-                        return prev.map(t => t.type === 'progress' ? { ...t, ...newToast } : t);
-                    }
+                    if (exists) return prev.map(t => t.type === 'progress' ? { ...t, ...newToast } : t);
                     return [...prev, newToast];
                 });
             } else {
-                setToasts(prev => {
-                    const withoutProgress = prev.filter(t => t.type !== 'progress');
-                    return [...withoutProgress, newToast];
-                });
+                setToasts(prev => [...prev.filter(t => t.type !== 'progress'), newToast]);
                 setTimeout(() => {
                     setToasts(prev => prev.filter(t => t.id !== newToast.id));
                 }, 6000);
@@ -43,38 +38,66 @@ export default function CmsToaster() {
         return () => window.removeEventListener('cms-toast', handleToast);
     }, []);
 
-    const removeToast = (id: string) => {
-        setToasts(prev => prev.filter(t => t.id !== id));
-    };
+    const removeToast = (id: string) => setToasts(prev => prev.filter(t => t.id !== id));
 
     return (
-        <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 items-end pointer-events-none">
+        // Região persistente — leitores de tela anunciam novos toasts automaticamente
+        <div
+            aria-live="polite"
+            aria-atomic="false"
+            className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 items-end pointer-events-none"
+        >
             {toasts.map(toast => (
-                <div key={toast.id} className="pointer-events-auto bg-white border border-violet-100 shadow-2xl shadow-violet-500/10 rounded-2xl w-80 overflow-hidden transform transition-all duration-300">
-                    <div className="p-4 flex items-start gap-4">
-                        <div className="shrink-0 mt-0.5">
-                            {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-violet-600" />}
-                            {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-red-500" />}
-                            {toast.type === 'info' && <Info className="w-5 h-5 text-violet-400" />}
-                            {toast.type === 'progress' && <Loader2 className="w-5 h-5 text-violet-600 animate-spin" />}
+                <div
+                    key={toast.id}
+                    role={toast.type === 'error' ? 'alert' : 'status'}
+                    className="pointer-events-auto bg-surface border border-border rounded-lg w-80 overflow-hidden"
+                    style={{ boxShadow: '0 8px 24px rgba(80,40,20,0.12)' }}
+                >
+                    <div className="p-4 flex items-start gap-3">
+                        <div className="shrink-0 mt-0.5" aria-hidden="true">
+                            {toast.type === 'success'  && <CheckCircle2 className="w-5 h-5 text-primary" />}
+                            {toast.type === 'error'    && <AlertCircle  className="w-5 h-5 text-red-600" />}
+                            {toast.type === 'info'     && <Info         className="w-5 h-5 text-primary" />}
+                            {toast.type === 'progress' && <Loader2      className="w-5 h-5 text-primary animate-spin" aria-label="Carregando" />}
                         </div>
-                        <div className="flex-1">
-                            <p className="text-sm font-bold text-slate-800 leading-snug">{toast.message}</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-ink leading-snug">{toast.message}</p>
                             {toast.link && (
-                                <a href={toast.link} target="_blank" className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-700 hover:bg-violet-600 hover:text-white rounded-lg text-xs font-bold transition-colors">
-                                    Ver alteração ao vivo <ExternalLink className="w-3 h-3" />
+                                <a
+                                    href={toast.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-soft text-primary hover:bg-primary hover:text-surface rounded text-xs font-semibold transition-colors"
+                                >
+                                    Ver alteração ao vivo
+                                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
                                 </a>
                             )}
                         </div>
                         {toast.type !== 'progress' && (
-                            <button onClick={() => removeToast(toast.id!)} className="shrink-0 text-slate-400 hover:text-violet-600 transition-colors">
-                                <X className="w-4 h-4" />
+                            <button
+                                onClick={() => removeToast(toast.id!)}
+                                aria-label="Fechar notificação"
+                                className="shrink-0 w-8 h-8 flex items-center justify-center text-ink-faint hover:text-ink hover:bg-elev rounded transition-colors"
+                            >
+                                <X className="w-4 h-4" aria-hidden="true" />
                             </button>
                         )}
                     </div>
                     {toast.type === 'progress' && toast.progress !== undefined && (
-                        <div className="w-full h-1.5 bg-slate-100">
-                            <div className="h-full bg-violet-600 transition-all duration-700 ease-out" style={{ width: `${toast.progress}%` }}></div>
+                        <div
+                            role="progressbar"
+                            aria-valuenow={toast.progress}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-label="Progresso da operação"
+                            className="w-full h-1.5 bg-elev"
+                        >
+                            <div
+                                className="h-full bg-primary transition-all duration-700 ease-out"
+                                style={{ width: `${toast.progress}%` }}
+                            />
                         </div>
                     )}
                 </div>

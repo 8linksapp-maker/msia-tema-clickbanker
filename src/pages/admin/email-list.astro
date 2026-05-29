@@ -13,31 +13,31 @@ const defaultTab = 'leads';
 
 <AdminLayout title="Lista de Emails" activeSection="email-list">
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900">Lista de Emails</h1>
-        <p class="text-slate-500 mt-1">Gerencie seus inscritos, popup de captura e sequências de email.</p>
+        <h1 class="text-2xl font-bold text-ink">Lista de Emails</h1>
+        <p class="text-ink-muted mt-1">Gerencie seus inscritos, popup de captura e sequências de email.</p>
     </div>
 
     <!-- Tabs -->
     <div class="mb-6">
-        <div class="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+        <div class="flex gap-1 bg-elev rounded-xl p-1 w-fit">
             <button
                 id="tab-leads"
                 onclick="showTab('leads')"
-                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-violet-700 shadow-sm"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-primary shadow-sm"
             >
                 👥 Leads
             </button>
             <button
                 id="tab-settings"
                 onclick="showTab('settings')"
-                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-slate-900"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-ink-muted hover:text-ink"
             >
-                ⚙️ Configurações{!isBrevoConfigured && <span class="ml-1.5 w-2 h-2 bg-amber-400 rounded-full inline-block align-middle"></span>}
+                ⚙️ Configurações{!isBrevoConfigured && <span class="ml-1.5 w-2 h-2 bg-primary rounded-full inline-block align-middle"></span>}
             </button>
             <button
                 id="tab-sequences"
                 onclick="showTab('sequences')"
-                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-slate-900"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-ink-muted hover:text-ink"
             >
                 📧 Sequências
             </button>
@@ -68,8 +68,8 @@ function showTab(tab) {
         sequences: document.getElementById('tab-sequences'),
     };
 
-    var activeClass   = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-violet-700 shadow-sm';
-    var inactiveClass = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-slate-900';
+    var activeClass   = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-primary shadow-sm';
+    var inactiveClass = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-ink-muted hover:text-ink';
 
     Object.keys(panels).forEach(function(key) {
         var isActive = key === tab;

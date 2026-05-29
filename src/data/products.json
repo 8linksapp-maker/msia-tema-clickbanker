@@ -1,29 +1,5 @@
 [
   {
-    "slug": "weightloss",
-    "name": "Weight Loss",
-    "category": "Saúde & Emagrecimento",
-    "vendor": "",
-    "hoplink": "amazon.com",
-    "price": "297",
-    "originalPrice": "",
-    "rating": "4.8",
-    "reviewCount": 0,
-    "blurb": "8 semanas com foco em ajuste metabolico - nao em corte calorico",
-    "description": "",
-    "pros": [
-      "comunidade ativa telegram"
-    ],
-    "cons": [],
-    "bestFor": "Quem ja tentou dieta restritiva",
-    "image": "/uploads/products/1779807955566-weightloss.jpg",
-    "commission": 0,
-    "gravity": 0,
-    "active": true,
-    "featuredInSidebar": false,
-    "createdAt": "2026-05-26T15:05:55.595Z"
-  },
-  {
     "slug": "renovacao-metabolica",
     "name": "Programa Renovação Metabólica",
     "category": "Saúde & Emagrecimento",

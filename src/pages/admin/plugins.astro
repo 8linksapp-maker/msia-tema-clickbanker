@@ -8,8 +8,8 @@ const registry = readData('pluginRegistry.json', []);
 ---
 <AdminLayout title="Plugins" activeSection="plugins">
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900">Plugins</h1>
-        <p class="text-slate-500 mt-1">Configure as integrações e funcionalidades extras do seu site.</p>
+        <h1 class="text-2xl font-bold text-ink">Plugins</h1>
+        <p class="text-ink-muted mt-1">Configure as integrações e funcionalidades extras do seu site.</p>
     </div>
     <PluginsHub registry={registry} client:load />
 </AdminLayout>
