@@ -1,12 +1,12 @@
 [
   {
-    "slug": "apego-seguro-padroes",
-    "productSlug": "apego-seguro-padroes",
+    "slug": "renovacao-metabolica",
+    "productSlug": "renovacao-metabolica",
     "published": true,
-    "createdAt": "2026-05-26T17:36:11.291Z",
+    "createdAt": "2026-05-29T22:21:03.316Z",
     "blocks": [
       {
-        "id": "hero-1779816971291-8",
+        "id": "hero-1780093263316-1",
         "type": "hero",
         "data": {
           "headline": "",
@@ -16,76 +16,73 @@
         }
       },
       {
-        "id": "problem-1779816982838-9",
+        "id": "problem-1780093342633-2",
         "type": "problem",
         "data": {
           "headline": "Você se identifica com isso?",
           "items": [
-            "",
-            "",
-            ""
+            "motivo 1",
+            "motivo 2",
+            "motivo 3"
           ]
         }
       },
       {
-        "id": "solution-1779816986027-10",
-        "type": "solution",
+        "id": "stats-1780093354725-3",
+        "type": "stats",
         "data": {
-          "headline": "",
-          "text": "",
-          "image": ""
-        }
-      },
-      {
-        "id": "text-image-1779816991194-11",
-        "type": "text-image",
-        "data": {
-          "headline": "",
-          "text": "",
-          "image": "",
-          "imagePosition": "right"
-        }
-      },
-      {
-        "id": "gallery-1779817001207-12",
-        "type": "gallery",
-        "data": {
-          "headline": "",
-          "columns": 3,
-          "images": [
+          "headline": "Mais de 50.000 clientes satisfeitos",
+          "items": [
             {
-              "src": "",
-              "caption": ""
+              "value": "111",
+              "label": "aasdadas"
             },
             {
-              "src": "",
-              "caption": ""
+              "value": "11",
+              "label": "aaaa"
             },
             {
-              "src": "",
-              "caption": ""
+              "value": "111",
+              "label": "aaaa"
             }
           ]
-        }
-      },
-      {
-        "id": "quote-1779817007360-13",
-        "type": "quote",
-        "data": {
-          "text": "",
-          "author": "",
-          "role": ""
         }
       }
     ],
     "seo": {
       "title": "",
       "description": ""
+    },
+    "fontFamily": "cabinet-grotesk",
+    "primaryColor": "#8c344c",
+    "thumbnail": "/uploads/images/1780093294677-image.jpg",
+    "widgets": {
+      "promoBar": {
+        "enabled": false,
+        "emoji": "🎯",
+        "text": "",
+        "ctaText": "Ver agora",
+        "ctaLink": "",
+        "background": "primary"
+      },
+      "socialProof": {
+        "enabled": false,
+        "items": [],
+        "intervalSeconds": 8,
+        "position": "bottom-left"
+      },
+      "exitPopup": {
+        "enabled": false,
+        "headline": "",
+        "subtext": "",
+        "ctaText": "Garantir desconto",
+        "couponCode": ""
+      }
     }
   },
   {
     "slug": "renovacao-metabolica-30-dias",
-    "productSlug": "renovacao-metabolica",
+    "productSlug": "weightloss",
     "published": true,
     "createdAt": "2026-05-26T00:00:00.000Z",
     "blocks": [
@@ -196,13 +193,30 @@
           "cta": "Garantir agora",
           "urgency": "Vagas limitadas pra próxima turma da comunidade"
         }
+      },
+      {
+        "id": "faq-1779920724053-1",
+        "type": "faq",
+        "data": {
+          "headline": "FAQ",
+          "items": [
+            {
+              "q": "Pergunta  01",
+              "a": "aaaaaa"
+            },
+            {
+              "q": "Pergunta 02",
+              "a": "aaaaaaaa"
+            }
+          ]
+        }
       }
     ],
     "seo": {
       "title": "Renovação Metabólica — Programa 8 semanas pra mulheres 35+",
       "description": "O programa de reset metabólico que já transformou 1.240 mulheres. Sem dieta restritiva. Garantia de 60 dias."
     },
-    "primaryColor": "",
+    "primaryColor": "#3458a2",
     "fontFamily": "boska",
     "widgets": {
       "promoBar": {
