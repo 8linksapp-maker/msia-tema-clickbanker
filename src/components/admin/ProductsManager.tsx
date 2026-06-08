@@ -3,6 +3,7 @@ import { Save, AlertCircle, Loader2, Plus, Trash2, Edit2, Package, X, ExternalLi
 import { triggerToast } from './CmsToaster';
 import { confirmDialog } from './CmsDialog';
 import { githubApi } from '../../lib/adminApi';
+import { normalizeCategories, type CategoryEntry } from '../../lib/categorySlug';
 
 interface Product {
   slug: string;
@@ -52,7 +53,7 @@ const EMPTY_PRODUCT: Product = {
 
 export default function ProductsManager() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryEntry[]>([]);
   const [clickTotals, setClickTotals] = useState<Record<string, number>>({});
   const [totalAllTime, setTotalAllTime] = useState(0);
   const [fileSha, setFileSha] = useState('');
@@ -90,7 +91,7 @@ export default function ProductsManager() {
       } catch { setProducts([]); }
       try {
         const cats = JSON.parse(catRes?.content || '[]');
-        setCategories(Array.isArray(cats) ? cats : []);
+        setCategories(normalizeCategories(cats));
       } catch { setCategories([]); }
     }).finally(() => setLoading(false));
   }, []);
@@ -359,7 +360,7 @@ export default function ProductsManager() {
                 <ModalField label="Categoria">
                   <select value={temp.category} onChange={e => setTemp({ ...temp, category: e.target.value })} className="modal-input">
                     <option value="">— escolher —</option>
-                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                    {categories.map(c => <option key={c.slug} value={c.name}>{c.name}</option>)}
                   </select>
                 </ModalField>
                 <ModalField label="Vendor (opcional)">

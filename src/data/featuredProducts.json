@@ -1,26 +1,26 @@
 [
   {
-    "name": "Renovação Metabólica",
-    "category": "Saúde & Emagrecimento",
-    "price": "R$ 297",
+    "name": "Metabolic Fix Method",
+    "category": "Health & Fitness",
+    "price": "$47",
     "rating": "4.7",
-    "blurb": "Programa 8 semanas com foco em ajuste metabólico — não em corte calórico.",
+    "blurb": "8-week protocol focused on metabolic recalibration — not calorie cutting.",
     "link": "#"
   },
   {
-    "name": "Marketing de Performance Essencial",
-    "category": "Negócios Online",
-    "price": "R$ 197",
+    "name": "Affiliate Authority System",
+    "category": "E-Business & E-Marketing",
+    "price": "$97",
     "rating": "4.6",
-    "blurb": "Fundamentos sem inflar com técnicas avançadas. Garantia 60 dias.",
+    "blurb": "Fundamentals-first affiliate course. No fluff, 60-day guarantee.",
     "link": "#"
   },
   {
-    "name": "Apego Seguro: Reconstruindo Padrões",
-    "category": "Relacionamentos",
-    "price": "R$ 97",
+    "name": "Reclaim Bond Method",
+    "category": "Relationships",
+    "price": "$47",
     "rating": "4.8",
-    "blurb": "Ebook + workbook estruturado pra mapear próprio padrão de apego.",
+    "blurb": "Ebook + workbook to map your attachment style and rebuild secure bonding.",
     "link": "#"
   }
 ]

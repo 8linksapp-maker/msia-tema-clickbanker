@@ -1,25 +1,27 @@
 [
   {
-    "slug": "renovacao-metabolica",
-    "name": "Programa Renovação Metabólica",
-    "category": "Saúde & Emagrecimento",
-    "vendor": "Instituto Vida Plena",
-    "hoplink": "https://abc.hop.clickbank.net/?cbpage=metabolismo",
-    "price": "R$ 297",
-    "originalPrice": "R$ 497",
+    "slug": "metabolic-fix-method",
+    "name": "Metabolic Fix Method",
+    "category": "Health & Fitness",
+    "vendor": "VitaLab Health",
+    "hoplink": "https://abc.hop.clickbank.net/?cbpage=metabolic-fix",
+    "price": "$47",
+    "originalPrice": "$97",
     "rating": "4.7",
-    "reviewCount": 1240,
-    "blurb": "8 semanas com foco em ajuste metabólico — não em corte calórico.",
+    "reviewCount": 1247,
+    "blurb": "8-week protocol focused on metabolic recalibration — not calorie cutting. Works for plateaued dieters.",
     "description": "",
     "pros": [
-      "Comunidade ativa Telegram",
-      "Material denso sem padding",
-      "Suporte 30 dias"
+      "Active Telegram community with daily coaching",
+      "Dense material with zero filler",
+      "30-day refund window",
+      "Nutritionist Q&A weekly"
     ],
     "cons": [
-      "Módulo de exercícios genérico"
+      "Workout module is generic — assumes gym access",
+      "Heavy reading week 1"
     ],
-    "bestFor": "Quem já tentou dieta restritiva",
+    "bestFor": "Dieters who already tried restrictive plans",
     "image": "",
     "commission": 50,
     "gravity": 87,
@@ -28,24 +30,25 @@
     "createdAt": "2026-05-01T00:00:00.000Z"
   },
   {
-    "slug": "marketing-performance-essencial",
-    "name": "Marketing de Performance Essencial",
-    "category": "Negócios Online",
-    "vendor": "Hub Digital",
-    "hoplink": "https://xyz.hop.clickbank.net/?cbpage=marketing-perf",
-    "price": "R$ 197",
+    "slug": "affiliate-authority-system",
+    "name": "Affiliate Authority System",
+    "category": "E-Business & E-Marketing",
+    "vendor": "Hub Digital Pro",
+    "hoplink": "https://xyz.hop.clickbank.net/?cbpage=affiliate-authority",
+    "price": "$97",
     "rating": "4.6",
-    "reviewCount": 890,
-    "blurb": "Fundamentos sem inflar com técnicas avançadas. Garantia 60 dias.",
+    "reviewCount": 891,
+    "blurb": "Fundamentals-first affiliate course — no fluff, no upsell pressure, 60-day guarantee.",
     "pros": [
-      "Material didático",
-      "Sem upsell agressivo",
-      "Comunidade Discord"
+      "Clear didactic structure",
+      "No aggressive upsell funnel",
+      "Active Discord with vendor responses",
+      "Real case-studies, not screenshots of $$$"
     ],
     "cons": [
-      "Inicial — quem já sabe vai achar lento"
+      "Beginner-leaning — experienced affiliates will skim"
     ],
-    "bestFor": "Iniciante absoluto",
+    "bestFor": "Absolute beginners with no list yet",
     "image": "",
     "commission": 60,
     "gravity": 62,
@@ -54,24 +57,24 @@
     "createdAt": "2026-05-01T00:00:00.000Z"
   },
   {
-    "slug": "apego-seguro-padroes",
-    "name": "Apego Seguro: Reconstruindo Padrões",
-    "category": "Relacionamentos",
-    "vendor": "Psicologia Aplicada",
-    "hoplink": "https://def.hop.clickbank.net/?cbpage=apego",
-    "price": "R$ 97",
+    "slug": "reclaim-bond-method",
+    "name": "Reclaim Bond Method",
+    "category": "Relationships",
+    "vendor": "Mindset Studio",
+    "hoplink": "https://def.hop.clickbank.net/?cbpage=reclaim-bond",
+    "price": "$47",
     "rating": "4.8",
-    "reviewCount": 420,
-    "blurb": "Ebook + workbook estruturado pra mapear padrão de apego.",
+    "reviewCount": 421,
+    "blurb": "Ebook + structured workbook to map your attachment style and rebuild secure bonding.",
     "pros": [
-      "Workbook anexo",
-      "Baseado em teoria do apego real",
-      "Preço acessível"
+      "Workbook included (printable PDF)",
+      "Based on real attachment theory, not pop-psych",
+      "Affordable entry point"
     ],
     "cons": [
-      "Pra quem busca curso em vídeo, não serve"
+      "Text-based — no video for visual learners"
     ],
-    "bestFor": "Quem faz terapia",
+    "bestFor": "People already in therapy looking for homework",
     "image": "",
     "commission": 50,
     "gravity": 35,
@@ -80,24 +83,26 @@
     "createdAt": "2026-05-01T00:00:00.000Z"
   },
   {
-    "slug": "reset-hormonal-feminino",
-    "name": "Reset Hormonal Feminino",
-    "category": "Saúde & Emagrecimento",
-    "vendor": "Clínica Equilibra",
-    "hoplink": "https://ghi.hop.clickbank.net/?cbpage=hormonal",
-    "price": "R$ 397",
+    "slug": "hormone-reset-protocol",
+    "name": "Hormone Reset Protocol",
+    "category": "Health & Fitness",
+    "vendor": "Equilibrium Clinic",
+    "hoplink": "https://ghi.hop.clickbank.net/?cbpage=hormone-reset",
+    "price": "$67",
+    "originalPrice": "$127",
     "rating": "4.5",
-    "reviewCount": 580,
-    "blurb": "Foco em desequilíbrio hormonal feminino 35-55. Suporte com nutri 4 semanas.",
+    "reviewCount": 583,
+    "blurb": "Targeted at female hormonal imbalance ages 35-55. Includes 4-week nutritionist support.",
     "pros": [
-      "Suporte humano incluso",
-      "Abordagem específica",
-      "Plano alimentar"
+      "Live human support included",
+      "Specific to female endocrine system",
+      "Detailed meal-planning template"
     ],
     "cons": [
-      "Preço alto pra quem não sabe se é hormonal"
+      "Pricey for users uncertain hormones are the issue",
+      "Not for users in active medical treatment"
     ],
-    "bestFor": "Mulheres 35-55 com sintomas hormonais",
+    "bestFor": "Women 35-55 with confirmed hormonal symptoms",
     "image": "",
     "commission": 45,
     "gravity": 71,
@@ -106,50 +111,51 @@
     "createdAt": "2026-05-01T00:00:00.000Z"
   },
   {
-    "slug": "metodo-corpo-equilibrio",
-    "name": "Método Corpo em Equilíbrio",
-    "category": "Saúde & Emagrecimento",
-    "vendor": "Bem-estar Pro",
-    "hoplink": "https://jkl.hop.clickbank.net/?cbpage=corpo-eq",
-    "price": "R$ 197",
-    "rating": "4.4",
-    "reviewCount": 760,
-    "blurb": "Abordagem progressiva pra iniciante: hidratação → nutrição → movimento.",
+    "slug": "manifest-reality-toolkit",
+    "name": "Manifest Reality Toolkit",
+    "category": "Spirituality, New Age & Alternative Beliefs",
+    "vendor": "Aurora Path",
+    "hoplink": "https://jkl.hop.clickbank.net/?cbpage=manifest-reality",
+    "price": "$37",
+    "rating": "4.6",
+    "reviewCount": 1102,
+    "blurb": "Practical manifestation framework — 21-day daily prompts, audio meditations, vision board templates.",
     "pros": [
-      "Didático e progressivo",
-      "Sem overwhelm",
-      "Boa pra iniciante"
+      "Daily structure prevents drift",
+      "Audio quality is professional",
+      "Low price barrier",
+      "No religious framing"
     ],
     "cons": [
-      "Quem já sabe vai achar básico"
+      "Skeptics will dismiss it on principle"
     ],
-    "bestFor": "Iniciante absoluto",
+    "bestFor": "Beginners curious about manifestation work",
     "image": "",
-    "commission": 50,
-    "gravity": 45,
+    "commission": 55,
+    "gravity": 78,
     "active": true,
     "featuredInSidebar": false,
     "createdAt": "2026-05-01T00:00:00.000Z"
   },
   {
-    "slug": "sistemas-trabalho-independente",
-    "name": "Sistemas de Trabalho Independente",
-    "category": "Desenvolvimento Pessoal",
-    "vendor": "Produtividade Aplicada",
-    "hoplink": "https://mno.hop.clickbank.net/?cbpage=sistemas",
-    "price": "R$ 197",
-    "rating": "4.6",
-    "reviewCount": 510,
-    "blurb": "Foca em rotina, não em motivação. Pra freelancer e afiliado.",
+    "slug": "deep-work-blueprint",
+    "name": "Deep Work Blueprint",
+    "category": "Self-Help",
+    "vendor": "Productivity Lab",
+    "hoplink": "https://mno.hop.clickbank.net/?cbpage=deep-work",
+    "price": "$47",
+    "rating": "4.5",
+    "reviewCount": 512,
+    "blurb": "Focused on systems, not motivation. Built for freelancers, knowledge workers, and affiliates.",
     "pros": [
-      "Sem motivacional vazio",
-      "Ferramentas práticas",
-      "Aplicável imediato"
+      "Zero motivational fluff",
+      "Actionable templates included",
+      "Immediately applicable on day one"
     ],
     "cons": [
-      "Não é específico pra quem quer 'mindset abundância'"
+      "Not for users seeking 'abundance mindset' content"
     ],
-    "bestFor": "Quem trabalha por conta própria",
+    "bestFor": "Self-employed people fighting distraction",
     "image": "",
     "commission": 55,
     "gravity": 38,
