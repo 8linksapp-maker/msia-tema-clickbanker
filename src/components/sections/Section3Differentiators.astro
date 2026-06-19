@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import SectionHeader from '../ui/SectionHeader.astro';
 import PostCardMedium from '../ui/PostCardMedium.astro';
+import { readData } from '../../lib/readData';
 
 interface Props {
   title?: string;
@@ -9,7 +10,8 @@ interface Props {
   items?: Array<{ title: string; desc: string }>;
 }
 
-const { title = "Em Alta Esta Semana" } = Astro.props;
+const home = readData<any>('home.json', {});
+const { title = home?.sections?.trending?.heading || 'Trending This Week' } = Astro.props;
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
