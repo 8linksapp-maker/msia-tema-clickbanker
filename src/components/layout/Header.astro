@@ -5,6 +5,10 @@ import { getCollection } from 'astro:content';
 
 const siteConfig = readData('siteConfig.json');
 const menuItems: any[] = readData('menu.json', { items: [] }).items || [];
+const homeData = readData<any>('home.json', {});
+const headerCfg = homeData?.header || {};
+const blogLinkLabel = headerCfg.blogLinkLabel || 'All articles';
+const searchHint = headerCfg.searchHint || 'esc to close';
 
 const posts = await getCollection('blog');
 const categoriesData = readData('categories.json', []);
@@ -44,7 +48,7 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
               <svg width="10" height="10" viewBox="0 0 10 10" class="opacity-60" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </button>
             <ul class="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[200px] bg-elev border border-rule rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all py-2 z-50 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]">
-              <li><a href={item.href} class="block px-4 py-2 text-sm text-ink hover:text-primary">Todos os artigos</a></li>
+              <li><a href={item.href} class="block px-4 py-2 text-sm text-ink hover:text-primary">{blogLinkLabel}</a></li>
               {allCategories.map((cat) => (
                 <li><a href={`/categoria/${cat.slug}`} class="block px-4 py-2 text-sm text-ink hover:text-primary">{cat.name}</a></li>
               ))}
@@ -78,7 +82,7 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <form action="/search" class="w-full max-w-2xl">
-      <label for="q" class="mono text-white/50 block mb-3">esc fecha</label>
+      <label for="q" class="mono text-white/50 block mb-3">{searchHint}</label>
       <input id="q" type="search" name="q" placeholder="o que você procura?" class="w-full bg-transparent border-b border-white/20 focus:border-white/60 outline-none text-white text-3xl md:text-4xl font-display font-semibold py-3 placeholder:text-white/30 placeholder:font-normal tracking-tight" autofocus />
     </form>
   </div>
