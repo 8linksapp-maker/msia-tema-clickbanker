@@ -45,7 +45,7 @@ const videoSchema = showSchema ? {
   '@context': 'https://schema.org',
   '@type': 'VideoObject',
   name: title || 'Vídeo',
-  description: description || title || 'Vídeo do artigo',
+  description: description || title || 'Article video',
   ...(uploadDate ? { uploadDate } : {}),
   ...(info.thumbnail ? { thumbnailUrl: info.thumbnail } : {}),
   embedUrl: info.embedUrl,
@@ -64,17 +64,17 @@ const videoSchema = showSchema ? {
         controls
         preload="metadata"
         class="post-video-el"
-        aria-label={title || 'Vídeo do post'}
+        aria-label={title || 'Post video'}
       >
         <source src={info.embedUrl} />
-        Seu navegador não suporta vídeo HTML5.
+        Your browser does not support HTML5 video.
       </video>
     ) : lite && info.provider === 'youtube' ? (
       <button
         type="button"
         class="post-video-lite"
         data-embed-url={info.embedUrl}
-        aria-label={`Reproduzir vídeo: ${title || 'embed'}`}
+        aria-label={`Play video: ${title || 'embed'}`}
         style={`background-image: url(${info.thumbnail})`}
       >
         <span class="post-video-play" aria-hidden="true">
@@ -87,7 +87,7 @@ const videoSchema = showSchema ? {
     ) : (
       <iframe
         src={info.embedUrl}
-        title={title || 'Vídeo do post'}
+        title={title || 'Post video'}
         loading="lazy"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
