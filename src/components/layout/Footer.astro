@@ -5,6 +5,13 @@ import { getCollection } from 'astro:content';
 
 const siteConfig = readData('siteConfig.json');
 const menuItems: any[] = readData('menu.json', { items: [] }).items || [];
+const homeData = readData<any>('home.json', {});
+const footerCfg = homeData?.footer || {};
+const navLabel = footerCfg.navLabel || 'navigation';
+const topicsLabel = footerCfg.topicsLabel || 'topics';
+const socialLabel = footerCfg.socialLabel || 'social';
+const privacyLabel = footerCfg.privacyLabel || 'privacy';
+const termsLabel = footerCfg.termsLabel || 'terms';
 
 const posts = await getCollection('blog');
 const categoriesData = readData('categories.json', []);
@@ -36,7 +43,7 @@ const socials: Array<[string, string, string]> = [
       </div>
 
       <div class="md:col-span-3">
-        <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">navegação</div>
+        <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">{navLabel}</div>
         <ul class="space-y-2.5 text-sm">
           {menuItems.map((item: any) => (
             <li><a href={item.href} class="text-ink-muted hover:text-ink transition-colors">{item.label}</a></li>
@@ -46,7 +53,7 @@ const socials: Array<[string, string, string]> = [
 
       {allCategories.length > 0 && (
         <div class="md:col-span-2">
-          <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">tópicos</div>
+          <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">{topicsLabel}</div>
           <ul class="space-y-2.5 text-sm">
             {allCategories.map((cat) => (
               <li><a href={`/categoria/${cat.slug}`} class="text-ink-muted hover:text-ink transition-colors">{cat.name}</a></li>
@@ -57,7 +64,7 @@ const socials: Array<[string, string, string]> = [
 
       {socials.length > 0 && (
         <div class="md:col-span-2">
-          <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">social</div>
+          <div class="mono uppercase text-ink-faint mb-4 pb-3 border-b border-rule">{socialLabel}</div>
           <ul class="space-y-2.5 text-sm">
             {socials.map(([_, label, href]: any) => (
               <li>
@@ -75,8 +82,8 @@ const socials: Array<[string, string, string]> = [
     <div class="border-t border-rule pt-6 flex items-center justify-between flex-wrap gap-3 text-xs">
       <span class="mono text-ink-faint">© {year} {siteConfig.name}</span>
       <div class="flex gap-5">
-        <a href="/privacidade" class="text-ink-faint hover:text-ink transition-colors">privacidade</a>
-        <a href="/termos" class="text-ink-faint hover:text-ink transition-colors">termos</a>
+        <a href="/privacidade" class="text-ink-faint hover:text-ink transition-colors">{privacyLabel}</a>
+        <a href="/termos" class="text-ink-faint hover:text-ink transition-colors">{termsLabel}</a>
       </div>
     </div>
   </div>
