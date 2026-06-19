@@ -32,7 +32,7 @@ if (variant === 'sidebar') {
         <div class="flex flex-col items-end shrink-0">
           <span class="mono text-primary font-bold">★ {product.rating}</span>
           {product.reviewCount && (
-            <span class="mono text-ink-faint text-[10px]">{product.reviewCount} avaliações</span>
+            <span class="mono text-ink-faint text-[10px]">{product.reviewCount} reviews</span>
           )}
         </div>
       )}
@@ -52,7 +52,7 @@ if (variant === 'sidebar') {
         <span class="font-display text-2xl font-extrabold text-primary">{product.price}</span>
       </div>
       <span class="btn btn-primary group-hover:translate-x-0.5 transition-transform">
-        Ver produto
+        View product
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </span>
     </div>
@@ -61,7 +61,7 @@ if (variant === 'sidebar') {
 
 {variant === 'hero' && (
   <div class="bg-surface border border-border rounded-md p-6 md:p-8 my-10">
-    <p class="mono uppercase text-ink-faint mb-3">produto desta análise</p>
+    <p class="mono uppercase text-ink-faint mb-3">featured in this review</p>
     <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-end">
       <div>
         <h3 class="font-display text-2xl md:text-3xl font-extrabold text-ink leading-tight mb-3">
@@ -78,7 +78,7 @@ if (variant === 'sidebar') {
           )}
           {product.bestFor && (
             <span class="text-ink-muted">
-              <span class="text-ink-faint">melhor pra:</span> {product.bestFor}
+              <span class="text-ink-faint">best for:</span> {product.bestFor}
             </span>
           )}
         </div>
