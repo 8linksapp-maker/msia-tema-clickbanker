@@ -1,9 +1,9 @@
 {
-  "name": "Afiliado ClickBank",
-  "description": "Reviews honestas, comparações e guias dos melhores produtos da ClickBank.",
-  "url": "https://afiliado-clickbank.com.br",
-  "author": "Equipe",
-  "language": "pt-BR",
+  "name": "ClickBank Affiliate",
+  "description": "Honest reviews, comparisons and guides for the best ClickBank products.",
+  "url": "https://clickbank-affiliate.com",
+  "author": "Editorial Team",
+  "language": "en",
   "logo": "",
   "theme": {
     "primary": "#a3592d",
@@ -18,7 +18,7 @@
     "youtube": ""
   },
   "contact": {
-    "email": "contato@afiliado-clickbank.com.br",
+    "email": "hello@clickbank-affiliate.com",
     "phone": "",
     "address": "",
     "name": ""
