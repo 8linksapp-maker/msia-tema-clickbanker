@@ -2,6 +2,7 @@
 import { BLOG_BASE } from '../../lib/postUrl';
 import { getCollection } from 'astro:content';
 import PostCardList from '../ui/PostCardList.astro';
+import { readData } from '../../lib/readData';
 
 interface Props {
   title?: string;
@@ -10,6 +11,15 @@ interface Props {
   btnLink?: string;
   bgImage?: string;
 }
+
+const home = readData<any>('home.json', {});
+const siteConfig = readData<any>('siteConfig.json', {});
+const tabs = home?.tabs || {};
+const popularLabel = tabs.popular || 'popular';
+const recentLabel = tabs.recent || 'recent';
+const tabsEmpty = tabs.empty || 'No posts available.';
+const readArticle = tabs.readArticle || 'Read article';
+const dateLocale = siteConfig?.language === 'pt-BR' ? 'pt-BR' : 'en-US';
 
 const { title, subtitle } = Astro.props;
 
@@ -56,10 +66,10 @@ const recentPosts = otherPosts.slice(0, 4);
                 <p class="text-white/75 text-sm line-clamp-2 mb-4">{featuredPost.data.description}</p>
                 <div class="flex items-center gap-3">
                   <span class="text-white/60 text-xs">
-                    {featuredPost.data.pubDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    {featuredPost.data.pubDate.toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })}
                   </span>
                   <span class="inline-flex items-center gap-1 text-primary-300 text-xs font-semibold">
-                    Ler artigo
+                    {readArticle}
                     <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -82,16 +92,16 @@ const recentPosts = otherPosts.slice(0, 4);
         <!-- Tabs header -->
         <div class="flex border-b border-gray-200">
           <button
-            class="tab-btn flex-1 py-3 text-sm font-bold text-center transition-colors active-tab"
+            class="tab-btn flex-1 py-3 text-sm font-bold text-center transition-colors active-tab capitalize"
             data-tab="popular"
           >
-            Popular
+            {popularLabel}
           </button>
           <button
-            class="tab-btn flex-1 py-3 text-sm font-bold text-center transition-colors"
+            class="tab-btn flex-1 py-3 text-sm font-bold text-center transition-colors capitalize"
             data-tab="recente"
           >
-            Recente
+            {recentLabel}
           </button>
         </div>
 
@@ -109,7 +119,7 @@ const recentPosts = otherPosts.slice(0, 4);
               />
             ))
           ) : (
-            <p class="text-slate-400 text-sm text-center py-8">Nenhum post disponível.</p>
+            <p class="text-slate-400 text-sm text-center py-8">{tabsEmpty}</p>
           )}
         </div>
 
@@ -127,7 +137,7 @@ const recentPosts = otherPosts.slice(0, 4);
               />
             ))
           ) : (
-            <p class="text-slate-400 text-sm text-center py-8">Nenhum post disponível.</p>
+            <p class="text-slate-400 text-sm text-center py-8">{tabsEmpty}</p>
           )}
         </div>
       </div>
