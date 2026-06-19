@@ -95,7 +95,7 @@ const categoryCounts = allCategories.map(cat => ({
   <!-- widget categories -->
   <div class="widget rounded">
     <div class="widget-header text-center">
-      <h3 class="widget-title">Explorar Tópicos</h3>
+      <h3 class="widget-title">Explorar Topics</h3>
       <img src="/images/wave.svg" class="wave" alt="wave" />
     </div>
     <div class="widget-content">
@@ -123,10 +123,10 @@ const categoryCounts = allCategories.map(cat => ({
         <div class="mb-2">
           <input id="sidebar-newsletter-input" class="form-control w-100 text-center" placeholder="Seu e-mail…" type="email" required>
         </div>
-        <button class="btn btn-default btn-full" type="submit">Inscrever-se</button>
+        <button class="btn btn-default btn-full" type="submit">Subscribe</button>
       </form>
       <p id="sidebar-newsletter-msg" style="display:none; text-align:center; margin-top:0.5rem; font-size:0.8rem; font-weight:600;"></p>
-      <span class="newsletter-privacy text-center mt-3">Ao se inscrever, você concorda com nossa <a href="/privacidade">Política de Privacidade</a></span>
+      <span class="newsletter-privacy text-center mt-3">By subscribing, you agree to our <a href="/privacidade">Privacy Policy</a></span>
     </div>
   </div>
   )}
@@ -224,14 +224,14 @@ const categoryCounts = allCategories.map(cat => ({
                 msg.textContent = data.error || 'Erro ao inscrever.';
                 msg.style.color = '#dc2626';
                 msg.style.display = 'block';
-                btn.textContent = originalText ?? 'Inscrever-se';
+                btn.textContent = originalText ?? 'Subscribe';
                 btn.disabled = false;
             }
         } catch {
             msg.textContent = 'Erro de rede. Tente novamente.';
             msg.style.color = '#dc2626';
             msg.style.display = 'block';
-            btn.textContent = originalText ?? 'Inscrever-se';
+            btn.textContent = originalText ?? 'Subscribe';
             btn.disabled = false;
         }
     });
