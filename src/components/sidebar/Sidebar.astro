@@ -27,13 +27,14 @@ function fmtDate(d: any): string {
   if (!d) return '';
   const dt = new Date(d);
   if (isNaN(dt.getTime())) return '';
-  return dt.toLocaleDateString('pt-BR', { month: 'short', day: '2-digit' }).replace('.', '');
+  const dateLocale = (siteConfig as any)?.language === 'pt-BR' ? 'pt-BR' : 'en-US';
+  return dt.toLocaleDateString(dateLocale, { month: 'short', day: '2-digit' }).replace('.', '');
 }
 ---
 
 <aside class="lg:sticky lg:top-24 space-y-12">
   <div class="side-section">
-    <div class="side-section-label uppercase">recente</div>
+    <div class="side-section-label uppercase">{(homeData as any)?.sidebar?.recentLabel || 'recent'}</div>
     <ol class="space-y-5">
       {recentPosts.map((post: any, i: number) => {
         const data = post.data;
@@ -59,7 +60,7 @@ function fmtDate(d: any): string {
 
   {allCategories.length > 0 && (
     <div class="side-section">
-      <div class="side-section-label uppercase">tópicos</div>
+      <div class="side-section-label uppercase">{(homeData as any)?.sidebar?.topicsLabel || 'topics'}</div>
       <ul class="flex flex-wrap gap-x-3 gap-y-2">
         {allCategories.map((cat) => (
           <li>
