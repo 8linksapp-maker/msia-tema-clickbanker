@@ -27,16 +27,26 @@ const posts = allPosts.sort((a: any, b: any) => {
 const featured = posts[0];
 const rest = posts.slice(1, 5);
 
+const dateLocale = siteConfig?.language === 'pt-BR' ? 'pt-BR' : 'en-US';
 function fmtShort(d: any): string {
   if (!d) return '';
   const dt = new Date(d);
   if (isNaN(dt.getTime())) return '';
-  return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  return dt.toLocaleDateString(dateLocale, { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
+const emptyCfg = homeData?.empty || {};
+const moreCfg = homeData?.sections?.latestPosts || {};
+
 const heroTitle = homeData?.hero?.title || siteConfig.name;
-const heroEyebrow = homeData?.hero?.eyebrow || 'scaffold msia';
-const heroLead = homeData?.hero?.lead || 'Cinco passos pra deixar este blog seu. Cada bloco é um capítulo.';
+const heroEyebrow = homeData?.hero?.eyebrow || 'honest reviews · clickbank';
+const heroLead = homeData?.hero?.lead || 'Honest reviews of the best ClickBank digital products.';
+const emptyEyebrow = emptyCfg.title || 'empty';
+const emptyHeading = emptyCfg.message || 'No posts published.';
+const emptyInstruction = emptyCfg.instruction || 'Create the first one at';
+const moreEyebrow = moreCfg.moreEyebrow || 'more';
+const moreCta = moreCfg.ctaLabel || 'View all articles';
+const moreLink = moreCfg.ctaLink || '/blog';
 ---
 
 <BaseLayout title={siteConfig.name} description={siteConfig.description}>
@@ -62,9 +72,9 @@ const heroLead = homeData?.hero?.lead || 'Cinco passos pra deixar este blog seu.
 
   {posts.length === 0 ? (
     <div class="container-x py-32">
-      <p class="mono uppercase text-ink-faint mb-3">vazio</p>
-      <h2 class="font-display text-3xl text-ink mb-3">Nenhum post publicado.</h2>
-      <p class="text-ink-muted">Crie o primeiro em <a href="/admin" class="text-primary underline underline-offset-4">/admin</a>.</p>
+      <p class="mono uppercase text-ink-faint mb-3">{emptyEyebrow}</p>
+      <h2 class="font-display text-3xl text-ink mb-3">{emptyHeading}</h2>
+      <p class="text-ink-muted">{emptyInstruction} <a href="/admin" class="text-primary underline underline-offset-4">/admin</a>.</p>
     </div>
   ) : (
     <>
@@ -162,9 +172,9 @@ const heroLead = homeData?.hero?.lead || 'Cinco passos pra deixar este blog seu.
       <!-- ===== Footer da home: link pra archive ===== -->
       <section class="border-b border-rule">
         <div class="container-x py-14 md:py-20 text-center">
-          <p class="mono uppercase text-ink-faint mb-4">tem mais</p>
-          <a href="/blog" class="font-display text-3xl md:text-4xl font-bold text-ink hover:text-primary transition-colors inline-flex items-center gap-3">
-            todos os artigos
+          <p class="mono uppercase text-ink-faint mb-4">{moreEyebrow}</p>
+          <a href={moreLink} class="font-display text-3xl md:text-4xl font-bold text-ink hover:text-primary transition-colors inline-flex items-center gap-3">
+            {moreCta}
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
