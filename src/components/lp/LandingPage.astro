@@ -113,7 +113,7 @@ function bgStyles(block: Block): { className: string; style: string } {
           <div class="lp-container">
             <div class={`lp-solution-grid ${d.image ? 'has-image' : ''}`}>
               <div>
-                <p class="lp-eyebrow">a solução</p>
+                <p class="lp-eyebrow">the solution</p>
                 <h2 class="lp-h2">{d.headline}</h2>
                 {d.text && <p class="lp-body">{d.text}</p>}
               </div>
@@ -134,8 +134,8 @@ function bgStyles(block: Block): { className: string; style: string } {
       return (
         <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
           <div class="lp-container lp-narrow">
-            <p class="lp-eyebrow">o que você ganha</p>
-            <h2 class="lp-h2">{d.headline || 'Benefícios diretos'}</h2>
+            <p class="lp-eyebrow">what you get</p>
+            <h2 class="lp-h2">{d.headline || 'Direct benefits'}</h2>
             <ul class="lp-list-check">
               {items.map((item: string) => (
                 <li>
@@ -162,7 +162,7 @@ function bgStyles(block: Block): { className: string; style: string } {
       return (
         <section class={`lp-block lp-section ${bgStyles(block).className}`} style={bgStyles(block).style}>
           <div class="lp-container">
-            <p class="lp-eyebrow lp-center">quem já usou</p>
+            <p class="lp-eyebrow lp-center">customer reviews</p>
             <h2 class="lp-h2 lp-center">{d.headline || 'Resultados reais'}</h2>
             <div class="lp-testimonials">
               {items.map((t: any) => (
@@ -189,8 +189,8 @@ function bgStyles(block: Block): { className: string; style: string } {
       return (
         <section class={`lp-block lp-section lp-section-muted ${bgStyles(block).className}`} style={bgStyles(block).style}>
           <div class="lp-container lp-narrow">
-            <p class="lp-eyebrow">perguntas frequentes</p>
-            <h2 class="lp-h2">{d.headline || 'Dúvidas comuns'}</h2>
+            <p class="lp-eyebrow">frequently asked questions</p>
+            <h2 class="lp-h2">{d.headline || 'Common questions'}</h2>
             <div class="lp-faq">
               {items.map((item: any) => (
                 <details class="lp-faq-item">
@@ -331,10 +331,10 @@ function bgStyles(block: Block): { className: string; style: string } {
             >
               <p class="lp-countdown-headline">{d.headline}</p>
               <div class="lp-countdown-timer" data-countdown-display>
-                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-d>00</span><span class="lp-countdown-lbl">dias</span></div>
-                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-h>00</span><span class="lp-countdown-lbl">horas</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-d>00</span><span class="lp-countdown-lbl">days</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-h>00</span><span class="lp-countdown-lbl">hours</span></div>
                 <div class="lp-countdown-unit"><span class="lp-countdown-val" data-m>00</span><span class="lp-countdown-lbl">min</span></div>
-                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-s>00</span><span class="lp-countdown-lbl">seg</span></div>
+                <div class="lp-countdown-unit"><span class="lp-countdown-val" data-s>00</span><span class="lp-countdown-lbl">sec</span></div>
               </div>
               <div class="lp-countdown-expired" data-countdown-expired style="display:none;">
                 <span class="lp-countdown-expired-text">{d.expiredMessage || 'Oferta encerrada'}</span>
