@@ -14,7 +14,8 @@ interface Props {
   items?: CategoryItem[];
 }
 
-const { title = "Explore por Categorias", items = [] } = Astro.props;
+const home = readData<any>('home.json', {});
+const { title = home?.sections?.categories?.heading || 'Browse by Category', items = [] } = Astro.props;
 const allCategories = normalizeCategories(readData('categories.json', []));
 ---
 
