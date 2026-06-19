@@ -1,30 +1,31 @@
 {
-  "name": "ClickBank Affiliate",
-  "description": "Honest reviews, comparisons and guides for the best ClickBank products.",
-  "url": "https://clickbank-affiliate.com",
-  "author": "Editorial Team",
-  "language": "en",
-  "logo": "",
-  "theme": {
-    "primary": "#a3592d",
-    "dark": "#1a1310",
-    "fontDisplay": "Cabinet Grotesk",
-    "fontBody": "Switzer"
-  },
-  "social": {
-    "instagram": "",
-    "twitter": "",
-    "facebook": "",
-    "youtube": ""
-  },
-  "contact": {
-    "email": "hello@clickbank-affiliate.com",
-    "phone": "",
-    "address": "",
-    "name": ""
-  },
-  "legal": {
-    "terms_last_updated": "",
-    "privacy_last_updated": ""
-  }
+    "name": "ClickBank Affiliate",
+    "description": "Honest reviews, comparisons and guides for the best ClickBank products.",
+    "url": "https://clickbank-affiliate.com",
+    "author": "Editorial Team",
+    "language": "en",
+    "logo": "",
+    "theme": {
+        "primary": "#a3592d",
+        "dark": "#1a1310",
+        "fontDisplay": "Cabinet Grotesk",
+        "fontBody": "Switzer"
+    },
+    "social": {
+        "instagram": "",
+        "twitter": "",
+        "facebook": "",
+        "youtube": ""
+    },
+    "contact": {
+        "email": "hello@clickbank-affiliate.com",
+        "phone": "",
+        "address": "",
+        "name": ""
+    },
+    "legal": {
+        "terms_last_updated": "",
+        "privacy_last_updated": ""
+    },
+    "menuHoverEnabled": true
 }
