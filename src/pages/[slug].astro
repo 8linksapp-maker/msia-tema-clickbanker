@@ -109,7 +109,7 @@ const videoPosition = data.videoPosition || 'after-hero';
 
       <div class="container-x relative z-10 pt-16 md:pt-24 pb-20 md:pb-28">
         <nav class="mono opacity-75 mb-12" aria-label="Breadcrumb">
-          <a href="/" class="hover:opacity-100 transition-opacity">início</a>
+          <a href="/" class="hover:opacity-100 transition-opacity">home</a>
           <span class="mx-2 opacity-60">/</span>
           {data.category && (
             <>
@@ -191,8 +191,8 @@ const videoPosition = data.videoPosition || 'after-hero';
       <div class="border-b border-rule bg-elev/40">
         <div class="container-x py-3">
           <p class="text-xs text-ink-muted leading-relaxed text-center md:text-left">
-            <span class="mono uppercase text-ink-faint mr-2">aviso</span>
-            Este artigo contém links de afiliado. Compras podem gerar comissão sem custo adicional pra você. Recomendamos apenas produtos analisados.
+            <span class="mono uppercase text-ink-faint mr-2">disclosure</span>
+            This article contains affiliate links. Purchases may earn us a commission at no extra cost to you. We only recommend products we've reviewed.
           </p>
         </div>
       </div>
@@ -216,7 +216,7 @@ const videoPosition = data.videoPosition || 'after-hero';
 
           {/* Tabela comparativa */}
           {comparedProducts.length > 0 && (
-            <ProductComparator products={comparedProducts} title="Comparação rápida" />
+            <ProductComparator products={comparedProducts} title="Quick comparison" />
           )}
 
           {/* Produtos recomendados no fim */}
