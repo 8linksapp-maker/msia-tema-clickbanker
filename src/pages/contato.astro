@@ -7,7 +7,7 @@ const contatoData = readData('contato.json', {});
 const contact = siteConfig.contact || {};
 ---
 
-<BaseLayout title="Contato" description={`Fale com ${siteConfig.name}`}>
+<BaseLayout title="Contact" description={`Fale com ${siteConfig.name}`}>
   <section class="border-b border-rule">
     <div class="container-x pt-16 md:pt-20 pb-12">
       <p class="mono uppercase text-ink-faint mb-5">contato</p>
@@ -15,7 +15,7 @@ const contact = siteConfig.contact || {};
         Vamos conversar.
       </h1>
       <p class="text-xl text-ink-muted leading-relaxed max-w-2xl">
-        {(contatoData as any).intro || 'Tem ideia, parceria ou dúvida? Manda mensagem que respondemos.'}
+        {(contatoData as any).intro || 'Got an idea, partnership or question? Drop us a message and we will reply.'}
       </p>
     </div>
   </section>
@@ -37,7 +37,7 @@ const contact = siteConfig.contact || {};
         )}
         {contact.address && (
           <div>
-            <div class="mono uppercase text-ink-faint mb-2">endereço</div>
+            <div class="mono uppercase text-ink-faint mb-2">address</div>
             <p class="text-base text-ink leading-relaxed">{contact.address}</p>
           </div>
         )}
