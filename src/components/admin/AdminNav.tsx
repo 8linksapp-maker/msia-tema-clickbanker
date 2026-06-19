@@ -22,6 +22,7 @@ const afiliadoItems: NavItem[] = [
 ];
 
 const pageItems: NavItem[] = [
+    { label: 'Página Inicial', href: '/admin/home', icon: Home, section: 'home' },
     { label: 'Navegação do site', href: '/admin/menu', icon: Navigation, section: 'menu' },
     { label: 'Sobre', href: '/admin/sobre', icon: Info, section: 'sobre' },
     { label: 'Contato', href: '/admin/contato', icon: Phone, section: 'contato' },
