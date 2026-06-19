@@ -4,10 +4,10 @@ import { readData } from '../../lib/readData';
 const pluginsConfig = readData('pluginsConfig.json', {}) as any;
 const cc = pluginsConfig?.cookieConsent;
 const enabled = cc?.enabled !== false;
-const headline = cc?.headline || 'Privacidade e Cookies';
-const description = cc?.description || 'Utilizamos cookies para melhorar sua experiência. Ao clicar em "Aceitar", você concorda com nossa política de privacidade.';
-const buttonAccept = cc?.buttonAccept || 'Aceitar';
-const buttonReject = cc?.buttonReject || 'Ler Política';
+const headline = cc?.headline || 'Privacy & Cookies';
+const description = cc?.description || 'We use cookies to improve your experience. By clicking "Accept", you agree to our privacy policy.';
+const buttonAccept = cc?.buttonAccept || 'Accept';
+const buttonReject = cc?.buttonReject || 'Learn more';
 const rejectUrl = cc?.rejectUrl || '/privacidade';
 const position = cc?.position || 'bottom';
 
