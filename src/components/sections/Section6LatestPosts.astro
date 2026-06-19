@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import SectionHeader from '../ui/SectionHeader.astro';
 import PostCardMedium from '../ui/PostCardMedium.astro';
 import Sidebar from '../sidebar/Sidebar.astro';
+import { readData } from '../../lib/readData';
 
 interface Props {
   title?: string;
@@ -11,12 +12,17 @@ interface Props {
   btnLink?: string;
 }
 
+const home = readData<any>('home.json', {});
+const latest = home?.sections?.latestPosts || {};
+
 const {
-  title = "Publicações Recentes",
+  title = latest.heading || 'Latest Posts',
   limit = 6,
-  btnText = "Ver Todos os Artigos",
-  btnLink = "/blog",
+  btnText = latest.ctaLabel || 'View All Articles',
+  btnLink = latest.ctaLink || '/blog',
 } = Astro.props;
+
+const emptyMsg = latest.empty || 'No posts yet.';
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -46,7 +52,7 @@ const posts = (await getCollection('blog'))
           </div>
         ) : (
           <div class="py-16 text-center rounded-2xl bg-white border border-gray-200">
-            <p class="text-slate-400">Nenhum post publicado ainda.</p>
+            <p class="text-slate-400">{emptyMsg}</p>
           </div>
         )}
 
