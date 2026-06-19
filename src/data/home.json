@@ -1,7 +1,70 @@
 {
   "hero": {
-    "eyebrow": "blog de afiliado · clickbank",
-    "title": "Reviews honestos. Produtos que entregam.",
-    "lead": "Análises práticas dos melhores produtos digitais da ClickBank — para você escolher com confiança e sem pressa."
+    "eyebrow": "honest reviews · clickbank",
+    "title": "Honest reviews. Products that deliver.",
+    "lead": "Practical reviews of the best ClickBank digital products — so you choose with confidence, no rush."
+  },
+  "sections": {
+    "editorsChoice": {
+      "heading": "Editor's Picks",
+      "ctaLabel": "More Articles",
+      "ctaLink": "/blog",
+      "readMoreLabel": "Read more"
+    },
+    "trending": {
+      "heading": "Trending This Week"
+    },
+    "categories": {
+      "heading": "Browse by Category"
+    },
+    "about": {
+      "label": "About Us",
+      "heading": "About Us",
+      "ctaLabel": "Learn More",
+      "ctaLink": "/sobre"
+    },
+    "latestPosts": {
+      "heading": "Latest Posts",
+      "ctaLabel": "View All Articles",
+      "ctaLink": "/blog",
+      "empty": "No posts yet.",
+      "moreEyebrow": "more"
+    }
+  },
+  "tabs": {
+    "popular": "popular",
+    "recent": "recent",
+    "empty": "No posts available.",
+    "readArticle": "Read article"
+  },
+  "header": {
+    "blogLinkLabel": "All articles",
+    "searchHint": "esc to close"
+  },
+  "footer": {
+    "navLabel": "navigation",
+    "topicsLabel": "topics",
+    "socialLabel": "social",
+    "privacyLabel": "privacy",
+    "termsLabel": "terms"
+  },
+  "sidebar": {
+    "recentLabel": "recent",
+    "topicsLabel": "topics"
+  },
+  "newsletter": {
+    "title": "Newsletter",
+    "description": "Get the best articles straight to your inbox.",
+    "placeholder": "Your email",
+    "submitLabel": "Subscribe",
+    "sendingLabel": "Sending…",
+    "successLabel": "Subscribed!",
+    "retryLabel": "Subscribe",
+    "networkError": "Network error. Try again."
+  },
+  "empty": {
+    "title": "empty",
+    "message": "No posts published.",
+    "instruction": "Create the first one at"
   }
 }
