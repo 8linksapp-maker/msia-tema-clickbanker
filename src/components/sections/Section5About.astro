@@ -1,4 +1,6 @@
 ---
+import { readData } from '../../lib/readData';
+
 interface Stat {
   value: string;
   label: string;
@@ -13,14 +15,19 @@ interface Props {
   stats?: Stat[];
 }
 
+const home = readData<any>('home.json', {});
+const about = home?.sections?.about || {};
+
 const {
-  title = "Sobre Nós",
+  title = about.heading || 'About Us',
   desc = "",
   image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop",
-  btnText = "Saiba Mais",
-  btnLink = "/sobre",
+  btnText = about.ctaLabel || 'Learn More',
+  btnLink = about.ctaLink || '/sobre',
   stats = [],
 } = Astro.props;
+
+const aboutLabel = about.label || 'About Us';
 ---
 
 <section class="py-16 bg-white border-b border-gray-200">
@@ -50,7 +57,7 @@ const {
       <!-- Conteúdo -->
       <div>
         <span class="inline-block bg-primary-100 text-primary-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
-          Sobre Nós
+          {aboutLabel}
         </span>
         <h2 class="text-3xl font-bold text-slate-800 mb-4 leading-tight">{title}</h2>
         <p class="text-slate-500 leading-relaxed mb-6">{desc}</p>
