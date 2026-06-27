@@ -251,7 +251,7 @@ const processedHtml = isHtmlBody && hasShortcodes(rawBody) ? renderShortcodes(ra
     (function() {
       const source = document.getElementById('email-inline-source');
       if (!source) return;
-      const pos = Number((source as HTMLElement).dataset.position) || 3;
+      const pos = Number(source.dataset.position) || 3;
       const paragraphs = document.querySelectorAll('.post-content > p');
       const target = paragraphs[pos - 1] || paragraphs[paragraphs.length - 1];
       if (target) {
