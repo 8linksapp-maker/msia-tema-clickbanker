@@ -7,7 +7,6 @@ import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
 import { yamlEscape } from '../../lib/yamlEscape';
 import { renderShortcodes } from '../../lib/shortcodes';
-import SEOScoreWidget from '../../plugins/seo/SEOScoreWidget';
 
 interface PostEditorProps {
     filePath: string | null; // null = novo post
@@ -825,13 +824,6 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                         </div>
                     </div>
 
-                    {/* SEO Score Widget */}
-                    <SEOScoreWidget
-                        title={post.title}
-                        description={post.description}
-                        heroImage={post.heroImage}
-                        content={post.content}
-                    />
                 </div>
             </div>
         </div>
