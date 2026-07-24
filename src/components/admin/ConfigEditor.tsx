@@ -274,7 +274,17 @@ export default function ConfigEditor() {
                     {/* URL do site — nível raiz do siteConfig */}
                     <div>
                         <label className={labelClass}>URL do Site</label>
-                        <input type="text" placeholder="https://seusite.com.br" value={config?.url || ''} onChange={e => setConfig({ ...config, url: e.target.value })} className={inputClass} />
+                        <input
+                            type="text"
+                            placeholder="https://seusite.com.br"
+                            value={config?.url || ''}
+                            onChange={e => setConfig({ ...config, url: e.target.value })}
+                            onBlur={e => {
+                                const v = e.target.value.trim().replace(/\/$/, '');
+                                if (v && !/^https?:\/\//i.test(v)) setConfig({ ...config, url: `https://${v}` });
+                            }}
+                            className={inputClass}
+                        />
                     </div>
                     {/* email, phone, address — dentro de contact{} */}
                     {[

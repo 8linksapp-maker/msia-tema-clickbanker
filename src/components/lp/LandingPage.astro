@@ -115,7 +115,7 @@ function bgStyles(block: Block): { className: string; style: string } {
               <div>
                 <p class="lp-eyebrow">a solução</p>
                 <h2 class="lp-h2">{d.headline}</h2>
-                {d.text && <p class="lp-body">{d.text}</p>}
+                {d.text && String(d.text).split(/\n\n+/).filter((p: string) => p.trim()).map((p: string) => <p class="lp-body">{p.trim()}</p>)}
               </div>
               {d.image && (
                 <div class="lp-solution-image">
@@ -238,7 +238,7 @@ function bgStyles(block: Block): { className: string; style: string } {
             <div class={`lp-text-image-grid ${isLeft ? 'reverse' : ''}`}>
               <div class="lp-text-image-content">
                 {d.headline && <h2 class="lp-h2">{d.headline}</h2>}
-                {d.text && <p class="lp-body">{d.text}</p>}
+                {d.text && String(d.text).split(/\n\n+/).filter((p: string) => p.trim()).map((p: string) => <p class="lp-body">{p.trim()}</p>)}
               </div>
               {d.image && (
                 <div class="lp-text-image-img">

@@ -37,7 +37,8 @@ if (fontStack) {
   cssVars += ` --lp-font: ${fontStack};`;
 }
 
-const siteUrl = siteConfig.url || Astro.url.origin;
+const rawUrl = String(siteConfig.url || Astro.url.origin || '').trim().replace(/\/$/, '');
+const siteUrl = rawUrl && !/^https?:\/\//i.test(rawUrl) ? `https://${rawUrl}` : rawUrl;
 const ogImage = image?.startsWith('http') ? image : (image ? new URL(image, siteUrl).toString() : '');
 ---
 
