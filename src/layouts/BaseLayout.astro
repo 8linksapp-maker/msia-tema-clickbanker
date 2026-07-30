@@ -58,8 +58,8 @@ const {
 const formattedTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
 const siteUrl = siteConfig.url || Astro.url.origin;
 const socialImage = image?.startsWith('http') ? image : image ? new URL(image, siteUrl).toString() : '';
+import CustomCodeBodyStart from '../plugins/custom-code/CustomCodeBodyStart.astro';
 ---
-
 <!DOCTYPE html>
 <html lang={siteConfig.language || 'pt-BR'} style={cssVars}>
 <head>
@@ -90,6 +90,7 @@ const socialImage = image?.startsWith('http') ? image : image ? new URL(image, s
 </head>
 
 <body class={bodyClass}>
+<CustomCodeBodyStart />
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-ink focus:text-bg focus:px-4 focus:py-2 focus:rounded focus:mono">
     pular pro conteúdo
   </a>

@@ -3,7 +3,7 @@ import {
     FileText, Tag, Users, Info, Phone,
     Shield, Settings, LogOut, ExternalLink, Navigation,
     Package, FileArchive, PenLine, ChevronRight, Home, Sparkles,
-    ShoppingBag, Rocket, Megaphone, MousePointerClick,
+    ShoppingBag, Rocket, Megaphone, MousePointerClick, Code2,
 } from 'lucide-react';
 
 interface NavItem {
@@ -158,6 +158,7 @@ export default function AdminNav({ activeSection = '', extraItems = [] }: AdminN
                 <div role="group" aria-labelledby="nav-config">
                     <p id="nav-config" className="text-[10px] font-bold text-ink-faint uppercase tracking-widest px-3 mb-1.5">Configurações</p>
                     <NavLink item={{ label: 'Plugins', href: '/admin/plugins', icon: Package, section: 'plugins' }} active={activeSection === 'plugins'} />
+                    <NavLink item={{ label: 'Código Personalizado', href: '/admin/custom-code', icon: Code2, section: 'custom-code' }} active={activeSection === 'custom-code'} />
                     <NavLink item={{ label: 'Configurações', href: '/admin/config', icon: Settings, section: 'config' }} active={activeSection === 'config'} />
                     <NavLink item={{ label: 'Backup', href: '/admin/backup', icon: FileArchive, section: 'backup' }} active={activeSection === 'backup'} />
                 </div>

@@ -115,5 +115,13 @@
     "color": "text-slate-600",
     "bg": "bg-slate-100",
     "href": "/admin/import-wp"
+  },
+  {
+    "name": "customCode",
+    "label": "Codigo Personalizado",
+    "description": "Injete HTML/JS de terceiros (AdCash, Hotjar, GTM, Meta Pixel custom) em 3 slots.",
+    "icon": "Code2",
+    "href": "/admin/custom-code",
+    "category": "avancado"
   }
 ]
