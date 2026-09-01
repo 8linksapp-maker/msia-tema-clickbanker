@@ -194,7 +194,8 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                                 .map(line => line.replace(/^-\s*/, '').replace(/^["']|["']$/g, '').trim())
                                 .filter(Boolean);
                         };
-                        const parsedHtml = await marked.parse(body);
+                        const isHtml = /^\s*<[a-z][\s\S]*>/i.test(body);
+                        const parsedHtml = isHtml ? body : await marked.parse(body);
                         const rawPubDate = extract('pubDate');
                         if (rawPubDate) setOriginalPubDateISO(rawPubDate);
                         const rawUpdated = extract('updatedDate');
